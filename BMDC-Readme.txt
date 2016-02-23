@@ -28,28 +28,28 @@ Dependencies:
 
 Compiling:
 ----------
-\$ cd /path/to/bmdc-source
-\$ scons PREFIX=/path/to/install/
+$ cd /path/to/bmdc-source
+$ scons PREFIX=/path/to/install/
 
 Installing:
 -----------
-\# scons install
+# scons install
 
 Running:
 --------
-\$ bmdc
+$ bmdc
 or
-\$ /path/to/install/bin/bmdc
+$ /path/to/install/bin/bmdc
 
 Uninstalling:
 -------------
 To uninstall BMDC++, simply delete the directory you installed it in. To uninstall using scons, run:
 
-\$ scons -c
+$ scons -c
 
 or if you used scons to install into the file system then use the same scons command that you used to install and add the option -c:
 
-\# scons -c install
+# scons -c install
 
 License:
 --------
