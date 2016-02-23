@@ -38,7 +38,8 @@ Installing:
 Running:
 --------
 $ bmdc
-${prefix}/bin/bmdc
+or
+$ /path/to/install/bin/bmdc
 
 Uninstalling:
 -------------
