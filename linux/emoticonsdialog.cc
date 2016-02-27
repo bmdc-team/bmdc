@@ -74,12 +74,12 @@ EmoticonsDialog::EmoticonsDialog(GtkWidget *chat, GtkWidget *button, GtkWidget *
 
 Emoticons *EmoticonsDialog::getEmot(const std::string &address)
 {
-	if(address.empty()) return Emoticons::get();	
+	if(address.empty()) return em_global;
 
 	map<std::string,Emoticons*>::iterator it;
 	if( (it = hubs.find(address) ) != hubs.end())
 		return it->second;
-	else return Emoticons::get();
+	else return em_global;
 }
 
 EmoticonsDialog::~EmoticonsDialog()
