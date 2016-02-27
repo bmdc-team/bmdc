@@ -254,8 +254,8 @@ void BookEntry::updateLabel_gui()
 	const char *format = "%s";
 	bool b_color = WGETB("colorize-tab-text");
 	char color_format[256];
-	const char* color =  string(urgent ? WGETS("color-tab-text-urgent") : WGETS("color-tab-text-bold")).c_str();
-	sprintf(color_format,"<span foreground=\"%s\">%%s</span>",color);	
+	string color =  urgent ? WGETS("color-tab-text-urgent") : WGETS("color-tab-text-bold");
+	sprintf(color_format,"<span foreground=\"%s\">%%s</span>",color.c_str());	
 
 	if (urgent)
 		format = b_color ? color_format : "<i><b>%s</b></i>";

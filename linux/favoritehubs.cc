@@ -598,13 +598,13 @@ void FavoriteHubs::saveFavHubGroups()
 		string awayMsg = groupsView.getString(&iter, "AwayMessage");
 		
 		p.set(SettingsManager::NICK, nick);
-		p.get(SettingsManager::EMAIL,email);
-		p.get(SettingsManager::DESCRIPTION, desc);
-		p.get(SettingsManager::FAV_SHOW_JOINS, favShowJoins);
-		p.get(SettingsManager::SHOW_JOINS, showJoins);
-		p.get(SettingsManager::LOG_CHAT_B, log_hub);
+		p.set(SettingsManager::EMAIL,email);
+		p.set(SettingsManager::DESCRIPTION, desc);
+		p.set(SettingsManager::FAV_SHOW_JOINS, favShowJoins);
+		p.set(SettingsManager::SHOW_JOINS, showJoins);
+		p.set(SettingsManager::LOG_CHAT_B, log_hub);
 		p.setAutoConnect((bool)connect_hub);
-		p.get(SettingsManager::DEFAULT_AWAY_MESSAGE, awayMsg);
+		p.set(SettingsManager::DEFAULT_AWAY_MESSAGE, awayMsg);
 
 		favHubGroups.insert(FavHubGroup(group, p));
 

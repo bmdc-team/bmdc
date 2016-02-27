@@ -256,7 +256,7 @@ void EmoticonsDialog::showEmotDialog_gui()
 void EmoticonsDialog::build()
 {
 	guint left_attach = 0,
-		right_attach = 1,
+		right_attach,
 		top_attach = 0;
 
 	const int sizetable = getEmot(address)->getCountFile_gui();
