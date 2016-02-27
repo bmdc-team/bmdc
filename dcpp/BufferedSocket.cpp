@@ -39,7 +39,7 @@ using std::max;
 
 BufferedSocket::BufferedSocket(char aSeparator/*, bool v4only*/) :
 separator(aSeparator), mode(MODE_LINE), dataBytes(0), rollback(0), state(STARTING),
-disconnecting(false)//, v4only(v4only)
+disconnecting(false),filterIn(NULL)//, v4only(v4only)
 {
 	start();
 

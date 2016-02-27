@@ -716,12 +716,12 @@ void DetectionTab::addAct_client(StringMap params)
 void DetectionTab::addRaw_client(StringMap params)
 {
     Action* a = RawManager::getInstance()->findAction(params["Action"]);
-	Raw *raw = new Raw();
-	raw->setName(params["Name"]);
-	raw->setRaw(params["RAW"]);
-	raw->setTime(Util::toInt(params["Time"]));
-	raw->setEnabled(true);
-	RawManager::getInstance()->addRaw(a,*raw);
+	Raw raw;// = new Raw();
+	raw.setName(params["Name"]);
+	raw.setRaw(params["RAW"]);
+	raw.setTime(Util::toInt(params["Time"]));
+	raw.setEnabled(true);
+	RawManager::getInstance()->addRaw(a,raw);
 	RawManager::getInstance()->saveActionRaws();
 }
 

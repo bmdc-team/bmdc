@@ -1190,14 +1190,16 @@ void FavoriteManager::on(UserConnected, const UserPtr& user) noexcept {
 		//Idedetn Favorites
 		ClientManager::getInstance()->lock();
 		OnlineUser *ou = ClientManager::getInstance()->findOnlineUser(HintedUser(user,Util::emptyString));
-		Identity id = ou->getIdentity();
-		string nick = id.getNick();
-		auto idt = favoritesNoCid.find(nick);
-		if(idt != favoritesNoCid.end())
-		{
-			idt->second->update(*ou);
-			fire(FavoriteManagerListener::FavoriteIUpdate(), nick, *(idt->second));
-		}
+		if(ou) {
+			Identity id = ou->getIdentity();
+			string nick = id.getNick();
+			auto idt = favoritesNoCid.find(nick);
+			if(idt != favoritesNoCid.end())
+			{
+				idt->second->update(*ou);
+				fire(FavoriteManagerListener::FavoriteIUpdate(), nick, *(idt->second));
+			}
+		}	
 	}
 }
 

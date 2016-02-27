@@ -222,10 +222,11 @@ File::File(const string& aFileName, int access, int mode) {
 	string filename = aFileName;
 
 	struct stat s;
-	if(lstat(filename.c_str(), &s) != -1) {
+	if(stat(filename.c_str(), &s) != -1) {
 		if(!S_ISREG(s.st_mode) && !S_ISLNK(s.st_mode))
 			throw FileException("Invalid file type");
 	}
+	
 
 	h = g_open(filename.c_str(), m, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);//glib
 	if(h == -1)
@@ -306,7 +307,7 @@ size_t File::write(const void* buf, size_t len) {
 // some ftruncate implementations can't extend files like SetEndOfFile,
 // not sure if the client code needs this...
 int File::extendFile(int64_t len) noexcept {
-	char zero;
+	char zero = ' ';
 
 	if( (lseek(h, (off_t)len, SEEK_SET) != -1) && (::write(h, &zero,1) != -1) ) {
 		int x = ftruncate(h,(off_t)len);

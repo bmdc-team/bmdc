@@ -37,7 +37,9 @@ Client::Client(const string& hubURL, char separator_, bool secure_) :
 	reconnDelay(120), lastActivity(GET_TICK()), registered(false), autoReconnect(false),
 	encoding(Text::systemCharset), state(STATE_DISCONNECTED), sock(nullptr),
 	hubUrl(hubURL),separator(separator_),
-	secure(secure_), countType(COUNT_UNCOUNTED)
+	secure(secure_), countType(COUNT_UNCOUNTED),
+	hideShare(true),checkClients(false), checkFilelists(false),
+	port(0),bIPv6(false),bIPv4(true)//defualt is ipv4
 {
 	string file, proto, query, fragment;
 	Util::decodeUrl(hubURL, proto, address, port, file, query, fragment);

@@ -67,9 +67,9 @@ EmoticonsDialog::EmoticonsDialog(GtkWidget *chat, GtkWidget *button, GtkWidget *
 		
 		if(em != NULL)
 			hubs.insert(make_pair(address,em));
-		
-	}
-		
+	} else
+		em_global = Emoticons::start();
+	
 }
 
 Emoticons *EmoticonsDialog::getEmot(const std::string &address)

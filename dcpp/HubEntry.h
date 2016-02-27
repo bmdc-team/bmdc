@@ -46,7 +46,11 @@ public:
 
 	}
 
-	HubEntry() { }
+	HubEntry():
+	name(Util::emptyString), server(Util::emptyString), description(Util::emptyString), country(Util::emptyString),
+	rating(Util::emptyString), reliability(0.0), shared(0), minShare(0), users(0), minSlots(0), maxHubs(0), maxUsers(0)
+	 { }
+	 
 	HubEntry(const HubEntry& rhs) : name(rhs.name), server(rhs.server), description(rhs.description), country(rhs.country),
 		rating(rhs.rating), reliability(rhs.reliability), shared(rhs.shared), minShare(rhs.minShare), users(rhs.users), minSlots(rhs.minSlots),
 		maxHubs(rhs.maxHubs), maxUsers(rhs.maxUsers) { }

@@ -79,7 +79,7 @@ void AboutConfig::show()
 	gchar* rowname;
 	gchar* isdefault;
 	gchar* types;
-	gchar* value;
+	gchar* value = "";
 	gchar* tmp;
 
 	for(int n = 0; n < SettingsManager::SETTINGS_LAST; n++ ) {

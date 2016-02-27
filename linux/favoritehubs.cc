@@ -273,7 +273,7 @@ void FavoriteHubs::onAddEntry_gui(GtkWidget*, gpointer data)
 
 	if (updatedEntry)
 	{
-		typedef Func1<FavoriteHubs, FavoriteHubEntry> F1;
+		typedef Func1<FavoriteHubs, FavoriteHubEntry& > F1;
 		F1 *func = new F1(fh, &FavoriteHubs::addEntry_client, entry);
 		WulforManager::get()->dispatchClientFunc(func);
 	}
@@ -771,7 +771,7 @@ void FavoriteHubs::initializeList_client()
 	}
 }
 
-void FavoriteHubs::addEntry_client(dcpp::FavoriteHubEntry entry)
+void FavoriteHubs::addEntry_client(dcpp::FavoriteHubEntry& entry)
 {
 	FavoriteManager::getInstance()->addFavorite(entry);
 	const FavoriteHubEntryList &fh = FavoriteManager::getInstance()->getFavoriteHubs();

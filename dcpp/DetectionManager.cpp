@@ -82,7 +82,7 @@ void DetectionManager::ProfilesLoad() {
 							while(xml.findChild("InfField")) {
 								const string& field = xml.getChildAttrib("Field");
 								const string& pattern = xml.getChildAttrib("Pattern");
-								const string& type = xml.getChildAttrib("Protocol", "both");
+								const string& type = xml.getChildAttrib("Protocol", "both");//todo some check (cov)
 								if(field.empty() || pattern.empty())
 									continue;
 								if(type == "both")

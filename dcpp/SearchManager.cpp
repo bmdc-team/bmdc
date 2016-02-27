@@ -50,7 +50,8 @@ const char* SearchManager::getTypeStr(int type) {
 
 SearchManager::SearchManager() :
 	stop(false),
-	lastSearch(GET_TICK())
+	lastSearch(GET_TICK()),
+	port(0)
 {
 	TimerManager::getInstance()->addListener(this);
 }

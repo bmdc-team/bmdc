@@ -449,7 +449,7 @@ bool FavoriteHubDialog::initDialog(UnMapIter &groups)
 			
 			gchar* image_path = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(backImage));
 			
-			string tmp = Util::getFileExt(string(image_path));
+			string tmp = Util::getFileExt(image_path);
 			std::transform(tmp.begin(), tmp.end(), tmp.begin(), (int(*)(int))toupper);
 
 			if(tmp == ".png" || tmp == ".jpg" || tmp == ".gif" || tmp == ".svg")//alow only these types
@@ -457,7 +457,7 @@ bool FavoriteHubDialog::initDialog(UnMapIter &groups)
 				p_entry->set(SettingsManager::BACKGROUND_CHAT_IMAGE,string(image_path));
 			}
 			
-			if(image_path)
+			if(image_path)//todo check if need
 				g_free(image_path);
 			
 			p_entry->setGroup(Util::emptyString);

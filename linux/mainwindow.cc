@@ -460,7 +460,7 @@ MainWindow::MainWindow():
 	
 	setInitThrotles();
 	Sound::start();
-	Emoticons::start();
+	//Emoticons::start();
 	Notify::start();
 
 	PluginManager::getInstance()->runHook(HOOK_UI_CREATED, getContainer(), NULL);
@@ -2759,6 +2759,7 @@ void MainWindow::on(QueueManagerListener::Finished, QueueItem *item, const strin
 	else if(item->isSet(QueueItem::FLAG_USER_LIST) && item->isSet(QueueItem::FLAG_CHECK_FILE_LIST))
 	{
         DirectoryListInfo* i = new DirectoryListInfo(item->getDownloads()[0]->getHintedUser(), item->getListName(), dir, avSpeed);
+        try {
         if(listQueue.stop) {
 			listQueue.stop = false;
 			listQueue.start();
@@ -2768,8 +2769,8 @@ void MainWindow::on(QueueManagerListener::Finished, QueueItem *item, const strin
 			listQueue.fileLists.push_back(i);
 		}
 		listQueue.s.signal();
-	}
-	else if (!item->isSet(QueueItem::FLAG_XML_BZLIST))
+	}catch(...){}
+	}else if (!item->isSet(QueueItem::FLAG_XML_BZLIST))
 	{
 		F3 *f3 = new F3(this, &MainWindow::showNotification_gui, _("<b>file:</b> "), item->getTarget(), Notify::DOWNLOAD_FINISHED);
 		WulforManager::get()->dispatchGuiFunc(f3);

@@ -125,6 +125,7 @@ HubSettings& HubSettings::operator=(const HubSettings& rhs)
 	ints = rhs.ints;
 	bools = rhs.bools;
 	share = rhs.share;
+	autoConnect = rhs.autoConnect;
 	return *this;
 }
 

@@ -448,6 +448,7 @@ bool WulforUtil::profileIsLocked()
 		lock.l_len = 0;
 		lock.l_type = F_WRLCK;
 		lock.l_whence = SEEK_SET;
+		lock.l_pid = getpid();
 		struct flock testlock = lock;
 
 		if (fcntl(fd, F_GETLK, &testlock) != -1) // Locking not supported
@@ -456,7 +457,7 @@ bool WulforUtil::profileIsLocked()
 				profileIsLocked = true;
 		}
 	}
-
+	g_close(fd,NULL);
 	return profileIsLocked;
 }
 

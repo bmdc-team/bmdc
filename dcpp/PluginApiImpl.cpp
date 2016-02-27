@@ -379,13 +379,21 @@ ConfigStrPtr DCAPI PluginApiImpl::getLanguage() {
 ConfigValuePtr PluginApiImpl::copyData(const ConfigValuePtr val) {
 	switch(val->type) {
 		case CFG_TYPE_STRING: {
-			auto str = (ConfigStrPtr)val;
+			/*auto str = (ConfigStrPtr)val;
 			auto copy = (ConfigStrPtr)malloc(sizeof(ConfigStr));
 			memcpy(copy, str, sizeof(ConfigStr));
 
 			size_t bufLen = strlen(str->value) + 1;
 			copy->value = (char*)malloc(bufLen);
 			strncpy((char*)copy->value, str->value, bufLen);
+*/
+			ConfigStrPtr copy = (ConfigStrPtr)malloc(sizeof(ConfigStr));
+			copy->type = val->type;
+			int len = strlen( ((ConfigStrPtr)val)->value );
+			copy->value = (char*)malloc(len);
+			const char* vat = (reinterpret_cast<ConfigStrPtr>(val))->value;
+			copy->value = vat;
+			//strncpy(copy->value,(char*)(((ConfigStrPtr)val)->value),len);
 
 			return (ConfigValuePtr)copy;
 		}
