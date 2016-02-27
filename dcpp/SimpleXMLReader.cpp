@@ -737,7 +737,9 @@ bool SimpleXMLReader::process() {
 
 		if(oldState == STATE_CONTENT && state != oldState && !value.empty()) {
 			if(!encoding.empty() && encoding != Text::utf8) {
-				value = Text::toUtf8(value, encoding);
+				//value = Text::toUtf8(value, encoding);
+				gsize oread,owrite;
+				value = g_filename_to_utf8(value.c_str(),-1,&oread,&owrite,NULL);
 			}
 			cb->data(value);
 			value.clear();

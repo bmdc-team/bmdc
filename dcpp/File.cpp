@@ -18,6 +18,8 @@
 
 #include "stdinc.h"
 #include "File.h"
+#include <glib.h>
+#include <glib/gstdio.h>
 
 namespace dcpp {
 
@@ -216,7 +218,8 @@ File::File(const string& aFileName, int access, int mode) {
 		m |= O_TRUNC;
 	}
 
-	string filename = Text::fromUtf8(aFileName);
+	//string filename = Text::fromUtf8(aFileName);
+	string filename = aFileName;
 
 	struct stat s;
 	if(lstat(filename.c_str(), &s) != -1) {
@@ -224,7 +227,7 @@ File::File(const string& aFileName, int access, int mode) {
 			throw FileException("Invalid file type");
 	}
 
-	h = open(filename.c_str(), m, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+	h = g_open(filename.c_str(), m, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);//glib
 	if(h == -1)
 		throw FileException(Util::translateError(errno));
 }

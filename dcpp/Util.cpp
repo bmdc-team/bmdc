@@ -154,11 +154,11 @@ void Util::initialize(PathsMap pathOverrides) {
 	paths[PATH_LOCALE] = Text::fromT(buf);
 
 #else
-	paths[PATH_GLOBAL_CONFIG] = "/etc/";
-	const char* home_ = getenv("HOME");
-	string home = home_ ? Text::toUtf8(home_) : "/tmp/";
-
-	paths[PATH_USER_CONFIG] = home + "/.bmdc++-s/";
+	//paths[PATH_GLOBAL_CONFIG] = "/etc/";
+	//const char* home_ = getenv("HOME");
+	//string home = home_ ? Text::toUtf8(home_) : "/tmp/";
+	string home = g_get_home_dir ();//glib
+	paths[PATH_GLOBAL_CONFIG] = paths[PATH_USER_CONFIG] = home + "/.bmdc++-s/";
 
 	loadBootConfig();
 
@@ -368,7 +368,7 @@ string Util::getShortTimeString(time_t t) {
 	} else {
 		strftime(buf, 254, SETTING(TIME_STAMPS_FORMAT).c_str(), _tm);
 	}
-	return Text::toUtf8(buf);
+	return buf;
 }
 
 /**
@@ -890,13 +890,18 @@ string Util::formatTime(const string &msg, const time_t t) {
 			buf.resize(bufsize);
 			buf.resize(strftime(&buf[0], bufsize-1, msg.c_str(), loc));
 		}
-
+/*
 #ifdef _WIN32
 		if(!Text::validateUtf8(buf))
 #endif
 		{
 			buf = Text::toUtf8(buf);
-		}
+		}*/
+		if(!g_utf8_validate(buf.c_str(),-1,NULL))
+			return Util::emptyString;
+		gsize oread,owrite;
+		buf = g_filename_to_utf8(buf.c_str(),-1,&oread,&owrite,NULL);
+		
 		return buf;
 	}
 	return Util::emptyString;

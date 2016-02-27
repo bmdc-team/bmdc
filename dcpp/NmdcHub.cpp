@@ -190,6 +190,7 @@ void NmdcHub::updateFromTag(Identity& id, const string& tag) {
 void NmdcHub::onLine(const string& aLine) noexcept {
 	if(aLine.empty())
 		return;
+	dcdebug("%s",aLine.c_str());	
 
 	if(aLine[0] != '$') {
 		// Check if we're being banned...
@@ -354,7 +355,7 @@ void NmdcHub::onLine(const string& aLine) noexcept {
 		j = param.find(' ', i);
 		if( (j == string::npos) || (j == i) )
 			return;
-		string nick = toUtf8(param.substr(i, j-i));
+		string nick = toUtf8(unescape(param.substr(i, j-i)));
 
 		if(nick.empty())
 			return;
@@ -383,7 +384,7 @@ void NmdcHub::onLine(const string& aLine) noexcept {
 				tmpDesc.erase(x);
 			}
 		}
-		u.getIdentity().setDescription(toUtf8(tmpDesc));
+		u.getIdentity().setDescription(tmpDesc);
 
 		i = j + 3;
 		j = param.find('$', i);

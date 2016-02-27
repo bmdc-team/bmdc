@@ -449,7 +449,7 @@ int TreeView::col(const string &title)
 {
 	dcassert(!title.empty());
 	int retval = -1;
-	dcassert(columns.find(title) != columns.end() || hiddenColumns.find(title) != hiddenColumns.end());
+	dcassert(columns.find(title) == columns.end() || hiddenColumns.find(title) == hiddenColumns.end());
 
 	if (columns.find(title) != columns.end())
 		retval = columns[title].pos;

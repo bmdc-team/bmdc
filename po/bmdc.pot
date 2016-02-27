@@ -8,7 +8,7 @@ msgstr ""
 "#-#-#-#-#  glade.pot  #-#-#-#-#\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://sourceforge.net/projects/freedcppmv/\n"
-"POT-Creation-Date: 2016-02-13 14:26+0100\n"
+"POT-Creation-Date: 2016-02-27 11:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "#-#-#-#-#  linux.pot  #-#-#-#-#\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://sourceforge.net/projects/freedcppmv/\n"
-"POT-Creation-Date: 2016-02-21 17:11+0100\n"
+"POT-Creation-Date: 2016-02-27 16:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3333,7 +3333,7 @@ msgstr ""
 msgid "Add Plugin"
 msgstr ""
 
-#: linux/search.hh:163
+#: linux/search.hh:167
 msgid "Add Search Tab"
 msgstr ""
 
@@ -3601,7 +3601,7 @@ msgid "Client Type"
 msgstr ""
 
 #: linux/bookentry.cc:293 linux/privatemessage.cc:1574
-#: linux/sharebrowser.cc:1077 linux/search.hh:164
+#: linux/sharebrowser.cc:1077 linux/search.hh:168
 msgid "Close"
 msgstr ""
 
