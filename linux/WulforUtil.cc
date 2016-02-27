@@ -1520,7 +1520,7 @@ string WulforUtil::getStatsForMem() {
 
 					if(!memvmp.empty() && !memvms.empty()) {
 						temp+="-= VM size (Peak): "+formatSized(memvms)+ " ("+formatSized(memvmp)+") =-\n";
-					} else if(memrss.size() != 0) {
+					} else if(memvms.size() != 0) {
 						temp+="-= VM size: "+memvms+" =-\n";
 					}
 

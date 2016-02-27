@@ -1214,7 +1214,7 @@ bool Util::isIp6(const string& name)
 			
 	bool ok = false;
 	for(auto i = name.begin();i!=name.end();++i) {
-			if(*i==':') {
+			if(*i==':') {//cechk this
 				for(int j = 5; j>0;--j){
 						if(isxdigit(name[j])){ok = true;}
 				}
@@ -1223,7 +1223,7 @@ bool Util::isIp6(const string& name)
 	}
 	bool ok2 = false;
 	for(auto i = name.end();i!=name.begin();--i) {
-			if(*i==':') {
+			if(*i==':') {//check
 				for(int q = 0; q<5;++q){
 						if(isxdigit(name[q])){ok2 = true;}
 				}

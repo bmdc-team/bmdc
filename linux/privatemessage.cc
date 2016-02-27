@@ -753,7 +753,8 @@ void PrivateMessage::applyEmoticons_gui()
 
 			/* delete text-emoticon and insert pixbuf-emoticon */
 			gtk_text_buffer_delete(messageBuffer, &p_start, &p_end);
-			gtk_text_buffer_insert_pixbuf(messageBuffer, &p_start, (*p_it)->getPixbuf());
+			if(*p_it)
+				gtk_text_buffer_insert_pixbuf(messageBuffer, &p_start, (*p_it)->getPixbuf());
 
 			searchEmoticons++;
 			totalEmoticons++;

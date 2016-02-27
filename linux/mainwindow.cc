@@ -1512,8 +1512,6 @@ bool MainWindow::getUserCommandLines_gui(const string &commands, ParamMap &ucPar
 	while((i = commands.find("%[line:", i)) != string::npos) {
 		i += 7;
 		string::size_type j = commands.find(']', i);
-		if(j == string::npos)
-			break;
 		if(j == string::npos && i == string::npos)
 			break;
 
@@ -3070,7 +3068,7 @@ void MainWindow::parsePartial(HintedUser aUser, string txt)
 			dynamic_cast<ShareBrowser*>(entry)->loadXML(txt);
 		}
 	}
-	if (raise)
+	if (entry && raise)
 		raisePage_gui(entry->getContainer());
 }
 

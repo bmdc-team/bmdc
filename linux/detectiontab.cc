@@ -754,8 +754,8 @@ void DetectionTab::editRaw_client(dcpp::StringMap params)
                 break;
             }
         }
-
-        RawManager::getInstance()->editRaw(&(*action),&(*old),(Raw(Util::toInt(params["ID"]),params["Name"],params["RAW"],Util::toInt(params["Time"]),Util::toInt(params["Enabled"]))));
+		if(old)
+			RawManager::getInstance()->editRaw(&(*action),&(*old),(Raw(Util::toInt(params["ID"]),params["Name"],params["RAW"],Util::toInt(params["Time"]),Util::toInt(params["Enabled"]))));
     }
     RawManager::getInstance()->saveActionRaws();
 }
@@ -981,20 +981,14 @@ gboolean DetectionTab::onButtonReleased_gui(GtkWidget*, GdkEventButton *event, g
 	DetectionTab *dt = reinterpret_cast<DetectionTab *>(data);
 	GtkTreeIter iter;
 	GtkTreeModel *tmodel;
-	if (!gtk_tree_selection_get_selected(dt->itemselection, &tmodel, &iter))
-	{
+	//if (!gtk_tree_selection_get_selected(dt->itemselection, &tmodel, &iter))
+	//{
+	//need test
 		if (dt->previous == GDK_BUTTON_PRESS && event->button == 3)
 		{
 			dt->popupMenu_gui();
 		}
-	}
-	else
-	{
-		if (dt->previous == GDK_BUTTON_PRESS && event->button == 3)
-		{
-			dt->popupMenu_gui();
-		}
-	}
+	//}
 	return TRUE;
 }
 

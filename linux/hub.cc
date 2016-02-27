@@ -432,8 +432,8 @@ void Hub::makeColor(GtkTreeViewColumn *column,GtkCellRenderer *cell, GtkTreeMode
 			return;
 		if(cell == NULL)
 			return;
-		if( iter == NULL)
-			return;
+//		if( iter == NULL)
+//			return;
 		string color;
 		string sizeString;
 
@@ -1652,7 +1652,8 @@ void Hub::applyEmoticons_gui()
 
 			/* delete text-emoticon and insert pixbuf-emoticon */
 			gtk_text_buffer_delete(chatBuffer, &p_start, &p_end);
-			gtk_text_buffer_insert_pixbuf(chatBuffer, &p_start, (*p_it)->getPixbuf());
+			if(*p_it)
+				gtk_text_buffer_insert_pixbuf(chatBuffer, &p_start, (*p_it)->getPixbuf());
 
 			searchEmoticons++;
 			totalEmoticons++;

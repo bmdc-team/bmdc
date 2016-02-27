@@ -1135,7 +1135,7 @@ ShareManager::SearchQuery::SearchQuery(const StringList& adcParams) :
 
 		auto cmd = toCode(p[0], p[1]);
 		if(toCode('T', 'R') == cmd) {
-			root = new TTHValue(p.substr(2));
+			root = new TTHValue(p.substr(2));//this need be deleted somewhere....
 			return;
 		} else if(toCode('A', 'N') == cmd) {
 			includeInit.emplace_back(p.substr(2));

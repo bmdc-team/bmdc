@@ -632,7 +632,7 @@ void FavoriteManager::load() {
 
 void FavoriteManager::load(SimpleXML& aXml) {
 	dontSave = true;
-	bool needSave = false;
+	const bool needSave = false;//cov
 
 	aXml.resetCurrentChild();
 	if(aXml.findChild("Hubs")) {

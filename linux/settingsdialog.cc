@@ -3782,20 +3782,27 @@ void Settings::onTextColorDefaultULClicked_gui(GtkWidget*, gpointer data)
 
 	s->setDefaultColor("#000000", _("Normal"), &iter);
 	valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(s->userListStore1), &iter);
-	if(valid)
+	if(valid) {
 		s->setDefaultColor("#1E90FF", _("Operator"), &iter);
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(s->userListStore1), &iter);
-	if(valid)
+	}	
+	if(valid) {
 		s->setDefaultColor("#747677", _("Pasive"), &iter);
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(s->userListStore1), &iter);
-	if(valid)
+	}	
+	if(valid) {
 		s->setDefaultColor("#FF0000", _("Favorite"), &iter);
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(s->userListStore1), &iter);
+	}	
 	if(valid)
+	{
 		s->setDefaultColor("#8B6914", _("Protected"), &iter);
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(s->userListStore1), &iter);
+	}	
 	if(valid)
+	{
 		s->setDefaultColor("#9AFFAF", _("Ignored"), &iter);
+	}	
 }
 
 void Settings::setColorUL()
