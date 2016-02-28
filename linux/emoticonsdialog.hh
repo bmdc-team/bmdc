@@ -45,7 +45,7 @@ class EmoticonsDialog
 		GtkWidget *Menu;       // packs menu
 		GtkWidget *dialog;     // emoticons dialog
 
-		Emoticons* em_global;
+		static Emoticons* em_global;
 
 		int icon_width;
 		int icon_height;

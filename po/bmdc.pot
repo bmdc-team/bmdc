@@ -19,7 +19,7 @@ msgstr ""
 "#-#-#-#-#  linux.pot  #-#-#-#-#\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://sourceforge.net/projects/freedcppmv/\n"
-"POT-Creation-Date: 2016-02-27 20:24+0100\n"
+"POT-Creation-Date: 2016-02-28 10:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1005,7 +1005,7 @@ msgstr ""
 #: linux/AboutConfig.cc:114 linux/AboutConfig.cc:138 linux/AboutConfig.cc:152
 #: linux/FavoriteHubDialog.cc:172 linux/FavoriteHubDialog.cc:183
 #: linux/FavoriteHubDialog.cc:256 linux/FavoriteHubDialog.cc:379
-#: linux/FavoriteHubDialog.cc:380 linux/emoticonsdialog.cc:143
+#: linux/FavoriteHubDialog.cc:380 linux/emoticonsdialog.cc:146
 #: linux/previewmenu.cc:88 linux/AboutConfig.hh:50
 msgid "Default"
 msgstr ""
@@ -3858,7 +3858,7 @@ msgstr ""
 msgid "Emoticons:"
 msgstr ""
 
-#: linux/emoticonsdialog.cc:106
+#: linux/emoticonsdialog.cc:109
 msgid "Emotion packs"
 msgstr ""
 
@@ -4223,7 +4223,7 @@ msgstr ""
 msgid "Icon"
 msgstr ""
 
-#: linux/emoticonsdialog.cc:111
+#: linux/emoticonsdialog.cc:114
 msgid "Icon size"
 msgstr ""
 

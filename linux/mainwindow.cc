@@ -512,7 +512,7 @@ MainWindow::~MainWindow()
 	g_object_unref(getWidget("statusIconMenu"));
 	g_object_unref(getWidget("toolbarMenu"));
 	Sound::stop();
-	Emoticons::stop();
+	//Emoticons::stop();
 	Notify::stop();
 }
 
@@ -2228,7 +2228,7 @@ void MainWindow::onPreferencesClicked_gui(GtkWidget*, gpointer data)
 	if (mw->useStatusIconBlink != WGETB("status-icon-blink-use"))
 		WSET("status-icon-blink-use", mw->useStatusIconBlink);
 	
-	bool emoticons = SETTING(USE_EMOTS);
+	//bool emoticons = SETTING(USE_EMOTS);
 
 	gint response = WulforManager::get()->openSettingsDialog_gui();
 
@@ -2303,8 +2303,8 @@ void MainWindow::onPreferencesClicked_gui(GtkWidget*, gpointer data)
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mw->getWidget("statusIconBlinkUseItem")), WGETB("status-icon-blink-use"));
 
 		// Emoticons
-		if (emoticons != SETTING(USE_EMOTS))
-			Emoticons::get()->reloadPack_gui();
+		//if (emoticons != SETTING(USE_EMOTS))
+		//	Emoticons::get()->reloadPack_gui();
 
 		// Toolbar
 		mw->checkToolbarMenu_gui();
