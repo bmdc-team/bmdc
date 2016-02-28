@@ -188,7 +188,7 @@ PrivateMessage::~PrivateMessage()
 	g_object_unref(getWidget("hubMenu"));
 	g_object_unref(getWidget("chatCommandsMenu"));
 
-	delete emotdialog;
+	//delete emotdialog;
 	
 }
 
@@ -1602,8 +1602,9 @@ if(notCreated) {
 
 void PrivateMessage::onCloseItem(gpointer data)
 {
-    PrivateMessage *entry = (PrivateMessage *)data;
-    WulforManager::get()->getMainWindow()->removeBookEntry_gui(dynamic_cast<BookEntry*>(entry));
+    BookEntry *entry = dynamic_cast<BookEntry*>((PrivateMessage *)data);
+    if(entry!= NULL)
+		WulforManager::get()->getMainWindow()->removeBookEntry_gui(entry);
 }
 
 void PrivateMessage::onCopyCID(gpointer data)
