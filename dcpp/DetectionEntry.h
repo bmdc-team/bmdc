@@ -24,7 +24,7 @@
 
 namespace dcpp {
 
-class DetectionEntry: public Flags {
+class DetectionEntry/*: public Flags*/ {
 public:
 	typedef std::deque<pair<std::string, std::string> > INFMap;
 
@@ -44,7 +44,7 @@ public:
 	string name;
 	string cheat;
 	string comment;
-	uint32_t Id;
+	size_t Id;
 	uint32_t rawToSend;
 	uint32_t clientFlag;
 	bool checkMismatch;

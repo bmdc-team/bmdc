@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,27 +17,33 @@
  */
 
 #include "stdinc.h"
+#include "DCPlusPlus.h"
+#include "Exception.h"
+#ifdef _WIN32
+#include <process.h>
+#endif
 #include "Thread.h"
-#include "Util.h"
-#include "format.h"
 
 namespace dcpp {
+#ifndef _WIN32
+pthread_mutex_t Thread::mtx = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 #ifdef _WIN32
-void Thread::start() {
+void Thread::start() throw() {
 	join();
-	if( (threadHandle = CreateThread(NULL, 0, &starter, this, 0, &threadId)) == NULL) {
-		throw ThreadException(_("Unable to create thread"));
+	if((threadHandle = (HANDLE)_beginthreadex(NULL, 0, &starter, this, 0, &threadId)) == NULL) {
+		throw Exception("Can not create thread");
 	}
 }
 
 #else
-void Thread::start() {
+void Thread::start() throw() {
 	join();
 	if(pthread_create(&threadHandle, NULL, &starter, this) != 0) {
-		throw ThreadException(_("Unable to create thread"));
+		throw Exception("Can not create thread");
 	}
 }
 #endif
 
-} // namespace dcpp
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,8 +108,8 @@ namespace Text {
 		return tmp;
 	}
 
-	inline bool isAscii(const string& str) noexcept { return isAscii(str.c_str()); }
-	bool isAscii(const char* str) noexcept;
+	inline bool isAscii(const string str) noexcept ;//{ return isAscii(str.c_str()); }
+	//bool isAscii(const char* str) noexcept;
 
 	bool validateUtf8(const string& str) noexcept;
 

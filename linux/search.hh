@@ -27,8 +27,11 @@
 #include <dcpp/ClientManager.h>
 #include <dcpp/SearchManager.h>
 #include <dcpp/SearchResult.h>
+#include <dcpp/format.h>
 #include "bookentry.hh"
 #include "treeview.hh"
+
+//##define _(String) String
 
 class UserCommandMenu;
 
@@ -158,8 +161,8 @@ class Search:
 		bool isMenuCreated;
 		GtkWidget* menu;	
 		public:
-			GtkWidget *createmenu()
-			{
+			GtkWidget *createmenu();
+			/*{
 				if(isMenuCreated) {
 					GtkWidget *item = BookEntry::createItemFirstMenu();
 					menu =  gtk_menu_new();
@@ -177,7 +180,7 @@ class Search:
 					isMenuCreated = false;
 				}
 				return menu;
-			}
+			}*/
 		private:
 			static void onCloseItem(gpointer data);
 			static void onAddItem(gpointer data);

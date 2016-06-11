@@ -46,11 +46,14 @@
 #undef ff
 #endif
 
+
+#include "UserManager.h"
+
 namespace dcpp {
 
 QueueManager::FileQueue::~FileQueue() {
-	//for_each(queue | map_values, DeleteFunction());
-	for(auto i:queue){delete (i).second;}//TODO check if does as it does :p
+	for_each(queue.begin(),queue.end() , DeleteFunction2());
+	//for(auto i:queue){delete (i).second;}//TODO check if does as it does :p
 }
 
 QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize,
@@ -192,9 +195,11 @@ QueueItem* QueueManager::UserQueue::getNext(const UserPtr& aUser, QueueItem::Pri
 
 	do {
 		auto i = userQueue[p].find(aUser);
-		if(i != userQueue[p].end()) {
+		if(i != userQueue[p].end())
+		{
 			dcassert(!i->second.empty());
-			for(auto j = i->second.begin(); j != i->second.end(); ++j) {
+			for(auto j = i->second.begin(); j != i->second.end(); ++j)
+			{
 				QueueItem* qi = *j;
 				if(qi->isWaiting()) {
 					return qi;
@@ -213,7 +218,7 @@ QueueItem* QueueManager::UserQueue::getNext(const UserPtr& aUser, QueueItem::Pri
 						continue;
 					}
 				}
-				if(qi->isSet(QueueItem::FLAG_TESTSUR) || qi->isSet(QueueItem::FLAG_CHECK_FILE_LIST))//thinking BMDC++
+				if(qi->isSet(QueueItem::FLAG_TESTSUR) || qi->isSet(QueueItem::FLAG_CHECK_FILE_LIST))// TESTSUR and checkFL not need next BMDC++
 					continue;
 				return qi;
 			}
@@ -254,6 +259,7 @@ pair<size_t, int64_t> QueueManager::UserQueue::getQueued(const UserPtr& aUser) c
 	for(size_t i = QueueItem::LOWEST; i < QueueItem::LAST; ++i) {
 		auto& ulm = userQueue[i];
 		auto iulm = ulm.find(aUser);
+
 		if(iulm == ulm.end()) {
 			continue;
 		}
@@ -437,18 +443,18 @@ int QueueManager::Rechecker::run() {
 		size_t pos = 0;
 		for(auto i = tt.getLeaves().begin();i!= tt.getLeaves().end();++i)
 		{
-				for(auto j = ttFile.getLeaves().begin();j!= ttFile.getLeaves().end();++j)
+			for(auto j = ttFile.getLeaves().begin();j!= ttFile.getLeaves().end();++j)
+			{
+				TTHValue& our = *i;
+				TTHValue& file = *j;
+				if(our == file)
 				{
-					TTHValue& our = *i;
-					TTHValue& file = *j;
-					if(our == file)
-					{
-						q->addSegment(Segment(pos,tt.getBlockSize())); 
-					}	
-					pos += tt.getBlockSize();	
+					q->addSegment(Segment(pos,tt.getBlockSize()));
 				}
-			
-		}	//TODO: check ...
+			pos += tt.getBlockSize();
+			}
+
+		}
 		/*for_each(tt.getLeaves(), ttFile.getLeaves(), [&](const TTHValue& our, const TTHValue& file) {
 			if(our == file) {
 				q->addSegment(Segment(pos, tt.getBlockSize()));
@@ -1830,7 +1836,7 @@ void QueueManager::logFinishedDownload(QueueItem* qi, Download*, bool crcChecked
 					}
 					hubNames.push_back(Util::toString(temp));
 
-					temp = ClientManager::getInstance()->getHubs(*i);
+					temp = UsersManager::getInstance()->getHubs(*i);
 					if(temp.empty()) {
 						temp.push_back(_("Offline"));
 					}

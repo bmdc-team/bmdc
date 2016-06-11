@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 - 2016 - BMDC - freedcpp at seznam dot cz
+ * Copyright (C) 2011 - 2016 - BMDC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include <iostream>
 #include <gtk/gtk.h>
 #include <dcpp/Util.h>
+#include "genres.h"
 
 using namespace std;
 using namespace dcpp;
@@ -40,7 +41,11 @@ class Splash
 			label = gtk_label_new("Loading...");
 			progressbar = gtk_progress_bar_new ();
 			box = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
-			image = gtk_image_new_from_file(_DATADIR "/icons/hicolor/scalable/apps/bmdc.svg");
+			
+			GResource* res = ::bmdc_get_resource();
+			g_resources_register(res);
+			image = gtk_image_new_from_resource("/org/gtk/bmdc/icons/hicolor/96x96/apps/bmdc.png");
+			
 			gtk_container_add(GTK_CONTAINER(box),image);
 			gtk_container_add(GTK_CONTAINER(box),label);
 			gtk_container_add(GTK_CONTAINER(box), progressbar);

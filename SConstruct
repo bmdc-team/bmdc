@@ -7,6 +7,7 @@ import string
 import re
 import fileinput
 import sys
+from sys import platform as _platform
 
 try:
 	from bzrlib import branch
@@ -33,8 +34,10 @@ NEW_SETTING = False
 #'-fno-stack-protector',
 # #,'-fpermissive' ],
 #,'-Weffc++'
+#'-L/usr/local/lib','-L/usr/lib',
+#'-ldl',
 BUILD_FLAGS = {#'-Wno-unused-parameter','-Wno-unused-value',
-	'common'  : ['-I#','-D_GNU_SOURCE', '-D_LARGEFILE_SOURCE', '-D_FILE_OFFSET_BITS=64', '-D_REENTRANT', '-L/usr/local/lib','-L/usr/lib','-ldl', '-pipe','-DUSE_STACKTRACE'],
+	'common'  : ['-I#','-D_GNU_SOURCE', '-D_LARGEFILE_SOURCE', '-D_FILE_OFFSET_BITS=64', '-D_REENTRANT','-pipe','-DUSE_STACKTRACE'],
 	'debug'   : ['-O1','-g', '-ggdb', '-Wall','-Wextra','-D_DEBUG'],#'-fpermissive' ,'-Wpadded'
 	'release' : ['-O3', '-fomit-frame-pointer', '-DNDEBUG']
 }
@@ -43,11 +46,17 @@ BUILD_FLAGS = {#'-Wno-unused-parameter','-Wno-unused-value',
 # Function definitions
 # ----------------------------------------------------------------------
 
-def check_pkg_config(context):
-	context.Message('Checking for pkg-config... ')
-	ret = context.TryAction('pkg-config --version')[0]
-	context.Result(ret)
-	return ret
+def check_pkg_config(context,name):
+	context.Message('Checking for %s... ' % name)
+	ret = commands.getoutput('\'%s\' --version' % name)
+	retval = 0
+	try:
+		retval = 1
+	except ValueError:
+		print "No pkg-config found!"
+
+	context.Result(retval)
+	return retval
 
 def check_pkg(context, name):
 	context.Message('Checking for %s... ' % name)
@@ -173,7 +182,11 @@ if os.environ.has_key('CFLAGS'):
 	env['CFLAGS'] = os.environ['CFLAGS'].split()
 
 if os.environ.has_key('CPPPATH'):
-	env['CPPPATH'] = os.environ['CPPPATH'].split()	
+	env['CPPPATH'] = os.environ['CPPPATH'].split()
+
+env['PKG_CONFIG'] = 'pkg-config'
+if os.environ.has_key('PKG_CONFIG'):
+	env['PKG_CONFIG'] = os.environ['PKG_CONFIG']
 
 env['CPPDEFINES'] = [] # Initialize as a list so Append doesn't concat strings
 
@@ -220,10 +233,10 @@ conf = env.Configure(
 # ----------------------------------------------------------------------
 
 if not 'install' in COMMAND_LINE_TARGETS:
-	if not conf.CheckCXXVersion(env['CXX'], 4, 1): 
+	if not conf.CheckCXXVersion(env['CXX'], 4, 1):
 		print 'Compiler version check failed. g++ 4.6 or later is needed'
 		Exit(1)
-	elif env['CXX'] == 'clang++':	
+	elif env['CXX'] == 'clang++':
 		print 'Use clang compiler'
 		env.Append(CXXFLAGS = ['-I/usr/include/','-Wno-overloaded-virtual','-pthread'])
 		env.Append(CFLAGS = '-I/usr/include/')
@@ -231,7 +244,7 @@ if not 'install' in COMMAND_LINE_TARGETS:
 		env.Append( LIBS = 'pthread')
 		env.Append( LINKFLAGS = '-lpthread')
 
-	if not conf.CheckPKGConfig():
+	if not conf.CheckPKGConfig(env['PKG_CONFIG']):
 		print '\tpkg-config not found.'
 		Exit(1)
 
@@ -293,7 +306,6 @@ if not 'install' in COMMAND_LINE_TARGETS:
 			conf.env.Append(CPPDEFINES = 'USE_XATTR')
 			LIB_HAVE_XATTR = True
 
-	# TODO: Implement a plugin system so libnotify doesn't have compile-time dependencies
 	if conf.env.get('libnotify'):
 			if not conf.CheckPKG('libnotify >= 0.4.1'):
 				print '\tlibnotify >= 0.4.1 not found, disabling notifications.'
@@ -345,27 +357,28 @@ if not 'install' in COMMAND_LINE_TARGETS:
 			print 'Found appindicator3'
 			conf.env.Append(CPPDEFINES = 'HAVE_APPINDCATOR')
 			conf.env.ParseConfig('pkg-config --libs --cflags appindicator3-0.1')
-	
+
 	if conf.env.get('libXss'):
 		if conf.CheckLibWithHeader('libXss','X11/extensions/scrnsaver.h' ,'c'):
 			print 'Found Xss'
 			conf.env.Append(CPPDEFINES = 'HAVE_XSSLIB')
 			LIB_HAVE_XSS = True
-	
+
 	if conf.env.get('newSettings'):
 		conf.env.Append(CPPDEFINES = 'USE_NEW_SETTINGS')
-		NEW_SETTING = True	
-	
+		NEW_SETTING = True
+
 	if conf.env.get('useStatusIcon'	):
 		conf.env.Append(CPPDEFINES = 'USE_STATUSICON')
-		
+
 	conf.CheckBZRRevision(env)
+	os.system('sh linux/gen.sh')
 	env = conf.Finish()
 
 # ----------------------------------------------------------------------
 # Compile and link flags
 # ----------------------------------------------------------------------
-
+	#_platform = 'win32'#flag for cross enable compile
 	env.MergeFlags(BUILD_FLAGS['common'])
 	env.MergeFlags(BUILD_FLAGS[env['mode']])
 
@@ -382,10 +395,10 @@ if not 'install' in COMMAND_LINE_TARGETS:
 	if LIB_HAVE_XATTR:
 		env.Append(LIBS='attr')
 		env.Append(LINKFLAGS='-lattr')
-		
+
 	if LIB_HAVE_XSS:
 		env.Append(LIBS='Xss')
-		env.Append(LINKFLAGS='-lXss')	
+		env.Append(LINKFLAGS='-lXss')
 
 	env.ParseConfig('pkg-config --libs gtk+-3.0')
 
@@ -394,6 +407,9 @@ if not 'install' in COMMAND_LINE_TARGETS:
 
 	if os.sys.platform == 'linux2':
 		env.Append(LINKFLAGS = '-Wl,--as-needed')
+		if not _platform == 'win32':
+			env.Append(LIBS='dl')
+
 
 	if os.name == 'mac' or os.sys.platform == 'darwin':
 		conf.env.Append(CPPDEFINES = ('ICONV_CONST', ''))
@@ -401,6 +417,11 @@ if not 'install' in COMMAND_LINE_TARGETS:
 	if os.sys.platform == 'sunos5':
 		conf.env.Append(CPPDEFINES = ('ICONV_CONST', 'const'))
 		env.Append(LIBS = ['socket', 'nsl'])
+
+	if _platform == 'win32':
+		env.Append(LIBS = ['wsock32','iphlpapi','ws2_32'])
+		#env.Append(LINKFLAGS= '-Wl,-subsystem ')
+		#env.Append(LDFLAGS = '-L/usr/i686-w64-mingw32/lib/')
 
 	if LIB_IS_GEO:
 		env.Append(LINKFLAGS = '-lGeoIP')
@@ -458,15 +479,15 @@ if not 'install' in COMMAND_LINE_TARGETS:
 	elif NEW_SETTING:
 		env.Program(target = PACKAGE, source = [libdcpp,settings_files, obj_files])
 	elif not NEW_SETTING and not LIB_IS_UPNP and not LIB_IS_NATPMP:
-		env.Program(target = PACKAGE, source = [libdcpp,obj_files])	
+		env.Program(target = PACKAGE, source = [libdcpp,obj_files])
 	elif not NEW_SETTING and not LIB_IS_UPNP:
 		env.Program(target = PACKAGE, source = [libdcpp,upnp,obj_files])
 	elif not NEW_SETTING and not LIB_IS_NATPMP:
 		env.Program(target = PACKAGE, source = [libdcpp,pmp,obj_files])
 	elif not NEW_SETTING:
-		env.Program(target = PACKAGE, source = [libdcpp,obj_files])	
+		env.Program(target = PACKAGE, source = [libdcpp,obj_files])
 	else:
-		env.Program(target = PACKAGE, source = [libdcpp,obj_files])		
+		env.Program(target = PACKAGE, source = [libdcpp,obj_files])
 
 	# i18n
 	env.MergePotFiles(source = [glade_pot_file, linux_pot_file], target = 'po/%s.pot' % PACKAGE)
@@ -490,9 +511,9 @@ else:
 	info_image_files = env.Glob('info/*.png')
 	desktop_file = os.path.join('data', PACKAGE + '.desktop')
 
-	env.ReplaceAll(desktop_file,"/usr/share/",prefix+"share/")
-	
-	
+	env.ReplaceAll(desktop_file,"/usr/share/",env['PREFIX']+"share/")
+
+
 	app_icon_filter = lambda icon: os.path.splitext(icon)[0] == PACKAGE
 	regular_icon_filter = lambda icon: os.path.splitext(icon)[0] != PACKAGE
 
@@ -501,12 +522,12 @@ else:
 	env.RecursiveInstall(BUILD_LOCALE_PATH, os.path.join(prefix, 'share', 'locale'))
 	env.RecursiveInstall('emoticons', os.path.join(prefix, 'share', PACKAGE))
 
-	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'ui'), source = glade_files))
+	#env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'ui'), source = glade_files))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', 'doc', PACKAGE), source = text_files))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', 'applications'), source = desktop_file))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'extensions/Scripts'), source = shell_files))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'extensions/Scripts'), source = py_files))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'country'), source = country_files))
- 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'info'), source = info_image_files))
+ 	#env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'info'), source = info_image_files))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'bin'), source = PACKAGE))
 

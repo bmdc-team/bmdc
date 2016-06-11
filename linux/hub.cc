@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2012 Jens Oknelid, paskharen@gmail.com
- * Copyright © 2010-2016 BMDC, freedcpp@seznam.cz
+ * Copyright © 2010-2016 BMDC++
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,9 +56,11 @@ Hub::Hub(const string &address, const string &encoding):
 	client(NULL),address(address),
 	encoding(encoding),	ImgLimit(0),historyIndex(0),totalShared(0),
 	scrollToBottom(true), PasswordDialog(false), WaitingPassword(false),
-	notCreated(true), isFavBool(true)
+	notCreated(true), isFavBool(true), lastTickNick(GET_TICK()),lastTickCid(GET_TICK()),lastTickIp(GET_TICK())
 {
 	FavoriteHubEntry* faventry =  getFavoriteHubEntry();
+	//@note because "." and this is used in CSS'ing 
+	//@ use the CID'ing of it
 	setName(CID(address).toBase32());
 	// Initialize nick treeview
 	nickView.setView(GTK_TREE_VIEW(getWidget("nickView")), false, "hub");
@@ -107,10 +109,6 @@ Hub::Hub(const string &address, const string &encoding):
 	sort = SETTING(SORT_FAVUSERS_FIRST) ? "Client Type" : "Nick Order";
 	if(faventry)
 		sort = faventry->get(SettingsManager::SORT_FAVUSERS_FIRST,SETTING(SORT_FAVUSERS_FIRST)) ? "Client Type" : "Nick Order";
-/*
-	nickView.setSortColumn_gui(_("Nick"), sort);
-	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(nickStore), nickView.col(sort), GTK_SORT_ASCENDING);
-*/	
 	//Own sort
 	gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(nickView.get(), nickView.col(_("Nick"))), TRUE);
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(nickStore), nickView.col(sort), sort_iter_compare_func_nick,
@@ -152,6 +150,9 @@ Hub::Hub(const string &address, const string &encoding):
 #endif
 #if GTK_CHECK_VERSION(3, 16, 0)
 	handCursor = gdk_cursor_new_for_display(gdk_display_get_default (),GDK_HAND2);
+#endif
+#if GTK_CHECK_VERSION(3,18,1)
+	handCursor = gdk_cursor_new_from_name(gdk_display_get_default(),"pointer");
 #endif
 	// image magnet
 	imageLoad.first = "";
@@ -278,10 +279,7 @@ Hub::Hub(const string &address, const string &encoding):
 	g_signal_connect(getWidget("UnProtectItem"), "activate", G_CALLBACK(onUnProtectUserClicked_gui), (gpointer)this);
 	g_signal_connect(getWidget("menurefresh"), "activate", G_CALLBACK(onRefreshUserListClicked_gui), (gpointer)this);
 	g_signal_connect(getWidget("buttonrefresh"), "clicked", G_CALLBACK(onRefreshUserListClicked_gui), (gpointer)this);
-	/**/
-	//g_signal_connect(getWidget("ripeitem"), "activate", G_CALLBACK(onRipeDbItem_gui),(gpointer)this);
-	//g_signal_connect(getWidget("copyipItem"), "activate", G_CALLBACK(onCopyIpItem_gui),(gpointer)this);
-	//end
+
 	g_signal_connect(getWidget("downloadBrowseItem"), "activate", G_CALLBACK(onDownloadToClicked_gui), (gpointer)this);
 	g_signal_connect(getWidget("downloadItem"), "activate", G_CALLBACK(onDownloadClicked_gui), (gpointer)this);
 	g_signal_connect(getWidget("italicButton"), "clicked", G_CALLBACK(onItalicButtonClicked_gui), (gpointer)this);
@@ -356,7 +354,7 @@ FavoriteHubEntry* Hub::getFavoriteHubEntry()
 {
 	return FavoriteManager::getInstance()->getFavoriteHubEntry(address);
 }
-//There we should be case-insestive
+
 gint Hub::sort_iter_compare_func_nick(GtkTreeModel *model, GtkTreeIter  *a,
 									GtkTreeIter  *b,  gpointer  data)
 {
@@ -374,8 +372,14 @@ gint Hub::sort_iter_compare_func_nick(GtkTreeModel *model, GtkTreeIter  *a,
 	}
 	else
 	{
-		ret = dcpp::Util::stricmp(nick_a,nick_b);
-		
+		// NOTE:
+		// g_utf8_collate works better 
+		// that stricmp
+		gchar* a_nick = g_utf8_casefold(nick_a,-1);
+		gchar* b_nick = g_utf8_casefold(nick_b,-1);
+		ret = g_utf8_collate(a_nick,b_nick);
+		g_free(a_nick);
+		g_free(b_nick);
 		g_free(nick_a);
 		g_free(nick_b);
 	}
@@ -401,7 +405,7 @@ void Hub::setColorsRows()
 	setColorRow(_("Support"));
 }
 
-void Hub::setColorRow(string cell)
+void Hub::setColorRow(const string cell)
 {
 
 	if(nickView.getCellRenderOf(cell) != NULL)
@@ -432,8 +436,7 @@ void Hub::makeColor(GtkTreeViewColumn *column,GtkCellRenderer *cell, GtkTreeMode
 			return;
 		if(cell == NULL)
 			return;
-//		if( iter == NULL)
-//			return;
+
 		string color;
 		string sizeString;
 
@@ -444,25 +447,39 @@ void Hub::makeColor(GtkTreeViewColumn *column,GtkCellRenderer *cell, GtkTreeMode
 		char a = tmp[0];
 		switch(a){
 			case 'A':
-			  color = WGETS("userlist-bg-bot-hub");
+			{
+				color = WGETS("userlist-bg-bot-hub");
 				break;
+			}	
 			case 'B':
+			{
 				color = WGETS("userlist-bg-operator");
 				break;
+			}	
 			case 'C':
+			{
      	   		color = WGETS("userlist-bg-favorite");
 				break;
+			}	
 			case 'I':
-			   color = WGETS("userlist-bg-ignored");
+			{
+				color = WGETS("userlist-bg-ignored");
 				break;
+			}	
 			case 'R':
-			   color	= WGETS("userlist-bg-protected");
+			{
+				color = WGETS("userlist-bg-protected");
 				break;
+			}	
 			case 'Z':
-			   color = WGETS("userlist-bg-pasive");
+			{
+				color = WGETS("userlist-bg-pasive");
 				break;
+			}	
 			default:
+			{
 			  color = WGETS("userlist-bg-normal");
+			}  
 		}
 //TODO: check? & UI
 bool isSet = false;
@@ -489,7 +506,7 @@ if(WGETB("use-highlighting")) {//TODO:May hub-based?
 }//END
 		if(AVManager::getInstance()->isNickVirused(nick))
 		{
-			color = WGETS("userlist-bg-virus-an");//"#A52A2A";//another red
+			color = WGETS("userlist-bg-virus-an");
 			AVManager::AVEntry entry = AVManager::getInstance()->getEntryByNick(nick);
 			if(entry.share == size) {
 				color = WGETS("userlist-bg-virus"); // if size and nick is ok
@@ -566,10 +583,13 @@ Hub::~Hub()
 	g_object_unref(getWidget("hubMenu"));
 	g_object_unref(getWidget("chatCommandsMenu"));
 	g_object_unref(getWidget("imageMenu"));
+	
+	TimerManager::getInstance()->removeListener(this);
 }
 
 void Hub::show()
 {
+	TimerManager::getInstance()->addListener(this);
 	// Connect to the hub
 	connectClient_client(address, encoding);
 }
@@ -621,8 +641,11 @@ gboolean Hub::onUserListTooltip_gui(GtkWidget *widget, gint x, gint y, gboolean 
 					  &model, &path, &iter))
 	return FALSE;
 
-	gchar *nick, *tag, *desc,*con,*ip,*e,*country,*slots,*hubs,*pk,*cheat,*gen,*sup,*cid,*type;
-	gint64 ssize;
+	gchar *nick = NULL,
+	*tag = NULL, *desc = NULL,*con = NULL,
+	*ip = NULL,*e = NULL,*country = NULL,*slots = NULL,*hubs = NULL,
+	*pk = NULL,*cheat = NULL,*gen = NULL,*sup = NULL,*cid = NULL,*type = NULL;
+	gint64 ssize = 0;
 	char buffer[1000];
 	
 	gtk_tree_model_get (model, &iter, hub->nickView.col(_("Nick")), &nick,
@@ -737,8 +760,8 @@ void Hub::updateUser_gui(ParamMap params)
 	int64_t shared = Util::toInt64(params["Shared"]);
 	const string& cid = params["CID"];
 	const string icon = "bmdc-" + params["Icon"];
-	const string &Nick = params["Nick"];
-	const string &nickOrder = params["Nick Order"];
+	const string& Nick = params["Nick"];
+	const string& nickOrder = params["Nick Order"];
 	bool favorite = userFavoriteMap.find(cid) != userFavoriteMap.end();
 
 	if (findUser_gui(cid, &iter))
@@ -927,17 +950,21 @@ void Hub::popupNickMenu_gui()
 
 	GtkTreeIter iter;
 	GList *list = gtk_tree_selection_get_selected_rows(nickSelection, NULL);
-	string nicks;
-
+	string nicks = Util::emptyString;
+	string cid = Util::emptyString;
+	string ip = "0.0.0.0";
+	string lastNick = Util::emptyString;
+	
 	for (GList *i = list; i; i = i->next)
 	{
 		GtkTreePath *path = (GtkTreePath *)i->data;
 		if (gtk_tree_model_get_iter(GTK_TREE_MODEL(nickStore), &iter, path))
 		{
-			string cid = nickView.getString(&iter, "CID");
-			string ni = nickView.getString(&iter, _("Nick"));
+			cid = nickView.getString(&iter, "CID");
+			ip = nickView.getString(&iter,_("IP"));
+			lastNick = nickView.getString(&iter, _("Nick"));
 			userCommandMenu->addUser(cid);
-			nicks += " " + ni;
+			nicks += " " + lastNick;
 		}
 		gtk_tree_path_free(path);
 	}
@@ -952,9 +979,112 @@ void Hub::popupNickMenu_gui()
 	gtk_label_set_markup (GTK_LABEL (label), markup);
 	g_free(markup);
 	
+	GtkWidget* menu_item = getWidget("ignoreMenuTimeItem");
+		
+	g_object_set_data_full(G_OBJECT(menu_item),"gnick",g_strdup(lastNick.c_str()),g_free);
+	g_object_set_data_full(G_OBJECT(menu_item),"gcid",g_strdup(cid.c_str()),g_free);
+	g_object_set_data_full(G_OBJECT(menu_item),"gip",g_strdup(ip.c_str()),g_free);
+	
+	g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(onClickMenuItemTime),(gpointer)this);
+	
 	gtk_menu_popup(GTK_MENU(getWidget("nickMenu")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 	gtk_widget_show_all(getWidget("nickMenu"));
 }
+
+void Hub::onClickMenuItemTime(GtkMenuItem* item,gpointer data)
+{
+	Hub* hub = (Hub*)data;
+	string nick = (gchar *)g_object_get_data(G_OBJECT(item),"gnick");
+	string ip = (gchar *)g_object_get_data(G_OBJECT(item),"gip");
+	string cid = (gchar *)g_object_get_data(G_OBJECT(item),"gcid");
+	GtkWidget* l = gtk_label_new(nick.c_str());
+	GtkWidget* s = gtk_spin_button_new_with_range(1,10,1);
+	GtkWidget* l2 = gtk_label_new("Hour(s)");
+	GtkWidget* c = gtk_combo_box_text_new();
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c),"NICK");
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c),"CID");
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c),"IP");
+	
+	gtk_combo_box_set_active(GTK_COMBO_BOX(c), 0);
+	
+	GtkWidget* d = gtk_dialog_new_with_buttons(
+	nick.c_str(),
+	GTK_WINDOW(WulforManager::get()->getMainWindow()->getContainer()),
+	(GtkDialogFlags)(GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT) 
+	,_("_OK"),GTK_RESPONSE_ACCEPT,
+	_("_Cancel"),GTK_RESPONSE_REJECT,
+	NULL
+	);
+	GtkWidget* g = gtk_grid_new();
+	GtkWidget* box = gtk_dialog_get_content_area(GTK_DIALOG(d));	
+	gtk_container_add(GTK_CONTAINER(g),l);
+	gtk_container_add(GTK_CONTAINER(g),gtk_label_new(_("Type")));
+	gtk_container_add(GTK_CONTAINER(g),c);
+	gtk_container_add(GTK_CONTAINER(g),s);
+	gtk_container_add(GTK_CONTAINER(g),l2);
+	gtk_container_add(GTK_CONTAINER(box),g);
+	
+	gtk_widget_show_all(g);
+	
+	
+	gint response = gtk_dialog_run(GTK_DIALOG(d));
+	if (response == GTK_RESPONSE_NONE)
+		return ;
+
+	gtk_widget_hide(GTK_WIDGET(d));
+
+	if (response == GTK_RESPONSE_ACCEPT)
+	{
+		
+		gchar* _text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(c));
+		if(_text)
+		{	
+			string text = string(_text);
+			gint time = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(s));
+			uint64_t tmp = 60*60*1000;
+			
+			if(time >= ONE_HOUR)
+				tmp = 60*60*1000;
+			if(time >= TWO_HOUR)
+				tmp = (60*60*1000)*2;
+			if(time >= THREE_HOUR)
+				tmp = (60*60*1000)*3;
+			if(time >= FOUR_HOUR)
+				tmp = (60*60*1000)*4;	
+			if(time >= FIVE_HOUR)
+				tmp = (60*60*1000)*5;
+			if(time >= SIX_HOUR)
+				tmp = (60*60*1000)*6;
+			if(time >= SEVEN_HOUR)
+				tmp = (60*60*1000)*7;
+			if(time >= EIGHT_HOUR)
+				tmp = (60*60*1000)*8;
+			if(time >= NINE_HOUR)
+				tmp = (60*60*1000)*9;
+			if(time >= TEN_HOUR)
+				tmp = (60*60*1000)*10;
+			
+			
+			if(text == "NICK")
+			{
+				hub->listTempsNicks.insert(make_pair(tmp,nick));
+			}
+			if(text == "CID")
+			{
+				
+				hub->listTempsCids.insert(make_pair(tmp,cid));
+			}
+			if(text == "IP")
+			{
+						
+				hub->listTempsIps.insert(make_pair(tmp,ip));
+			}
+			
+			g_free(_text);
+		}
+	}
+}
+	
 
 void Hub::getPassword_gui()
 {
@@ -1151,8 +1281,8 @@ void Hub::addMessage_gui(string cid, string message, Msg::TypeMsg typemsg)
 	}
 	
 }
-
-void Hub::applyTags_gui(const string &cid, const string &line)
+//&&
+void Hub::applyTags_gui(const string cid, const string line)
 {
 	GtkTextIter start_iter;
 	gtk_text_buffer_get_end_iter(chatBuffer, &start_iter);
@@ -1683,11 +1813,17 @@ void Hub::updateCursor_gui(GtkWidget *widget)
 	GtkTextIter iter;
 	GSList *tagList = NULL;
 	GtkTextTag *newTag = NULL;
-//@NOTE: GTK3
-	GdkDeviceManager *device_manager = gdk_display_get_device_manager (gdk_window_get_display (gtk_widget_get_window(widget)));
-	GdkDevice *pointer = gdk_device_manager_get_client_pointer (device_manager);
-	gdk_window_get_device_position (gtk_widget_get_window(widget), pointer, &x, &y, NULL);
-
+	GdkDevice *dev = NULL;
+#if !GTK_CHECK_VERSION(3,20,0)
+	GdkDeviceManager *device_manager = NULL;
+	device_manager = gdk_display_get_device_manager (gdk_window_get_display (gtk_widget_get_window(widget)));
+	dev = gdk_device_manager_get_client_pointer (device_manager);
+#else	
+	GdkDisplay* win = gtk_widget_get_display(widget);
+	GdkSeat* seat = gdk_display_get_default_seat(win);
+	dev = gdk_seat_get_pointer(seat);
+#endif	
+	gdk_window_get_device_position (gtk_widget_get_window(widget), dev, &x, &y, NULL);
 	// Check for tags under the cursor, and change mouse cursor appropriately
 	gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(widget), GTK_TEXT_WINDOW_WIDGET, x, y, &buf_x, &buf_y);
 	gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(widget), &iter, buf_x, buf_y);
@@ -2131,13 +2267,7 @@ gboolean Hub::onEntryKeyPress_gui(GtkWidget *entry, GdkEventKey *event, gpointer
 	hub->completionKey.clear();
 	return FALSE;
 }
-/*
-#define GETTAG(t,tagn) \
-gchar* tmp = NULL; \
-g_object_get(G_OBJECT(t), "name", &tmp, NULL); \
-string tagn = string(tmp); \
-g_free(tmp); \
-*/
+
 gboolean Hub::onNickTagEvent_gui(GtkTextTag *tag, GObject*, GdkEvent *event, GtkTextIter*, gpointer data)
 {
 	if (event->type == GDK_2BUTTON_PRESS)
@@ -2238,6 +2368,7 @@ gboolean Hub::onIpTagEvent_gui(GtkTextTag *tag, GObject*, GdkEvent *event , GtkT
 			
 			gtk_widget_show_all(hub->getWidget("ipMenu"));
 			gtk_menu_popup(GTK_MENU(hub->getWidget("ipMenu")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
+			g_free(tmp);
 			return TRUE;
 		}
 	}
@@ -2504,7 +2635,7 @@ void Hub::onSendMessage_gui(GtkEntry *entry, gpointer data)
 		else if( command == "listip")
 		{
 			auto list = FavoriteManager::getInstance()->getListIp();
-			string tmp;
+			string tmp = _("List WatchIPs\n");
 			for(auto it:list)
 					tmp += _("IP: ") + it.first + _(" Last Seen: ")+Util::formatTime("%Y-%m-%d %H:%M", it.second->getLastSeen())+"\n";
 			
@@ -2766,12 +2897,28 @@ void Hub::onSendMessage_gui(GtkEntry *entry, gpointer data)
 				hub->addStatusMessage_gui(_("No user given to command"),Msg::SYSTEM,Sound::NONE);
 			} else {
 				ClientManager* cm = ClientManager::getInstance();
+				cm->lock();
 				UserPtr ui = cm->findUser(params,hub->client->getHubUrl());
 				OnlineUser* ou = cm->findOnlineUser(ui->getCID(),hub->client->getHubUrl());
 				Identity& id = ou->getIdentity();
 				hub->addMessage_gui("",WulforUtil::formatReport(id)+"\n",Msg::SYSTEM);
 				
 			}
+		}
+		else if( command == "gettempignore")
+		{
+			map <string ,uint64_t> temp;
+			for(auto i:hub->listTempsNicks)
+				temp.insert(make_pair(i.second,i.first));
+			for(auto i:hub->listTempsIps)
+				temp.insert(make_pair(i.second,i.first));
+			for(auto i:hub->listTempsCids)
+				temp.insert(make_pair(i.second,i.first));
+			string lists;	
+			for(auto i:temp)
+				lists += i.first + " " + Util::formatSeconds(i.second);
+				
+			hub->addMessage_gui("",lists,Msg::SYSTEM);	
 		}	
 		// protect command
 		else if (command == "password")
@@ -4461,6 +4608,53 @@ void Hub::on(ClientListener::Message, Client*, const ChatMessage& message) noexc
 		ou = cm->findOnlineUser(message.from->getCID(),client->getHubUrl());
 		fid = ou->getIdentity();
 	}
+	bool ok = false;
+	{
+		Lock l(cs);//because this can be in same time as add
+		if(!listTempsNicks.empty())
+		{
+			for(auto i = listTempsNicks.begin();i != listTempsNicks.end();++i)
+			{
+				if(fid.getNick() == (*i).second)
+				{	
+					ok = true;
+					break;
+				}
+			}
+		}
+		if(!listTempsIps.empty())
+		{	
+			for(auto i = listTempsNicks.begin();i != listTempsNicks.end();++i)
+				{
+					if(fid.getIp() == (*i).second)
+					{	
+						ok = true;
+						break;
+					}
+				}
+		}
+	if(!listTempsCids.empty())	
+	{
+		for(auto i = listTempsNicks.begin();i != listTempsNicks.end();++i)
+			{
+				if(ou->getUser()->getCID() == CID((*i).second))
+				{	
+					ok = true;
+					break;
+				}
+			}
+	}
+	}
+	if(ok)
+	{
+		string error = _("Temp Ignored User ")+fid.getNick()+" "+fid.getIp()+" "
+		+ou->getUser()->getCID().toBase32();
+		typedef Func3<Hub, string, Msg::TypeMsg, Sound::TypeSound> F3;
+		F3 *func = new F3(this, &Hub::addStatusMessage_gui, error, Msg::STATUS, Sound::NONE);
+		WulforManager::get()->dispatchGuiFunc(func);
+		return;
+	}
+		
 	
 	if( (!fid.isHub()) && (!fid.isBot()) )
 	{
@@ -4882,12 +5076,15 @@ void Hub::onToglleButtonIcon(GtkToggleButton *button, gpointer data)
 
 		FavoriteHubEntry* fav = FavoriteManager::getInstance()->getFavoriteHubEntry(hub->client->getHubUrl());
 		if(fav != NULL) {
+			
 			fav->set(SettingsManager::HUB_ICON_STR,Util::emptyString);
 			FavoriteManager::getInstance()->save();
 		}
 	}
+	
 	if( hub->tab_button == NULL) return;
 	gtk_widget_set_sensitive(hub->tab_button, !active);
+	
 	if( hub->tab_image == NULL ) return;
 	gtk_widget_set_sensitive(hub->tab_image, !active);
 }

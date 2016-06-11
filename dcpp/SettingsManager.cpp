@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -214,7 +214,7 @@ SettingsManager::SettingsManager()
 	const string downloadDir = xdgDir ? string(xdgDir) + PATH_SEPARATOR_STR : Util::getPath(Util::PATH_DOWNLOADS);
 	setDefault(DOWNLOAD_DIRECTORY, downloadDir);
 #else
-	setDefault(DOWNLOAD_DIRECTORY,Util::getPath(Util::PATH_DOWNLOADS))
+	setDefault(DOWNLOAD_DIRECTORY,Util::getPath(Util::PATH_DOWNLOADS));
 #endif
 	
 	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getPath(Util::PATH_USER_LOCAL) + "Incomplete" PATH_SEPARATOR_STR);
@@ -784,7 +784,7 @@ bool SettingsManager::getType(const int& n, Types& type) const {
 const string SettingsManager::parseCoreCmd(const string cmd) {
 	StringTokenizer<string> sl(cmd, ' ');
 	if (sl.getTokens().size() == 2) {
-			int n;
+			int n = -1;
 			SettingsManager::Types type = SettingsManager::TYPE_NONE;
 			getType(sl.getTokens().at(0).c_str(),n,type);
            if (type == SettingsManager::TYPE_INT) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #include "UserConnection.h"
 #include "ClientManager.h"
 #include "format.h"
+
+#include "UserManager.h"
 
 namespace dcpp {
 
@@ -80,7 +82,7 @@ void Transfer::getParams(const UserConnection& aSource, ParamMap& params) {
 	if(hubNames.empty())
 		hubNames.push_back(_("Offline"));
 	params["hub"] = Util::toString(hubNames);
-	StringList hubs = ClientManager::getInstance()->getHubs(aSource.getUser()->getCID(), aSource.getHubUrl());
+	StringList hubs = UsersManager::getInstance()->getHubs(aSource.getUser()->getCID(), aSource.getHubUrl());
 	if(hubs.empty())
 		hubs.push_back(_("Offline"));
 	params["hubURL"] = Util::toString(hubs);

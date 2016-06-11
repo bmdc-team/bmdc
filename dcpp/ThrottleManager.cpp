@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2009-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2009-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,7 +116,14 @@ SettingsManager::IntSetting ThrottleManager::getCurSetting(SettingsManager::IntS
 	if(SETTING(TIME_DEPENDENT_THROTTLE)) {
 		time_t currentTime;
 		time(&currentTime);
+#ifndef _WIN32		
+		struct tm result;
+		localtime_r(&currentTime,&result);
+		int currentHour = result.tm_hour;
+#else
 		int currentHour = localtime(&currentTime)->tm_hour;
+#endif			
+		//int currentHour = localtime(&currentTime)->tm_hour;
 		if((SETTING(BANDWIDTH_LIMIT_START) < SETTING(BANDWIDTH_LIMIT_END) &&
 			currentHour >= SETTING(BANDWIDTH_LIMIT_START) && currentHour < SETTING(BANDWIDTH_LIMIT_END)) ||
 			(SETTING(BANDWIDTH_LIMIT_START) > SETTING(BANDWIDTH_LIMIT_END) &&

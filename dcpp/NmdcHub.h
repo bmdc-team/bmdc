@@ -138,13 +138,12 @@ private:
 	void myInfo(bool alwaysSend);
 	void supports(const StringList& feat);
 	void clearFlooders(uint64_t tick);
-	bool isProtectedIP(const string& ip);
+	//bool isProtectedIP(const string& ip);
 
 	void updateFromTag(Identity& id, const string& tag);
 	void refreshLocalIp() noexcept;
 
 	virtual void checkNick(string& aNick);
-	//virtual bool v4only() const { return false; }
 	// TimerManagerListener
 	void on(Second, uint64_t aTick) noexcept;
 	void on(Minute, uint64_t aTick) noexcept;

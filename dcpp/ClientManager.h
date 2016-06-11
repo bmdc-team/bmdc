@@ -38,6 +38,8 @@
 
 #include "ShareManager.h"
 
+#include "UserManager.h"
+
 namespace dcpp {
 
 using std::pair;
@@ -56,20 +58,20 @@ private:
 	using ClientListener::on;
 	using TimerManagerListener::on;	
 public:
-	typedef unordered_set<Client*> ClientList;
+	typedef unordered_map<string,Client*> ClientList;
 	typedef unordered_map<CID, UserPtr> UserMap;
 
 	Client* getClient(const string& aHubURL);
 	void putClient(Client* aClient);
 
-	StringList getHubs(const CID& cid, const string& hintUrl);
+	//StringList getHubs(const CID& cid, const string& hintUrl);
 	StringList getHubNames(const CID& cid, const string& hintUrl);
 	StringList getNicks(const CID& cid, const string& hintUrl);
 	string getField(const CID& cid, const string& hintUrl, const char* field) const;
 
 	StringList getNicks(const HintedUser& user) { return getNicks(user.user->getCID(), user.hint); }
 	StringList getHubNames(const HintedUser& user) { return getHubNames(user.user->getCID(), user.hint); }
-	StringList getHubs(const HintedUser& user) { return getHubs(user.user->getCID(), user.hint); }
+	StringList getHubs(const HintedUser& user) { return UsersManager::getInstance()->getHubs(user.user->getCID(), user.hint); }
 
 	vector<Identity> getIdentities(const UserPtr &u) const;
 
@@ -79,7 +81,7 @@ public:
 	bool isHubConnected(const string& aUrl) const;
 
 	void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
-	void search(string& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken, const StringList& aExtList);
+	void search(const string& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken, const StringList& aExtList);
 	void infoUpdated();
 
 	UserPtr getUser(const string& aNick, const string& aHubUrl) noexcept;
@@ -137,16 +139,17 @@ public:
 			return (!ou->getClient().getHideShare());
 		return true;
 	}
-	ShareManager* getShareManagerClient(const HintedUser& p){
+	ShareManager* getShareManagerClient(const string& hint){
 		Lock l(cs);
-		OnlineUser* ou = findOnlineUserHint(p.user->getCID(), p.hint);
-		if(ou)
-			return ou->getClient().getShareManager();
-		return ShareManager::getInstance();
+		auto i = clients.find(hint);
+		if(i != clients.end() && i->second->getShareManager() != NULL) {
+			return i->second->getShareManager();
+		}
+       return ShareManager::getInstance();
 	}
 
 	int getMode(const string& aHubUrl) const;
-	//bool getMode6(const string&) const;//@TODO
+	//bool getMode6(const string&) const;//@TODO?
 	bool isActive(const string& aHubUrl = Util::emptyString) const;
 
 	void setIpAddress(const UserPtr& p, const string& ip);

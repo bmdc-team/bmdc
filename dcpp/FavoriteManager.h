@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ class FavoriteManager : public Speaker<FavoriteManagerListener>, private HttpCon
 {
 private:
 	using SettingsManagerListener::on;
-	using ClientManagerListener::on;	
+	using ClientManagerListener::on;
 public:
 // Public Hubs
 	enum HubTypes {
@@ -93,6 +93,7 @@ public:
 	FavoriteNoCid getFavoritesIndepentOnCid() { Lock l(cs); return favoritesNoCid; }
 	FavoriteUser* getIndepentFavorite(const string& nick)
 	{
+		Lock l(cs);
 		auto fit = favoritesNoCid.find(nick);
 		if(fit!= favoritesNoCid.end())
 		{
@@ -102,10 +103,11 @@ public:
 	}
 
 	bool hasSlotI(const string& nick) {
+		Lock l(cs);
 		FavoriteUser* u = getIndepentFavorite(nick);
 		return (u != NULL) ? (u->isSet(FavoriteUser::FLAG_GRANTSLOT)) : false;
 	}
-	bool isFavoriteIUser(string nick) { return favoritesNoCid.find(nick) != favoritesNoCid.end(); }
+	bool isFavoriteIUser(string nick) { Lock l(cs); return favoritesNoCid.find(nick) != favoritesNoCid.end(); }
 	
 	void addFavoriteIUser(const string& nick, const time_t lastSeen = 0, const string& desc = Util::emptyString)
 	{
@@ -208,8 +210,8 @@ public:
     //Raw Manager
 	bool getEnabledAction(FavoriteHubEntry* entry, int actionId);
 	void setEnabledAction(FavoriteHubEntry* entry, int actionId, bool enabled);
-	bool getEnabledRaw(FavoriteHubEntry* entry, int actionId, int rawId);
-	void setEnabledRaw(FavoriteHubEntry* entry, int actionId, int rawId, bool enabled);
+	bool getEnabledRaw(FavoriteHubEntry* entry, int actionId, unsigned int rawId);
+	void setEnabledRaw(FavoriteHubEntry* entry, int actionId, unsigned int rawId, bool enabled);
 
 	void load();
 	void save();
@@ -271,7 +273,7 @@ private:
 	void on(SettingsManagerListener::Load, SimpleXML& xml) {
 		load(xml);
 	}
-
+	
 	void load(SimpleXML& aXml);
 	void recentload(SimpleXML& aXml);
 	void recentsave();

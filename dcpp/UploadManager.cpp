@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,16 +71,14 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 	access. we want to know the type of the upload to see if the user deserves a mini-slot. */
 
 	bool isInSharingHub = true;
-	ShareManager* sm = ShareManager::getInstance();
 	if(aSource.getUser()) {
 		isInSharingHub = ClientManager::getInstance()->getSharingHub(aSource.getHintedUser());
 		if(!isInSharingHub && (aType != Transfer::names[Transfer::TYPE_FULL_LIST] || aType != Transfer::names[Transfer::TYPE_PARTIAL_LIST])) {
 			aSource.fileNotAvail();
 			return false;
 		}
-		sm = ClientManager::getInstance()->getShareManagerClient(aSource.getHintedUser());
-		
 	}
+	ShareManager* sm = ClientManager::getInstance()->getShareManagerClient(aSource.getHintedUser().hint);
 	
 
 	bool miniSlot;
@@ -89,14 +87,14 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 	try {
 		if(aType == Transfer::names[Transfer::TYPE_FILE]) {
-			auto info = /*ShareManager::getInstance()*/sm->toRealWithSize(aFile, isInSharingHub);
+			auto info = sm->toRealWithSize(aFile, isInSharingHub);
 			sourceFile = move(info.first);
 			type = (aFile == Transfer::USER_LIST_NAME_BZ || aFile == Transfer::USER_LIST_NAME) ?
 				Transfer::TYPE_FULL_LIST : Transfer::TYPE_FILE;
 			miniSlot = type == Transfer::TYPE_FULL_LIST || info.second <= static_cast<int64_t>(SETTING(SET_MINISLOT_SIZE) * 1024);
 
 		} else if(aType == Transfer::names[Transfer::TYPE_TREE]) {
-			sourceFile = /*ShareManager::getInstance()*/sm->toReal(aFile, isInSharingHub);
+			sourceFile = sm->toReal(aFile, isInSharingHub);
 			type = Transfer::TYPE_TREE;
 			miniSlot = true;
 
@@ -165,8 +163,8 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 					start = 0;
 					size = xml.size();
 				} else {
-					bool isList = (aFile == Transfer::USER_LIST_NAME_BZ); // Will have to re-think this later
-					if(!isInSharingHub && !isList) { aSource.fileNotAvail(); return false; } // Hiding share, no file should be available besides filelists which should be empty anyways
+					//bool isList = (aFile == Transfer::USER_LIST_NAME_BZ); // Will have to re-think this later
+					//if(!isInSharingHub && !isList) { aSource.fileNotAvail(); return false; } // Hiding share, no file should be available besides filelists which should be empty anyways
 					File* f = new File(sourceFile, File::READ, File::OPEN);
 
 					start = aStartPos;
@@ -190,8 +188,8 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 		case Transfer::TYPE_TREE:
 			{
-				MemoryInputStream* mis = ShareManager::getInstance()->getTree(aFile);
-				if(!mis || !isInSharingHub) {
+				MemoryInputStream* mis = /*ShareManager::getInstance()*/sm->getTree(aFile);
+				if(!mis /*|| !isInSharingHub*/) {
 					aSource.fileNotAvail();
 					return false;
 				}
@@ -205,7 +203,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 		case Transfer::TYPE_PARTIAL_LIST:
 			{
 				// Partial file list
-				MemoryInputStream* mis = ShareManager::getInstance()->generatePartialList(aFile, listRecursive, isInSharingHub);
+				MemoryInputStream* mis = /*ShareManager::getInstance()*/sm->generatePartialList(aFile, listRecursive, isInSharingHub);
 				if(!mis) {
 					aSource.fileNotAvail();
 					return false;
@@ -596,7 +594,9 @@ void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcComman
 
 	if(type == Transfer::names[Transfer::TYPE_FILE]) {
 		try {
-			aSource->send(ShareManager::getInstance()->getFileInfo(ident));
+			ShareManager* shareManager = ClientManager::getInstance()->getShareManagerClient(aSource->getHubUrl());
+			aSource->send(shareManager->getFileInfo(ident));
+			//aSource->send(ShareManager::getInstance()->getFileInfo(ident));
 		} catch(const ShareException&) {
 			aSource->fileNotAvail();
 		}

@@ -50,6 +50,7 @@
 #endif
 #ifdef HAVE_XSSLIB
 //Note Idle detection
+//lib64x11-static-devel
 #include <X11/extensions/scrnsaver.h>
 #include <gdk/gdkx.h>
 #endif
@@ -88,7 +89,7 @@ class MainWindow:
 		void raisePage_gui(GtkWidget *page);
 		static bool getUserCommandLines_gui(const std::string &commands, dcpp::ParamMap &ucParams);
 		void propertiesMagnetDialog_gui(std::string magnet);
-		void showMessageDialog_gui(const std::string &primaryText, const std::string &secondaryText);
+		void showMessageDialog_gui(const std::string primaryText, const std::string secondaryText);
 
 		void showBook(const EntryType type, BookEntry* book);
 
@@ -166,7 +167,6 @@ class MainWindow:
 	private:
 		typedef std::pair<std::string, std::string> ParamPair;
 		typedef std::vector<ParamPair> ListParamPair;
-		//static const char* icons[(MainWindow::IconsToolbar)END][3];
 		static std::string icons[(MainWindow::IconsToolbar)END][2];
 		// GUI functions
 #ifdef HAVE_XSSLIB			
@@ -305,7 +305,7 @@ class MainWindow:
 		virtual void on(dcpp::QueueManagerListener::Finished, dcpp::QueueItem *item, const std::string& dir, int64_t avSpeed) noexcept;
 		virtual void on(dcpp::TimerManagerListener::Second, uint64_t ticks) noexcept;
 		
-		//lib64x11-static-devel
+		
 		virtual void on(dcpp::TimerManagerListener::Minute, uint64_t ticks) noexcept;
 		
 		//Partial filelist

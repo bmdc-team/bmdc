@@ -57,8 +57,8 @@ public:
 	 * @param sep Line separator
 	 * @return An unconnected socket
 	 */
-	static BufferedSocket* getSocket(char sep/*, bool*/) {
-		return new BufferedSocket(sep/*, false*/);
+	static BufferedSocket* getSocket(char sep) {
+		return new BufferedSocket(sep);
 	}
 
 	static void putSocket(BufferedSocket* aSock) {
@@ -109,7 +109,6 @@ public:
 	string getLocalIp() const { return sock->getLocalIp(); }
 	uint16_t getLocalPort() const { return sock->getLocalPort(); }
 	
-	
 	bool isV6Valid() const { return sock->isV6Valid(); }
 
 private:
@@ -149,7 +148,7 @@ private:
 		function<void ()> f;
 	};
 
-	BufferedSocket(char aSeparator/*, bool v4only*/);
+	BufferedSocket(char aSeparator);
 
 	virtual ~BufferedSocket();
 	
@@ -172,7 +171,6 @@ public:
 	GETSET(char, separator, Separator)
 private:	
 	bool disconnecting;
-//	bool v4only;
 
 	virtual int run();
 

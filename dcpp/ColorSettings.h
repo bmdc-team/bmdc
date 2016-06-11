@@ -32,17 +32,13 @@ class ColorSettings: public Flags
 		CONTEXT_NICKLIST = 2,
 		CONTEXT_FILELIST = 3
 	};
-  
+
 	ColorSettings(): Flags(CONTEXT_CHAT), bIncludeNick(false), bCaseSensitive(false), bPopup(false), bTab(false),
 		bPlaySound(false), bBold(false), bUnderline(false), bItalic(false),
 		bNoti(Util::emptyString), iMatchType(1), iBgColor(Util::emptyString), iFgColor(Util::emptyString), bHasBgColor(false),
 		bHasFgColor(false) , strSoundFile(Util::emptyString), strMatch(Util::emptyString), bUsingRegexp(false)  {	}
 	~ColorSettings(){ };
 
-private:
-	//string to match against
-	string strMatch;	
-public:	
 	GETSET(string, bNoti, Noti);
 	GETSET(string,  iBgColor, BgColor);
 	GETSET(string,  iFgColor, FgColor);
@@ -59,8 +55,8 @@ public:
 	GETSET(bool, bHasBgColor, HasBgColor);
 	GETSET(bool, bHasFgColor, HasFgColor);
 
-	void setMatch(string match){
-		if(match.find(("$Re:")) == 0) {
+	void setMatch(const string match){
+		if(match.compare(0,4,"$Re:") == 0) {
 			bUsingRegexp = true;
 		}
 		strMatch = match;
@@ -76,9 +72,11 @@ public:
 			return 2;
 		if(isSet(CONTEXT_FILELIST))
 			return 3;
-		return 0;	
+		return 0;
 	}
 private:
+	//string to match against
+	string strMatch;
 	bool bUsingRegexp;
 
    };

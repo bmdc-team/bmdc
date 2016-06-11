@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2014 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,8 @@
 #include <fnmatch.h>
 #endif
 
+#include "Exception.h"
+
 #include <limits>
 
 // define this to 1 to measure the time taken by searches to complete.
@@ -58,17 +60,19 @@ using std::numeric_limits;
 
 atomic_flag ShareManager::refreshing = ATOMIC_FLAG_INIT;
 
-ShareManager::ShareManager() : hits(0), xmlListLen(0), bzXmlListLen(0),
+ShareManager::ShareManager(string _name) : hits(0), xmlListLen(0), bzXmlListLen(0),
 	xmlDirty(true), forceXmlRefresh(true), refreshDirs(false), update(false), listN(0),
-	lastXmlUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20), bzXmlRoot(NULL),xmlRoot(NULL)
+	lastXmlUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20), bzXmlRoot(NULL),xmlRoot(NULL),
+	id(_name)
 {
-	if(getName().empty())
+	if(id.empty())
 		SettingsManager::getInstance()->addListener(this);
 	
 	TimerManager::getInstance()->addListener(this);
 	QueueManager::getInstance()->addListener(this);
 	HashManager::getInstance()->addListener(this);
 
+	//did we need this now?
 	if(!Util::fileExists(Util::getPath(Util::PATH_USER_CONFIG) + "Emptyfiles.xml.bz2")) {
 		string emptyXmlName = Util::getPath(Util::PATH_USER_CONFIG) + "Emptyfiles.xml.bz2";
 		FilteredOutputStream<BZFilter, true> emptyXmlFile(new File(emptyXmlName, File::WRITE, File::TRUNCATE | File::CREATE));
@@ -81,6 +85,7 @@ ShareManager::ShareManager() : hits(0), xmlListLen(0), bzXmlListLen(0),
 }
 
 ShareManager::~ShareManager() {
+	
 	if(getName().empty())
 		SettingsManager::getInstance()->removeListener(this);
 	
@@ -89,11 +94,20 @@ ShareManager::~ShareManager() {
 	HashManager::getInstance()->removeListener(this);
 
 	join();
+}
+
+//Borowed from wxStrong for Custom Share
+void ShareManager::setName(const string _id) {
+	if(_id == id)
+		return; // nothing to change since id is same
 
 	if(bzXmlRef.get()) {
+		// delete list with old name
 		bzXmlRef.reset();
 		File::deleteFile(getBZXmlFile());
 	}
+
+	id = _id;
 }
 
 ShareManager::Directory::Directory(const string& aName, const ShareManager::Directory::Ptr& aParent) :
@@ -119,11 +133,11 @@ string ShareManager::Directory::getFullName() const noexcept {
 	return getParent()->getFullName() + getName() + '\\';
 }
 
-string ShareManager::Directory::getRealPath(const std::string& path) const {
+string ShareManager::Directory::getRealPath(const ShareManager* manager,const std::string& path) const {
 	if(getParent()) {
-		return getParent()->getRealPath(getRealName() + PATH_SEPARATOR_STR + path);
+		return getParent()->getRealPath(manager,getRealName() + PATH_SEPARATOR_STR + path);
 	} else {
-		return ShareManager::getInstance()->findRealRoot(getRealName(), path);
+		return manager->findRealRoot(getRealName(), path);
 	}
 }
 
@@ -189,7 +203,7 @@ pair<string, int64_t> ShareManager::toRealWithSize(const string& virtualFile, bo
 	}
 
 	auto f = findFile(virtualFile);
-	return make_pair(f.getRealPath(), f.getSize());
+	return make_pair(f.getRealPath(this), f.getSize());
 }
 
 StringList ShareManager::getRealPaths(const string& virtualPath) {
@@ -206,7 +220,7 @@ StringList ShareManager::getRealPaths(const string& virtualPath) {
 
 		// imitate Directory::getRealPath
 		if(d->getParent()) {
-			ret.push_back(d->getParent()->getRealPath(d->getName()));
+			ret.push_back(d->getParent()->getRealPath(this,d->getName()));
 		} else {
 			for(auto& i: shares) {
 				if(Util::stricmp(i.second, d->getName()) == 0) {
@@ -449,7 +463,7 @@ void ShareManager::merge(const Directory::Ptr& directory, const string& realPath
 	auto i = directories.find(directory->getName());
 	if(i != directories.end()) {
 		dcdebug("Merging directory <%s> into %s\n", realPath.c_str(), directory->getName().c_str());
-		i->second->merge(directory, realPath);
+		i->second->merge(this,directory, realPath);
 
 	} else {
 		dcdebug("Adding new directory %s\n", directory->getName().c_str());
@@ -457,7 +471,7 @@ void ShareManager::merge(const Directory::Ptr& directory, const string& realPath
 	}
 }
 
-void ShareManager::Directory::merge(const Directory::Ptr& source, const string& realPath) {
+void ShareManager::Directory::merge(const ShareManager* manager,const Directory::Ptr& source, const string& realPath) {
 	// merge directories
 	for(auto& i: source->directories) {
 		auto subSource = i.second;
@@ -471,13 +485,13 @@ void ShareManager::Directory::merge(const Directory::Ptr& source, const string& 
 			auto f = findFile(subSource->getName());
 			if(f != files.end()) {
 				// we have a file that has the same name as the dir being merged; rename it.
-				const_cast<File&>(*f).validateName(Util::getFilePath(f->getRealPath()));
+				const_cast<File&>(*f).validateName(Util::getFilePath(f->getRealPath(manager)));
 			}
 
 		} else {
 			// the directory was already existing; merge into it.
 			auto subTarget = ti->second;
-			subTarget->merge(subSource, realPath + subSource->getName() + PATH_SEPARATOR);
+			subTarget->merge(manager,subSource, realPath + subSource->getName() + PATH_SEPARATOR);
 		}
 	}
 
@@ -809,7 +823,7 @@ void ShareManager::updateIndices(Directory& dir, const decltype(std::declval<Dir
 	} else {
 		if(!SETTING(LIST_DUPES)) {
 			try {
-				LogManager::getInstance()->message(_("Duplicate file will not be shared: ")+Util::addBrackets(f.getRealPath())+_("Size: ")+Util::toString(f.getSize())+_(" B) Dupe matched against: ") + Util::addBrackets(j->second->getRealPath()));
+				LogManager::getInstance()->message(_("Duplicate file will not be shared: ")+Util::addBrackets(f.getRealPath(this))+_("Size: ")+Util::toString(f.getSize())+_(" B) Dupe matched against: ") + Util::addBrackets(j->second->getRealPath(this)));
 				dir.files.erase(i);
 			} catch (const ShareException&) {
 			}
@@ -839,7 +853,7 @@ void ShareManager::refresh(bool dirs, bool aUpdate, bool block, function<void (f
 		try {
 			start();
 			setThreadPriority(Thread::LOW);
-		} catch(const ThreadException& e) {
+		} catch(const Exception &e) {
 			LogManager::getInstance()->message(_("File list refresh failed: ") + e.getError());
 		}
 	}
@@ -868,7 +882,7 @@ void ShareManager::runRefresh(function<void (float)> progressF) {
 	if(refreshDirs) {
 		HashManager::HashPauser pauser;
 
-		LogManager::getInstance()->message(_("File list refresh initiated"));
+		LogManager::getInstance()->message(_("File list refresh initiated ") + getName() );
 
 		lastFullUpdate = GET_TICK();
 
@@ -903,7 +917,7 @@ void ShareManager::runRefresh(function<void (float)> progressF) {
 		}
 		refreshDirs = false;
 
-		LogManager::getInstance()->message(_("File list refresh finished"));
+		LogManager::getInstance()->message(_("File list refresh finished ") + !getName().empty() ? ":"+getName() : " ");
 	}
 
 	if(update) {
@@ -973,13 +987,7 @@ void ShareManager::generateXmlList() {
 				bzXmlRef.reset();
 				File::deleteFile(getBZXmlFile());
 			}
-/*
-			try {
-				File::renameFile(newXmlName, Util::getPath(Util::PATH_USER_CONFIG) + "files.xml.bz2");
-				newXmlName = Util::getPath(Util::PATH_USER_CONFIG) + "files.xml.bz2";
-			} catch(const FileException&) {
-				// Ignore, this is for caching only...
-			}*/
+
 			bzXmlRef = unique_ptr<File>(new File(newXmlName, File::READ, File::OPEN));
 			setBZXmlFile(newXmlName);
 			bzXmlListLen = File::getSize(newXmlName);

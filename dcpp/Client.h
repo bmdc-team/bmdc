@@ -133,11 +133,12 @@ public:
 
 	//BMDC++
 	GETSET(bool, hideShare, HideShare);
-	GETSET(string, chatExtraInfo, ChatExtraInfo);
-	GETSET(string, protectUser, ProtectUser);
 	GETSET(bool, checkAtConnect, CheckAtConnect);
 	GETSET(bool, checkClients, CheckClients);
 	GETSET(bool, checkFilelists, CheckFilelists);
+
+	GETSET(bool,ipv6,eIPv6);
+
 	mutable CriticalSection cs; //BMDC++//RSX++
 protected:
 	friend class ClientManager;
@@ -170,9 +171,9 @@ protected:
 	/** Reload details from favmanager or settings */
 	void reloadSettings(bool updateNick);
 	/// Get the external IP the user has defined for this hub, if any.
-	const string& getUserIp() const;
-	const string& getUserIp4() const;
-	const string& getUserIp6() const; 
+	const string getUserIp() const;
+	const string getUserIp4() const;
+	const string getUserIp6() const; 
 
 	virtual void checkNick(string& nick) = 0;
 
@@ -184,7 +185,6 @@ protected:
 	virtual void on(Line, const string& aLine) noexcept;
 	virtual void on(Failed, const string&) noexcept;
 
-	//virtual bool v4only() const = 0;
 private:
 	virtual void infoImpl() = 0;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include "CryptoManager.h"
 //[BMDC
 #include "RawManager.h"
+#include "UserManager.h"
 //]
 #include "HttpConnection.h"
 #include "StringTokenizer.h"
@@ -38,13 +39,13 @@ using std::make_pair;
 using std::swap;
 
 //RSX++//BMDC++
-FavoriteHubEntry::FavAction::FavAction(bool _enabled, string _raw /*= Util::emptyString*/, int id /*=0*/) noexcept: enabled(_enabled) {
+FavoriteHubEntry::FavAction::FavAction(bool _enabled, string _raw /*= Util::emptyString*/, size_t id /*=0*/) noexcept: enabled(_enabled) {
 	if(_raw.empty()) return;
 	StringTokenizer<string> tok(_raw, ',');
 	const Action* a = RawManager::getInstance()->findAction(id);
 	if(a != NULL) {
 		for(auto j = tok.getTokens().begin(); j != tok.getTokens().end(); ++j) {
-			int rId = Util::toInt(*j);
+			size_t rId = Util::toUInt32(*j);
 			for(auto i = a->raw.begin(); i != a->raw.end(); ++i) {
 				if(rId == i->getId()) {
 					raws.push_back(rId);
@@ -174,12 +175,14 @@ void FavoriteManager::removeHubUserCommands(int ctx, const string& hub) {
         });
 }
 
+
 void FavoriteManager::addFavoriteUser(const UserPtr& aUser) {
 	{
 		Lock l(cs);
 		if(users.find(aUser->getCID()) == users.end()) {
-			StringList urls = ClientManager::getInstance()->getHubs(aUser->getCID(), Util::emptyString);
-			StringList nicks = ClientManager::getInstance()->getNicks(aUser->getCID(), Util::emptyString);
+			//ClientMan
+			StringList urls = UsersManager::getInstance()->getHubs(aUser->getCID(), Util::emptyString);//how add hubUrl?
+			StringList nicks = UsersManager::getInstance()->getNicks(aUser->getCID(), Util::emptyString);
 
 			/// @todo make this an error probably...
 			if(urls.empty())
@@ -435,17 +438,19 @@ void FavoriteManager::save() {
 			xml.addChildAttrib("Group", (*i)->getGroup());
 			//BMDC++
 			xml.addChildAttrib("Mode", (*i)->getMode());
-			xml.addChildAttrib("ChatExtraInfo", (*i)->getChatExtraInfo());
+			//xml.addChildAttrib("ChatExtraInfo", (*i)->getChatExtraInfo());
 			xml.addChildAttrib("onConnect", (*i)->getCheckAtConn());
 			xml.addChildAttrib("CheckClients", (*i)->getCheckClients());
 			xml.addChildAttrib("CheckFilelists", (*i)->getCheckFilelists());
-			xml.addChildAttrib("Protects", (*i)->getProtectUsers());
+			//xml.addChildAttrib("Protects", (*i)->getProtectUsers());
 			xml.addChildAttrib("UserListToggle", (*i)->getShowUserList());
 			xml.addChildAttrib("NotifyToggle", (*i)->getNotify());
 			xml.addChildAttrib("Order",(*i)->getHubOrder());
 			xml.addChildAttrib("Visible",(*i)->getHubVisible());
 			xml.addChildAttrib("Width",(*i)->getHubWidth());
 			xml.addChildAttrib("Private", (*i)->getPrivate());
+
+			xml.addChildAttrib("EnableIPv6",(*i)->geteIPv6());	
 
 			(*i)->save(xml);
 			//RSX++
@@ -661,17 +666,20 @@ void FavoriteManager::load(SimpleXML& aXml) {
 			//BMDC++
 			e->setGroup(aXml.getChildAttrib("Group"));
 			e->setMode(aXml.getIntChildAttrib("Mode"));
-			e->setChatExtraInfo(aXml.getChildAttrib("ChatExtraInfo"));
+			//e->setChatExtraInfo(aXml.getChildAttrib("ChatExtraInfo"));
 			e->setCheckAtConn(Util::toInt(aXml.getChildAttrib("onConnect")));
 			e->setCheckClients(Util::toInt(aXml.getChildAttrib("CheckClients")));
 			e->setCheckFilelists(Util::toInt(aXml.getChildAttrib("CheckFilelists")));
-			e->setProtectUsers(aXml.getChildAttrib("Protects"));
+			//e->setProtectUsers(aXml.getChildAttrib("Protects"));
 			e->setShowUserList(Util::toInt(aXml.getChildAttrib("UserListToggle")));
 			e->setNotify(Util::toInt(aXml.getChildAttrib("NotifyToggle")));
 			e->setHubOrder(aXml.getChildAttrib("Order"));
 			e->setHubVisible(aXml.getChildAttrib("Visible"));
 			e->setHubWidth(aXml.getChildAttrib("Width"));
 			e->setPrivate(Util::toInt(aXml.getChildAttrib("Private")));//add
+			
+			e->seteIPv6(Util::toInt(aXml.getChildAttrib("EnableIPv6")));
+
 			e->setId(e->getServer());
 			e->load(aXml);
 			favoriteHubs.push_back(e);
@@ -707,7 +715,6 @@ void FavoriteManager::load(SimpleXML& aXml) {
 				u = ClientManager::getInstance()->getUser(CID(cid));
 			}
 
-			//ClientManager::getInstance()->saveUser(u->getCID());
 			FavoriteMap::iterator i = users.insert(make_pair(u->getCID(), FavoriteUser(u, nick, hubUrl))).first;
 
 			if(aXml.getBoolChildAttrib("GrantSlot"))
@@ -1085,7 +1092,7 @@ void FavoriteManager::setEnabledAction(FavoriteHubEntry* entry, int actionId, bo
 		(*h)->action.insert(make_pair(actionId, new FavoriteHubEntry::FavAction(true)));
 }
 
-bool FavoriteManager::getEnabledRaw(FavoriteHubEntry* entry, int actionId, int rawId) {
+bool FavoriteManager::getEnabledRaw(FavoriteHubEntry* entry, int actionId, unsigned int rawId) {
 	auto h = find(favoriteHubs.begin(), favoriteHubs.end(), entry);
 	if(h == favoriteHubs.end())
 		return false;
@@ -1093,7 +1100,7 @@ bool FavoriteManager::getEnabledRaw(FavoriteHubEntry* entry, int actionId, int r
 	FavoriteHubEntry::FavAction::List::const_iterator i = (*h)->action.find(actionId);
 	if(i == (*h)->action.end())
 		return false;
-	for(std::list<int>::const_iterator j = i->second->raws.begin(); j != i->second->raws.end(); ++j) {
+	for(std::list<size_t>::const_iterator j = i->second->raws.begin(); j != i->second->raws.end(); ++j) {
 		if(*j == rawId) {
 			return true;
 		}
@@ -1101,14 +1108,14 @@ bool FavoriteManager::getEnabledRaw(FavoriteHubEntry* entry, int actionId, int r
 	return false;
 }
 
-void FavoriteManager::setEnabledRaw(FavoriteHubEntry* entry, int actionId, int rawId, bool enabled) {
+void FavoriteManager::setEnabledRaw(FavoriteHubEntry* entry, int actionId, unsigned int rawId, bool enabled) {
 	auto h = find(favoriteHubs.begin(), favoriteHubs.end(), entry);
 	if(h == favoriteHubs.end())
 		return;
 
 	FavoriteHubEntry::FavAction::List::const_iterator i = (*h)->action.find(actionId);
 	if(i != (*h)->action.end()) {
-		for(std::list<int>::iterator j = i->second->raws.begin(); j != i->second->raws.end(); ++j) {
+		for(std::list<size_t>::iterator j = i->second->raws.begin(); j != i->second->raws.end(); ++j) {
 			if(*j == rawId) {
 				if(!enabled)
 					i->second->raws.erase(j);

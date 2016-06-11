@@ -30,7 +30,7 @@ BookEntry(Entry::SYSTEML,_("System Log"),"system"),
  buffer(NULL),sysMark(NULL)
 {
 	WulforUtil::setTextDeufaults(getWidget("systextview"),SETTING(BACKGROUND_CHAT_COLOR),dcpp::Util::emptyString,false,dcpp::Util::emptyString,"SystemLog");
-	WulforUtil::setTextColor(string("black"),string("SystemLog"));//TODO: Settings
+	WulforUtil::setTextColor(WGETS("text-system-fore-color"),string("SystemLog"));
 
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (getWidget("systextview")));
 	gtk_text_buffer_get_end_iter(buffer, &iter);
@@ -149,25 +149,20 @@ void SystemLog::on(LogManagerListener::Message, time_t t, const string& message,
 
 GdkPixbuf* SystemLog::getImageSev(int sev)
 {
-	string tmp = Util::emptyString;
+	GtkWidget* image = NULL;
 	switch(sev)
 	{
-		case LogManager::Sev::LOW: tmp = "info";break;
-		case LogManager::Sev::NORMAL: tmp = "warning";break;
-		case LogManager::Sev::HIGH: tmp = "error"; break;
+		case LogManager::Sev::LOW: 
+			image = gtk_image_new_from_resource("/org/gtk/bmdc/info/info.png");
+			break;
+		case LogManager::Sev::NORMAL: 
+			image = gtk_image_new_from_resource("/org/gtk/bmdc/info/warning.png");
+			break;
+		case LogManager::Sev::HIGH: 
+			image = gtk_image_new_from_resource("/org/gtk/bmdc/info/error.png");
+			break;
 		default:break;
 	};
-	GError* error = NULL;
-
-	gchar *path = g_strdup_printf(_DATADIR PATH_SEPARATOR_STR "bmdc/info/%s.png",
-		                              (gchar *)tmp.c_str());
-
-	GdkPixbuf* buf = gdk_pixbuf_new_from_file_at_size(path,15,15,&error);
-	g_free(path);
-	if(error != NULL || buf == NULL) {
-			g_error_free(error);
-			return NULL;
-	}
-	return buf;
+	return WulforUtil::scalePixbuf(gtk_image_get_pixbuf(GTK_IMAGE(image)),24,24);
 }
 

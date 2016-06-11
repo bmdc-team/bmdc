@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@ public:
 	typedef X<1> Minute;
 
 	// We expect everyone to implement this...
-	virtual void on(Second, uint64_t) throw() { }
-	virtual void on(Minute, uint64_t) throw() { }
+	virtual void on(Second, uint64_t) noexcept { }
+	virtual void on(Minute, uint64_t) noexcept { }
 };
 
 class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>, public Thread {

@@ -22,15 +22,23 @@
 #include "compiler.h"
 //For locale
 #include <glib.h>
+#ifndef _WIN32
 #include <glib/gi18n.h>
+#endif
 //---
 #include <cstdlib>
 #include <ctime>
+
+
+#ifdef _WIN32
+#include <winsock2.h>
+#else
+#include <sys/socket.h>
 #include <arpa/inet.h>
-#include <fcntl.h>
 #include <sys/utsname.h>
 #include <sys/sysinfo.h>
-
+#endif
+#include <fcntl.h>
 #include <map>
 #include <cstring>
 #include <algorithm> //we dont need boost
@@ -236,11 +244,11 @@ public:
 	static string toAdcFile(const string& file);
 	static string toNmdcFile(const string& file);
 
-	static string formatBytes(int64_t aBytes);
+	static string formatBytes(const int64_t aBytes);
 
-	static string formatExactSize(int64_t aBytes);
+	static string formatExactSize(const int64_t aBytes);
 
-	static string formatSeconds(int64_t aSec) {
+	static string formatSeconds(const int64_t aSec) {
 		char buf[64];
 		snprintf(buf, sizeof(buf), "%01lu:%02d:%02d", (unsigned long)(aSec / (60*60)), (int)((aSec / 60) % 60), (int)(aSec % 60));
 		return buf;
@@ -251,19 +259,19 @@ public:
 
 	static string formatTime(const string &msg, const time_t t);
 
-	static inline int64_t roundDown(int64_t size, int64_t blockSize) {
+	static inline int64_t roundDown(const int64_t size,const int64_t blockSize) {
 		return ((size + blockSize / 2) / blockSize) * blockSize;
 	}
 
-	static inline int64_t roundUp(int64_t size, int64_t blockSize) {
+	static inline int64_t roundUp(const int64_t size, const int64_t blockSize) {
 		return ((size + blockSize - 1) / blockSize) * blockSize;
 	}
 
-	static inline int roundDown(int size, int blockSize) {
+	static inline int roundDown(const int size, const int blockSize) {
 		return ((size + blockSize / 2) / blockSize) * blockSize;
 	}
 
-	static inline int roundUp(int size, int blockSize) {
+	static inline int roundUp(const int size,const int blockSize) {
 		return ((size + blockSize - 1) / blockSize) * blockSize;
 	}
 

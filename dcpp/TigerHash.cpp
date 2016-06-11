@@ -12,7 +12,7 @@
  */
 
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,11 @@
 
 #include <algorithm>
 #include <cstring>
+#ifndef _WIN32
 #include <endian.h>
+#else
+#include "portable_endian.h"
+#endif
 #include "debug.h"
 
 #if (__BYTE_ORDER == __BIG_ENDIAN)

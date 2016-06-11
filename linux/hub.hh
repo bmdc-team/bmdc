@@ -28,7 +28,7 @@
 #include <dcpp/Client.h>
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/QueueManager.h>
-#include <dcpp/HttpDownload.h>
+#include <dcpp/TimerManager.h>
 #include <dcpp/Flags.h>
 #include "bookentry.hh"
 #include "treeview.hh"
@@ -47,12 +47,15 @@ class Hub:
 	public BookEntry,
 	public dcpp::ClientListener,
 	public dcpp::FavoriteManagerListener,
-	public dcpp::QueueManagerListener
+	public dcpp::QueueManagerListener,
+	public dcpp::TimerManagerListener
 {
 	private:
 		using dcpp::ClientListener::on;
 		using dcpp::FavoriteManagerListener::on;
 		using dcpp::QueueManagerListener::on;	
+		using dcpp::TimerManagerListener::on;
+		mutable dcpp::CriticalSection cs;
 	public:
 		Hub(const std::string &address, const std::string &encoding);
 		virtual ~Hub();
@@ -89,7 +92,7 @@ class Hub:
 		void popupNickMenu_gui();
 		void getPassword_gui();
 		void addMessage_gui(std::string cid, std::string message, Msg::TypeMsg typemsg);
-		void applyTags_gui(const std::string &cid, const std::string &line);
+		void applyTags_gui(const std::string cid, const std::string line);
 
 		void applyEmoticons_gui();
 		void updateCursor_gui(GtkWidget *widget);
@@ -212,7 +215,7 @@ private:
 
 		void SetTabText(gpointer data);
 
-		void setColorRow(std::string cell);
+		void setColorRow(const std::string cell);
 		void setColorsRows();
 		void clickAction(gpointer data);
 
@@ -240,7 +243,89 @@ private:
 		virtual void on(dcpp::ClientListener::HubTopic, dcpp::Client *, const std::string &top) noexcept;
 		virtual void on(dcpp::ClientListener::ClientLine, dcpp::Client* , const std::string &mess, int type) noexcept;
 		virtual void on(dcpp::QueueManagerListener::Finished, dcpp::QueueItem *item, const std::string& dir, int64_t avSpeed) noexcept;
+		
+		typedef enum 
+		{
+			ONE_HOUR = 1,
+			TWO_HOUR ,
+			THREE_HOUR,
+			FOUR_HOUR ,
+			FIVE_HOUR ,
+			SIX_HOUR ,
+			SEVEN_HOUR ,
+			EIGHT_HOUR,
+			NINE_HOUR,
+			TEN_HOUR
+		} TempTime;
+		
+		typedef std::multimap<uint64_t,std::string> TempMap;
+		TempMap listTempsNicks;
+		TempMap listTempsIps;
+		TempMap listTempsCids;
+		uint64_t lastTickCid;
+		uint64_t lastTickNick;
+		uint64_t lastTickIp;
+		static void onClickMenuItemTime(GtkMenuItem* item,gpointer data);
+		// TimerManagerListener
+		virtual void on(dcpp::TimerManagerListener::Minute, uint64_t aTick) noexcept
+		{
+			dcpp::Lock l(cs);
+			dcdebug("[HUB] TimerManager %lud",aTick);
+			if(aTick > lastTickCid)
+			{
+				lastTickCid = aTick + (60*60*1000);//hour
+				for(auto i = listTempsCids.begin();i!= listTempsCids.end();++i)
+				{
+					if( ( (*i).first == 60*60*1000) ||
+					( (*i).first == 60*60*1000*2) ||
+					( (*i).first == 60*60*1000*3) ||
+					 ( (*i).first == 60*60*1000*4) ||
+					 ( (*i).first == 60*60*1000*5) ||
+					 ( (*i).first == 60*60*1000*6) ||
+					 ( (*i).first == 60*60*1000*7) ||
+					 ( (*i).first == 60*60*1000*8) ||
+					 ( (*i).first == 60*60*1000*9) ||
+					 ( (*i).first == 60*60*1000*10))
+					{
+						listTempsCids.erase(i);
+					
+					}
+				}
+			}	
+			if(aTick > lastTickNick)
+			{
+				lastTickNick = aTick + (60*60*1000);
+				for(auto i = listTempsNicks.begin();i!= listTempsNicks.end();++i)
+				{
+					if( ( (*i).first == 60*60*1000) ||
+					( (*i).first == 60*60*1000*2) ||
+					( (*i).first == 60*60*1000*3) ||
+					 ( (*i).first == 60*60*1000*4) ||
+					 ( (*i).first == 60*60*1000*5) ||
+					 ( (*i).first == 60*60*1000*6) ||
+					 ( (*i).first == 60*60*1000*7) ||
+					 ( (*i).first == 60*60*1000*8) ||
+					 ( (*i).first == 60*60*1000*9) ||
+					 ( (*i).first == 60*60*1000*10))
+					{
+						listTempsNicks.erase(i);
+					
+					}
+				}
+			}	
+			
+			for(auto i = listTempsIps.begin();i!= listTempsIps.end();++i)
+			{
+				if(aTick > lastTickIp)
+				{
+					lastTickIp = aTick + ((*i).first*(60*60*1000));
+					listTempsIps.erase(i);
+					continue;
+				}
+			}	
+		}
 
+		
 		UserMap userMap;
 		UnMapIter userIters;
 		UserMap userFavoriteMap;

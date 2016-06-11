@@ -4,12 +4,12 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with main.c; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor Boston, MA 02110-1301,  USA
@@ -42,29 +42,28 @@ using namespace dcpp;
                                       "_Open",\
                                       GTK_RESPONSE_OK,\
                                       NULL);
-#endif                                      
+#endif
 
 static GtkWidget* createComboBoxWith3Options(const gchar* a,const gchar* b,const gchar* c)
 {
 	GtkWidget* combo = gtk_combo_box_text_new();
 	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),a);
 	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),b);
-	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),c);	
-	
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),c);
+
 	return combo;
 }
 
 FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 	Entry(Entry::FAV_HUB),
-	p_entry(entry),
-	actionStore(NULL), actionSel(NULL)
+	p_entry(entry)
 {
 	mainDialog = gtk_dialog_new();
 	if(!p_entry->getServer().empty())
 		gtk_window_set_title (GTK_WINDOW(mainDialog), (_("Favorite Propteries for ") + p_entry->getServer()).c_str());
-	else 
-		gtk_window_set_title (GTK_WINDOW(mainDialog), _("Favorite Propteries for New Favorite Hub"));	
-	
+	else
+		gtk_window_set_title (GTK_WINDOW(mainDialog), _("Favorite Propteries for New Favorite Hub"));
+
 	mainBox = gtk_dialog_get_content_area ( GTK_DIALOG(mainDialog) );
 	notebook = gtk_notebook_new();
 	gtk_container_add(GTK_CONTAINER(mainBox), notebook);
@@ -95,48 +94,48 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 	entryUserDescriptio = gen;
 	gtk_entry_set_text (GTK_ENTRY(entryUserDescriptio), p_entry->get(SettingsManager::DESCRIPTION,SETTING(DESCRIPTION)).c_str());
 	g_g_a(entryUserDescriptio,1,5,1,1);
-	
+
 	g_g_a( lan(_("e-Mail: ")) ,0,6,1,1);
 	entryMail = gen;
 	gtk_entry_set_text (GTK_ENTRY(entryMail), p_entry->get(SettingsManager::EMAIL,SETTING(EMAIL)).c_str());
 	g_g_a(entryMail,1,6,1,1);
-	
+
 	g_g_a( lan(_("Codepage: ")),0,7,1,1);
 	comboCodepage = gtk_combo_box_text_new();
 	g_g_a(comboCodepage,1,7,1,1);
 	string enc = p_entry->getEncoding();
 	// Fill the charset drop-down list in edit fav hub dialog.
 	auto& charsets = WulforUtil::getCharsets();
+	bool set = false;
 	for (auto ic = charsets.begin(); ic != charsets.end(); ++ic)
 	{
 			gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(comboCodepage), (*ic).c_str());
-	}
-	bool set = false;
-	for(auto ii = charsets.begin(); ii != charsets.end(); ++ii) {
-			if(enc == *ii) {
-				gtk_combo_box_set_active(GTK_COMBO_BOX(comboCodepage), (ii - charsets.begin()));
+
+			if(enc == *ic) {
+				gtk_combo_box_set_active(GTK_COMBO_BOX(comboCodepage), (ic - charsets.begin()));
 				set = true;
 			}
+
 	}
 	//Default
 	if(set == false){
 		gtk_combo_box_set_active(GTK_COMBO_BOX(comboCodepage),0);
 	}
-	
+
 	g_g_a( lan(_("Group")),0,8,1,1);
 	comboGroup = gtk_combo_box_text_new();
 	g_g_a(comboGroup, 1,8,1,1);
-	
+
 	//group combo
 	checkAutoConnect = g_c_b_n(_("Auto-Connect to this Hub"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkAutoConnect), p_entry->getAutoConnect());
-	
+
 	g_g_a(checkAutoConnect,0,9,1,1);
-	
+
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), boxSimple ,lan(_("General Settings")));
 	//check
 	GtkWidget* boxCheck = gtk_grid_new();
-	g_g_a_c( lan(_("Protected Users:")) ,0,0,1,1);
+	g_g_a_c( lan(_("Protected Users: ")) ,0,0,1,1);
 	entryProtectedUser = gen;
 	gtk_entry_set_text(GTK_ENTRY(entryProtectedUser), p_entry->get(SettingsManager::PROTECTED_USERS,SETTING(PROTECTED_USERS)).c_str());
 	g_g_a_c(entryProtectedUser,1,0,1,1);
@@ -157,7 +156,7 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkHideShare), p_entry->getHideShare() );
 
 	g_g_a_a(checkHideShare,0,0,1,1);
-	
+
 	g_g_a_a(lan(_("Extra Chat Info:")),0,1,1,1);
 	extraChatInfoEntry = gen;
 	gtk_entry_set_text(GTK_ENTRY(extraChatInfoEntry), p_entry->get(SettingsManager::CHAT_EXTRA_INFO,SETTING(CHAT_EXTRA_INFO)).c_str());
@@ -167,19 +166,19 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 	entryAwayMessage = gen;
 	gtk_entry_set_text(GTK_ENTRY(entryAwayMessage), p_entry->get(SettingsManager::DEFAULT_AWAY_MESSAGE,SETTING(DEFAULT_AWAY_MESSAGE)).c_str());
 	g_g_a_a(entryAwayMessage,1,2,1,1);
-	
+
 	g_g_a_a( lan(_("Favorite Users Joins/Parts:")) ,0,3,1,1);
 	comboFavParts = createComboBoxWith3Options(_("Default"),_("Enable"),_("Disable"));
-	
+
 	if(p_entry->get(SettingsManager::FAV_SHOW_JOINS,SETTING(FAV_SHOW_JOINS)) == SETTING(FAV_SHOW_JOINS))
 		gtk_combo_box_set_active(GTK_COMBO_BOX(comboFavParts), 0);
 	else
 		gtk_combo_box_set_active(GTK_COMBO_BOX(comboFavParts),p_entry->get(SettingsManager::FAV_SHOW_JOINS,SETTING(FAV_SHOW_JOINS))+1);
-	
+
 	g_g_a_a(comboFavParts,1,3,1,1);
-	
+
 	g_g_a_a( lan(_("Users Joins/Parts:")) ,0,4,1,1);
-	
+
 	comboParts = createComboBoxWith3Options(_("Default"),_("Enable"),_("Disable"));
 
 	if(p_entry->get(SettingsManager::FAV_SHOW_JOINS,SETTING(SHOW_JOINS)) == SETTING(SHOW_JOINS))
@@ -188,41 +187,38 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 		gtk_combo_box_set_active(GTK_COMBO_BOX(comboParts),p_entry->get(SettingsManager::SHOW_JOINS,SETTING(SHOW_JOINS))+1);
 
 	g_g_a_a(comboParts,1,4,1,1);
-	
+
 	g_g_a_a( lan(_("Background Chat Color:")) ,0,5,1,1);
 	colorBack = gtk_color_button_new();
 	GdkRGBA color;
 	gdk_rgba_parse(&color,p_entry->get(SettingsManager::BACKGROUND_CHAT_COLOR,SETTING(BACKGROUND_CHAT_COLOR)).c_str());
 	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(colorBack),&color);
 	g_g_a_a(colorBack,1,5,1,1);
-	
+
 	g_g_a_a( lan(_("Background Chat Image:")),0,6,1,1);
 	backImage = gtk_file_chooser_button_new(_("Open Image"),GTK_FILE_CHOOSER_ACTION_OPEN);
 	gtk_file_chooser_select_filename (GTK_FILE_CHOOSER(backImage),p_entry->get(SettingsManager::BACKGROUND_CHAT_IMAGE,SETTING(BACKGROUND_CHAT_IMAGE)).c_str());
 	g_g_a_a(backImage,1,6,1,1);
-	
+
 	g_g_a_a( lan(_("Emoticons:")) ,0,7,1,1);
 	comboEmot = gtk_combo_box_text_new();
 	g_g_a_a(comboEmot,1,7,1,1);
-	
+
 	string path = WulforManager::get()->getPath() + G_DIR_SEPARATOR_S + "emoticons" + G_DIR_SEPARATOR_S;
 	StringList files = File::findFiles(path, "*.xml");
+	string pack_name = p_entry->get(SettingsManager::EMOT_PACK,SETTING(EMOT_PACK));
 	for(auto fi = files.begin(); fi != files.end();++fi) {
 			string file = Util::getFileName((*fi));
-			size_t nedle =  file.find(".");
-			string text = file.substr(0,nedle);
+			size_t needle =  file.find(".");
+			string text = file.substr(0,needle);
 			gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(comboEmot), text.c_str() );
-	}
-	
-	string pack_name = p_entry->get(SettingsManager::EMOT_PACK,SETTING(EMOT_PACK));
-	for(auto fii = files.begin(); fii!= files.end(); ++fii) {
-			size_t needle = Util::getFileName(*fii).find(".");
-			string tmp  = Util::getFileName(*fii).substr(0,needle);
-			if(pack_name == tmp) {
-				gtk_combo_box_set_active(GTK_COMBO_BOX(comboEmot), (fii - files.begin()));
+
+			if(pack_name == text) {
+				gtk_combo_box_set_active(GTK_COMBO_BOX(comboEmot), (fi - files.begin()));
 			}
+
 	}
-	
+
 	enableNoti = g_c_b_n(_("Enable Notify for This Hub"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enableNoti), p_entry->getNotify());
 	g_g_a_a(enableNoti,0,8,1,1);
@@ -232,57 +228,49 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 	enableCountry = g_c_b_n(_("Enable Country Info in Chat"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enableCountry), p_entry->get(SettingsManager::USE_COUNTRY_FLAG,SETTING(USE_COUNTRY_FLAG)));
 	g_g_a_a(enableCountry,0,9,1,1);
-	
+
 	enableIp = g_c_b_n(_("Enable IP Info in Chat"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enableIp), p_entry->get(SettingsManager::USE_IP,SETTING(USE_IP)));
 	g_g_a_a(enableIp,1,9,1,1);
-	
+
 	enableBold = g_c_b_n(_("Enable Tab Bolding"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enableBold), p_entry->get(SettingsManager::BOLD_HUB,SETTING(BOLD_HUB)));
 	g_g_a_a(enableBold,0,10,1,1);
-	
+
 	enableStatusChat = g_c_b_n(_("Enable Status Chat message"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enableStatusChat), p_entry->get(SettingsManager::STATUS_IN_CHAT,SETTING(STATUS_IN_CHAT)));
 	g_g_a_a(enableStatusChat,1,10,1,1);
-	
+
 	enableFavFirst = g_c_b_n(_("Enable Favorite Users First in UserList"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enableFavFirst), p_entry->get(SettingsManager::SORT_FAVUSERS_FIRST,SETTING(SORT_FAVUSERS_FIRST)));
 	g_g_a_a(enableFavFirst,0,11,1,1);
-	
+
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), boxAdvanced ,labelAdvanced );
 	//
 	GtkWidget* boxConnection = gtk_grid_new();
 	g_g_a_c_s(lan(_("Mode:")),0,0,1,1);
 	comboMode = createComboBoxWith3Options(_("Default"),_("Active"),_("Passive"));
-	//this need clarifiaction
-	/*if(p_entry->getMode() == SETTING(INCOMING_CONNECTIONS))
-		gtk_combo_box_set_active(GTK_COMBO_BOX(comboMode), 0);
-	else{
-		int mode_i = p_entry->getMode();
-		if(mode_i <= 1)
-			gtk_combo_box_set_active(GTK_COMBO_BOX(comboMode),1);//1active
-		else gtk_combo_box_set_active(GTK_COMBO_BOX(comboMode),2);//2passive	
-	}*/
-	bool b_ip = true;
+
 	switch(p_entry->getMode())
 	{
-		
 		case SettingsManager::INCOMING_DIRECT:
-									
 		case SettingsManager::INCOMING_FIREWALL_UPNP:
-						b_ip = false;
-						gtk_combo_box_set_active(GTK_COMBO_BOX(comboMode), 0);
-						break;
+		{
+			gtk_combo_box_set_active(GTK_COMBO_BOX(comboMode), 0);
+			break;
+		}
 		case SettingsManager::INCOMING_FIREWALL_NAT:
-						gtk_combo_box_set_active(GTK_COMBO_BOX(comboMode), 1);
-						break;
+		{
+			gtk_combo_box_set_active(GTK_COMBO_BOX(comboMode), 1);
+			break;
+		}
 		case SettingsManager::INCOMING_FIREWALL_PASSIVE:
 		default:
+		{
 			gtk_combo_box_set_active(GTK_COMBO_BOX(comboMode), 2);
-		break;
+			break;
+		}
 	};
-	
-	
 
 	g_g_a_c_s(comboMode,1,0,1,1);
 
@@ -291,14 +279,13 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 	entryIp = gen;
 	gtk_entry_set_text(GTK_ENTRY(entryIp), p_entry->get(SettingsManager::EXTERNAL_IP,SETTING(EXTERNAL_IP)).c_str());
 	g_g_a_c_s(entryIp,1,2,1,1);
-	//if(b_ip)
-	//	gtk_widget_set_sensitive(GTK_WIDGET(entryIp),FALSE);
-	
-	//GtkWidget* enableIp6 = g_c_b_n("Enable IPv6");
-	//g_g_a_c_s(enableIp6,0,3,1,1);
-	
+
+	enableIp6 = g_c_b_n("Enable IPv6 Support");
+	g_g_a_c_s(enableIp6,0,3,1,1);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enableIp6),p_entry->geteIPv6());
+
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), boxConnection ,lan(_("Connection Setup")) );
-	
+	//Actions Page
 	treeView = gtk_tree_view_new();
 	GtkWidget* boxKickAction = gtk_grid_new();
 	gtk_grid_attach(GTK_GRID(boxKickAction),treeView,0,0,3,3);
@@ -315,11 +302,13 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 	actionSel = gtk_tree_view_get_selection(actionView.get());
 
 	g_signal_connect(actionView.getCellRenderOf(_("Enabled")), "toggled", G_CALLBACK(onToggledClicked_gui), (gpointer)this);
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), boxKickAction ,lan("Kick Actions") );	
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), boxKickAction ,lan("Kick Actions") );
 	initActions();
-	
+
+	//Share Page
+
 	GtkWidget* boxShare = gtk_grid_new();
-	
+
 	GtkWidget *scroll = gtk_scrolled_window_new(NULL,NULL);
 	GtkWidget *shareTree = gtk_tree_view_new();
 	shareView.setView(GTK_TREE_VIEW(shareTree));
@@ -331,45 +320,46 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 	shareStore = gtk_list_store_newv(shareView.getColCount(), shareView.getGTypes());
 	gtk_tree_view_set_model(shareView.get(), GTK_TREE_MODEL(shareStore));
 	shareView.setSortColumn_gui(_("Size"), "Real Size");
-	gtk_container_add(GTK_CONTAINER(scroll),GTK_WIDGET(shareView.get()));
+	gtk_container_add(GTK_CONTAINER(shareTree),GTK_WIDGET(shareView.get()));
 
-	gtk_box_pack_start(GTK_BOX(boxShare),scroll,TRUE,TRUE,0);
+	gtk_grid_attach(GTK_GRID(boxShare),scroll,0,0,4,4);
 
 	button_add = gtk_button_new_with_label("Add");
 	button_rem = gtk_button_new_with_label("Remove");
-//	button_edit = gtk_button_new_with_label("Remove");
-	GtkWidget* grid = gtk_grid_new();	
+//	button_edit = gtk_button_new_with_label("Edit");
+	GtkWidget* grid = gtk_grid_new();
 	gtk_grid_attach(GTK_GRID(grid),button_add,0,1,1,1);
 	gtk_grid_attach(GTK_GRID(grid),button_rem,1,1,1,1);
 //	gtk_grid_attach(GTK_GRID(grid),button_edit,2,0,1,1);
 	labelShareSize = gtk_label_new("");
-	gtk_grid_attach(GTK_GRID(grid),labelShareSize,2,2,1,1);
-	gtk_box_pack_start(GTK_BOX(boxShare),grid,TRUE,TRUE,0);
-	
+	gtk_grid_attach(GTK_GRID(grid),labelShareSize,2,5,1,1);
+	gtk_grid_attach(GTK_GRID(boxShare),grid,0,5,1,1);
+
+
 	g_signal_connect(button_add, "clicked", G_CALLBACK(onAddShare_gui), (gpointer)this);
 	g_signal_connect(button_rem, "clicked", G_CALLBACK(onRemoveShare_gui), (gpointer)this);
-	
+
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook) , boxShare, lan("Share Setup"));
-	
-	//need be after all contain stuff
-	gtk_widget_show_all(notebook);			
+
+	//NOTE: need be after all contain stuff
+	gtk_widget_show_all(notebook);
 	GtkWidget* okButton = gtk_button_new_with_label(_("Ok"));
-	GtkWidget* cancelButton = 	gtk_button_new_with_label(_("Cancel"));
-		
+	GtkWidget* cancelButton = gtk_button_new_with_label(_("Cancel"));
+
 	gtk_dialog_add_action_widget (GTK_DIALOG(mainDialog),
                               okButton,
                               GTK_RESPONSE_OK);
 	gtk_dialog_add_action_widget (GTK_DIALOG(mainDialog),
                               cancelButton,
-                              -6);                      
-	gtk_widget_show(cancelButton);	
+                              -6);
+	gtk_widget_show(cancelButton);
 	gtk_widget_show(okButton);
 }
 
 
 bool FavoriteHubDialog::initDialog(UnMapIter &groups)
 {
-		
+
 		FavHubGroups favHubGroups = FavoriteManager::getInstance()->getFavHubGroups();
 
 		GtkTreeIter iter;
@@ -415,21 +405,22 @@ bool FavoriteHubDialog::initDialog(UnMapIter &groups)
 			p_entry->setServer(gtk_entry_get_text(GTK_ENTRY(entryAddress)));
 			p_entry->setHubDescription(gtk_entry_get_text(GTK_ENTRY(entryDesc)));
 			p_entry->setPassword(gtk_entry_get_text(GTK_ENTRY(entryPassword)));
-			
+
 			p_entry->set(SettingsManager::CHAT_EXTRA_INFO ,gtk_entry_get_text(GTK_ENTRY(extraChatInfoEntry)));
 			p_entry->set(SettingsManager::EXTERNAL_IP, gtk_entry_get_text(GTK_ENTRY(entryIp)));
-			p_entry->setProtectUsers(gtk_entry_get_text(GTK_ENTRY(entryProtectedUser)));
+			p_entry->set(SettingsManager::PROTECTED_USERS,gtk_entry_get_text(GTK_ENTRY(entryProtectedUser)));
 			p_entry->setNotify(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON( enableNoti)));
-			
+
 			p_entry->setMode(gtk_combo_box_get_active(GTK_COMBO_BOX(comboMode)));
-			
+			p_entry->seteIPv6(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(enableIp6)));
+
 			p_entry->setAutoConnect(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkAutoConnect)));
 			p_entry->set(SettingsManager::LOG_CHAT_B, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(enableLog)));
 			p_entry->setHideShare(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkHideShare)));
 			p_entry->setCheckAtConn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkOnConn)));
 			p_entry->setCheckFilelists(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkFilelists)));
 			p_entry->setCheckClients(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkClients)));
-			
+
 			p_entry->set(SettingsManager::USE_IP ,gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(enableIp)));
 			p_entry->set(SettingsManager::BOLD_HUB ,gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(enableBold)));
 			p_entry->set(SettingsManager::GET_USER_COUNTRY, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(enableCountry)));
@@ -441,27 +432,29 @@ bool FavoriteHubDialog::initDialog(UnMapIter &groups)
 			p_entry->set(SettingsManager::DEFAULT_AWAY_MESSAGE, gtk_entry_get_text(GTK_ENTRY(entryAwayMessage)));
 
 			p_entry->set(SettingsManager::EXTERNAL_IP6, Util::emptyString);
-			GdkRGBA color;	
+			GdkRGBA color;
 			gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER(colorBack),
                             &color);
-			
-			p_entry->set(SettingsManager::BACKGROUND_CHAT_COLOR, WulforUtil::colorToString(&color) );
-			
-			gchar* image_path = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(backImage));
-			
-			string tmp = Util::getFileExt(image_path);
-			std::transform(tmp.begin(), tmp.end(), tmp.begin(), (int(*)(int))toupper);
 
-			if(tmp == ".png" || tmp == ".jpg" || tmp == ".gif" || tmp == ".svg")//alow only these types
+			p_entry->set(SettingsManager::BACKGROUND_CHAT_COLOR, WulforUtil::colorToString(&color) );
+
+			gchar* image_path = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(backImage));
+
+			const gchar* tmp = Util::getFileExt(image_path).c_str();
+
+			if( (g_ascii_strcasecmp(tmp,".png") == 0)
+			|| (g_ascii_strcasecmp(tmp,".jpg") == 0)
+			|| (g_ascii_strcasecmp(tmp,".gif") == 0)
+			|| (g_ascii_strcasecmp(tmp,".svg") == 0))//alow only these types
 			{
 				p_entry->set(SettingsManager::BACKGROUND_CHAT_IMAGE,string(image_path));
+
+				if(image_path)
+					g_free(image_path);
 			}
-			
-			if(image_path)//todo check if need
-				g_free(image_path);
-			
+
 			p_entry->setGroup(Util::emptyString);
-			
+
 		if (gtk_combo_box_get_active(GTK_COMBO_BOX(comboGroup)) != 0)
 		{
 			gchar *group = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(comboGroup));
@@ -479,7 +472,7 @@ bool FavoriteHubDialog::initDialog(UnMapIter &groups)
 		}
 
 		gchar *pack = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(comboEmot));
-		
+
 		if(pack)
 		{
 			p_entry->set(SettingsManager::EMOT_PACK,string(pack));
@@ -488,7 +481,7 @@ bool FavoriteHubDialog::initDialog(UnMapIter &groups)
 
 		p_entry->set(SettingsManager::NICK, gtk_entry_get_text(GTK_ENTRY(entryUsername)));
 
-		p_entry->set(SettingsManager::DESCRIPTION,gtk_entry_get_text(GTK_ENTRY(entryUserDescriptio)));
+		p_entry->set(SettingsManager::DESCRIPTION, gtk_entry_get_text(GTK_ENTRY(entryUserDescriptio)));
 
 		if (p_entry->getName().empty() || p_entry->getServer().empty())
 		{
@@ -592,12 +585,12 @@ void FavoriteHubDialog::initActions()
 			}
 		}
 	}
-	
-	void FavoriteHubDialog::onAddShare_gui(GtkWidget*, gpointer data)
+
+void FavoriteHubDialog::onAddShare_gui(GtkWidget*, gpointer data)
 {
 	FavoriteHubDialog *s = (FavoriteHubDialog*)data;
-	GtkWidget* fileDialog = b_file_dialog_widget("Open Directory");
-	
+	GtkWidget* fileDialog = b_file_dialog_widget(_("Open Directory"));
+
  	gint response = gtk_dialog_run(GTK_DIALOG(fileDialog));
 	gtk_widget_hide(fileDialog);
 
@@ -612,14 +605,15 @@ void FavoriteHubDialog::initActions()
 			if (path[path.length() - 1] != PATH_SEPARATOR)
 				path += PATH_SEPARATOR;
 
-			GtkWidget* dialog = gtk_dialog_new_with_buttons ("Favorite name",
-                                      NULL,
+			GtkWidget* dialog = gtk_dialog_new_with_buttons (_("Set Name"),
+                                      GTK_WINDOW(s->getContainer()),
                                      (GtkDialogFlags)(GTK_DIALOG_MODAL|GTK_DIALOG_DESTROY_WITH_PARENT),
                                       _("_OK"),
                                       GTK_RESPONSE_OK,
                                       _("_Cancel"),
                                       GTK_RESPONSE_CANCEL,
                                       NULL);
+                        //gtk_window_set_transient_for(GTK_WINDOW(dialog),GTK_WINDOW(s->getContainer()));
 
 			GtkWidget *box = gtk_dialog_get_content_area (GTK_DIALOG(dialog));
 			GtkWidget *entry = gtk_entry_new();
@@ -638,14 +632,26 @@ void FavoriteHubDialog::initActions()
 			{
 				try
 				{
-					s->p_entry->getShareManager()->addDirectory(path, name);
+					ShareManager *share = s->p_entry->getShareManager();
+
+					if(share->getName().empty())
+					{
+						share = new ShareManager(s->p_entry->getServer());
+					}
+					share->addDirectory(path, name);
+					s->p_entry->setShareManager(share);
+					FavoriteManager::getInstance()->save();
+					s->p_entry->getShareManager()->refresh();
+					//s->updateShares_gui();
 				}
 				catch (const ShareException &e)
 				{
 					return;//should not update GUI if any Share* exception hapened
 				}
-				catch(...){g_print("Some other exception");}
-				
+				catch(...){
+					//g_log("Some other exception");
+				}
+
 				s->addShare_gui(path, name);
 			}
 		}

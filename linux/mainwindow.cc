@@ -89,30 +89,13 @@ string MainWindow::icons[(MainWindow::IconsToolbar)END][2] =
 	{"search-adl", "searchADL"},
 	{"search-spy", "searchSpy"},
 	{"queue", "queue"},
-	{"finished-dowloads", "finishedDownloads"},
+	{"finished-downloads", "finishedDownloads"},
 	{"finished-uploads", "finishedUploads"},
 	{"notepad", "notepad"},
 	{"system", "system"},
 	{"away", "AwayIcon"},
 	{"limiting", "limitingButton"}
 };
-/*
-const char* MainWindow::icons[(MainWindow::IconsToolbar)END][3] =
-{
-{ /*( QUICKCON),*/ //"bmdc-connect", "bmdc-connect-on", "connect"},
-//{ /*( FAVORITE_HUBS),*/  "bmdc-favorite-hubs", "bmdc-favorite-hubs-on", "favHubs"},
-//{ /*( FAVORITE_USERS),*/  "bmdc-favorite-users", "bmdc-favorite-users-on", "favUsers"},
-//{ /*( PUBLIC_HUBS),*/  "bmdc-public-hubs", "bmdc-public-hubs-on", "publicHubs"},
-//{ /*( SEARCH_ADL),*/  "bmdc-search-adl", "bmdc-search-adl-on", "searchADL"},
-//{ /*( SEARCH_SPY),*/  "bmdc-search-spy", "bmdc-search-spy-on", "searchSpy"},
-//{ /*( QUEUE),*/  "bmdc-queue", "bmdc-queue-on", "queue"},
-//{ /*( FDOWNLOADS),*/  "bmdc-finished-downloads", "bmdc-finished-downloads-on", "finishedDownloads"},
-//{ /*( FUPLOADS),*/  "bmdc-finished-uploads", "bmdc-finished-uploads-on", "finishedUploads"},
-//{ /*( NOTEPAD),*/  "bmdc-notepad", "bmdc-notepad-on", "notepad"},
-//{ /*( SYSTEM),*/  "bmdc-system", "bmdc-system-on", "system"},
-//{ /*( AWAY),*/  "bmdc-away", "bmdc-away-on", "AwayIcon"},
-//{ /*( LIMITING),*/  "bmdc-limiting", "bmdc-limiting-on", "limitingButton"}
-//};
 
 MainWindow::MainWindow():
 	Entry(Entry::MAIN_WINDOW, "mainwindow"),
@@ -297,6 +280,12 @@ MainWindow::MainWindow():
 
 	// Set all windows to the default icon
 	gtk_window_set_default_icon_name(g_get_prgname());
+	#ifdef _WIN32
+	//note do not check Gerror here
+	GdkPixbuf* buf = NULL;
+	buf = gdk_pixbuf_new_from_resource("/org/gtk/bmdc/icons/hicolor/96x96/apps/bmdc.png",NULL);
+	gtk_window_set_default_icon(buf);
+	#endif
 
 	// All notebooks created in glade need one page.
 	// In our case, this is just a placeholder, so we remove it.
@@ -460,7 +449,6 @@ MainWindow::MainWindow():
 	
 	setInitThrotles();
 	Sound::start();
-	//Emoticons::start();
 	Notify::start();
 
 	PluginManager::getInstance()->runHook(HOOK_UI_CREATED, getContainer(), NULL);
@@ -512,7 +500,6 @@ MainWindow::~MainWindow()
 	g_object_unref(getWidget("statusIconMenu"));
 	g_object_unref(getWidget("toolbarMenu"));
 	Sound::stop();
-	//Emoticons::stop();
 	Notify::stop();
 }
 
@@ -775,6 +762,8 @@ void MainWindow::raisePage_gui(GtkWidget *page)
 
 void MainWindow::removeBookEntry_gui(BookEntry *entry)
 {
+	if(entry == NULL) return;//entry can not be NULL at any rate
+	
 	string entryID = entry->getID();
 	Entry::EntryType type = entry->getType();
 	removeItemFromList(type, entryID);
@@ -945,10 +934,10 @@ void MainWindow::createStatusIcon_gui()
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(getWidget("statusIconBlinkUseItem")), useStatusIconBlink);
 	g_signal_connect(getWidget("statusIconBlinkUseItem"), "toggled", G_CALLBACK(onStatusIconBlinkUseToggled_gui), (gpointer)this);
 
-		if (SETTING(ALWAYS_TRAY))
-			gtk_status_icon_set_visible(statusIcon, TRUE);
-		else
-			gtk_status_icon_set_visible(statusIcon, FALSE);
+	if (SETTING(ALWAYS_TRAY))
+		gtk_status_icon_set_visible(statusIcon, TRUE);
+	else
+		gtk_status_icon_set_visible(statusIcon, FALSE);
 }
 
 void MainWindow::updateStatusIconTooltip_gui(string download, string upload)
@@ -1830,7 +1819,7 @@ void MainWindow::addFileDownloadQueue_client(string name, int64_t size, string t
 	}
 }
 
-void MainWindow::showMessageDialog_gui(const string &primaryText, const string &secondaryText)
+void MainWindow::showMessageDialog_gui(const string primaryText, const string secondaryText)
 {
 	if (primaryText.empty())
 		return;
@@ -1927,8 +1916,10 @@ void MainWindow::onTopToolbarToggled_gui(GtkWidget*, gpointer data)
 
 	GtkWidget *parent = mw->getWidget("hbox4");
 	GtkWidget *child = mw->getWidget("toolbar1");
+	
 	if (gtk_widget_get_parent(child) != GTK_WIDGET(parent))
 		return;
+		
 	g_object_ref(child);
 	gtk_container_remove(GTK_CONTAINER(parent), child);
 	parent = mw->getWidget("vbox1");
@@ -1945,8 +1936,10 @@ void MainWindow::onLeftToolbarToggled_gui(GtkWidget*, gpointer data)
 
 	GtkWidget *parent = mw->getWidget("vbox1");
 	GtkWidget *child = mw->getWidget("toolbar1");
+	
 	if ( gtk_widget_get_parent(child) != GTK_WIDGET(parent))
 		return;
+		
 	g_object_ref(child);
 	gtk_container_remove(GTK_CONTAINER(parent), child);
 	parent = mw->getWidget("hbox4");
@@ -2006,7 +1999,7 @@ gboolean MainWindow::onAddButtonClicked_gui(GtkWidget*, gpointer data)
 void MainWindow::onToolToggled_gui(GtkWidget *widget, gpointer data)
 {
 	string key = (gchar *)g_object_get_data(G_OBJECT(widget), "key");
-	GtkWidget *button = (GtkWidget*) data;
+	GtkWidget *button = (GtkWidget*)data;
 	bool active = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
 	active ? gtk_widget_show(button) : gtk_widget_hide(button);
 	WSET(key, active);
@@ -2228,8 +2221,6 @@ void MainWindow::onPreferencesClicked_gui(GtkWidget*, gpointer data)
 	if (mw->useStatusIconBlink != WGETB("status-icon-blink-use"))
 		WSET("status-icon-blink-use", mw->useStatusIconBlink);
 	
-	//bool emoticons = SETTING(USE_EMOTS);
-
 	gint response = WulforManager::get()->openSettingsDialog_gui();
 
 	if (response == GTK_RESPONSE_OK)
@@ -2302,10 +2293,6 @@ void MainWindow::onPreferencesClicked_gui(GtkWidget*, gpointer data)
 		// Status menu
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mw->getWidget("statusIconBlinkUseItem")), WGETB("status-icon-blink-use"));
 
-		// Emoticons
-		//if (emoticons != SETTING(USE_EMOTS))
-		//	Emoticons::get()->reloadPack_gui();
-
 		// Toolbar
 		mw->checkToolbarMenu_gui();
 
@@ -2356,6 +2343,7 @@ void MainWindow::onHashClicked_gui(GtkWidget*, gpointer )
 {
 	WulforManager::get()->openHashDialog_gui();
 }
+
 #ifdef HAVE_LIBTAR
 void MainWindow::onExportItemClicked_gui(GtkWidget*, gpointer data)
 {
@@ -2365,6 +2353,7 @@ void MainWindow::onExportItemClicked_gui(GtkWidget*, gpointer data)
 	delete h;
 }
 #endif
+
 void MainWindow::onSearchClicked_gui(GtkWidget*, gpointer data)
 {
 	MainWindow *mw = (MainWindow *)data;
@@ -2664,8 +2653,7 @@ void MainWindow::startSocket_client()
 	try {
 		ConnectivityManager::getInstance()->setup(true);
 	} catch (const Exception& e) {
-		string error = e.getError();
-		dcdebug("%s",error.c_str());
+		dcdebug("%s",e.getError().c_str());
 	}
 
 	ClientManager::getInstance()->infoUpdated();
@@ -2767,7 +2755,8 @@ void MainWindow::on(QueueManagerListener::Finished, QueueItem *item, const strin
 			listQueue.fileLists.push_back(i);
 		}
 		listQueue.s.signal();
-	}catch(...){}
+		}catch(...){}
+		
 	}else if (!item->isSet(QueueItem::FLAG_XML_BZLIST))
 	{
 		F3 *f3 = new F3(this, &MainWindow::showNotification_gui, _("<b>file:</b> "), item->getTarget(), Notify::DOWNLOAD_FINISHED);
@@ -2860,8 +2849,7 @@ if(_idleDetectionPossible) {
 	g_print("Detection Part 2");
 		long idlesecs = (_mit_info->idle/1000); // in sec
 		//TODO: (1000 ms = 1s)
-		if (idlesecs > WGETI("idle-time")) {
-			//g_print("Idle: Away Mode on");
+		if (idlesecs > SETTING(AWAY_IDLE)) {
 				if(!dcpp::Util::getAway()) {//dont set away twice
 
 					dcpp::Util::setAway(true);
@@ -3068,7 +3056,7 @@ void MainWindow::parsePartial(HintedUser aUser, string txt)
 			dynamic_cast<ShareBrowser*>(entry)->loadXML(txt);
 		}
 	}
-	if (entry && raise)
+	if ((entry != NULL) && raise)
 		raisePage_gui(entry->getContainer());
 }
 
@@ -3087,7 +3075,7 @@ void MainWindow::updateStats_gui(string file, uint64_t bytes, size_t files, uint
 		startFiles = files;
 
 	double diff = tick - startTime;
-	bool paused = HashManager::getInstance()->isHashingPaused(); //NOTE: core 0.762
+	bool paused = HashManager::getInstance()->isHashingPaused(); 
 
 	if (diff < 1000 || files == 0 || bytes == 0 || paused)
 	{

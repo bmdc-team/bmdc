@@ -53,6 +53,10 @@
 
 #include "AVManager.h"
 
+#include "UserManager.h"
+
+#include "format.h"
+
 #ifdef _WIN32
 extern "C" int _nl_msg_cat_cntr;
 #endif
@@ -68,18 +72,17 @@ void startup() {
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 #endif
-
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset(PACKAGE, "UTF-8");
-
 	SettingsManager::newInstance();
-
+	TimerManager::newInstance();
 	LogManager::newInstance();
-	//TimerManager::newInstance();
+	TimerManager::newInstance();
 	HashManager::newInstance();
 	CryptoManager::newInstance();
 	DebugManager::newInstance();
 	SearchManager::newInstance();
+	UsersManager::newInstance();
 	ClientManager::newInstance();
 	ConnectionManager::newInstance();
 	DownloadManager::newInstance();
@@ -205,6 +208,7 @@ void shutdown() {
 	SearchManager::deleteInstance();
 	FavoriteManager::deleteInstance();
 	ClientManager::deleteInstance();
+	UsersManager::deleteInstance();//
 	DebugManager::deleteInstance();
 	HashManager::deleteInstance();
 	LogManager::deleteInstance();

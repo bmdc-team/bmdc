@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -241,7 +241,7 @@ time_t File::getLastModified() noexcept {
 	return s.st_mtime;
 }
 
-bool File::isOpen() const noexcept {
+bool File::isOpen() noexcept {
 	return h != -1;
 }
 

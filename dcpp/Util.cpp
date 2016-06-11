@@ -38,6 +38,10 @@
 	#include <sys/utsname.h>
 	#include <cctype>
 	#include <cstring>
+#else
+#include "Text.h"
+#include "w.h"
+#include <shlobj.h>
 #endif
 #include <clocale>
 
@@ -90,7 +94,9 @@ static string getDownloadsPath(const string& def) {
 	             // Defined in KnownFolders.h.
 	             static GUID downloads = {0x374de290, 0x123f, 0x4565, {0x91, 0x64, 0x39, 0xc4, 0x92, 0x5e, 0x46, 0x7b}};
 	    		 if(getKnownFolderPath(downloads, 0, NULL, &path) == S_OK) {
-	    			 string ret = Text::fromT(path) + "\\";
+	    			 string ret = Util::emptyString;
+	    			 Text::wcToUtf8(*path,ret);
+	    			 //string ret = Text::fromT(path) + "\\";
 	    			 ::CoTaskMemFree(path);
 	    			 return ret;
 	    		 }
@@ -102,13 +108,13 @@ static string getDownloadsPath(const string& def) {
 }
 
 #endif
-#include "TimerManager.h"//fix?
+//#include "TimerManager.h"//fix?
 void Util::initialize(PathsMap pathOverrides) {
 	Text::initialize();
 
 	sgenrand((unsigned long)time(NULL));
-	
-	TimerManager::newInstance();
+
+	//TimerManager::newInstance();
 #ifdef _WIN32
 	TCHAR buf[MAX_PATH+1] = { 0 };
 	::GetModuleFileName(NULL, buf, MAX_PATH);
@@ -176,7 +182,7 @@ void Util::initialize(PathsMap pathOverrides) {
 	paths[PATH_RESOURCES] = "/usr/share/";
 	paths[PATH_LOCALE] = paths[PATH_RESOURCES] + "locale/";
 	paths[PATH_DOWNLOADS] = home + "/Downloads/";
-	
+
 #endif
 
 	paths[PATH_FILE_LISTS] = paths[PATH_USER_LOCAL] + "FileLists" PATH_SEPARATOR_STR;
@@ -228,14 +234,14 @@ void Util::loadBootConfig() {
 		if(boot.findChild("ConfigPath")) {
 			ParamMap params;
 			/// @todo load environment variables instead? would make it more useful on *nix
-			params["APPDATA"] = []() -> string {
+			/*params["APPDATA"] = []() -> string {
 				TCHAR path[MAX_PATH];
 				return Text::fromT((::SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path), path));
 			};
 			params["PERSONAL"] = []() -> string {
 				TCHAR path[MAX_PATH];
 				return Text::fromT((::SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, path), path));
-			};
+			};*/
 			paths[PATH_USER_CONFIG] = Util::formatParams(boot.getChildData(), params);
 		}
 	} catch(const Exception& ) {
@@ -460,10 +466,10 @@ void Util::decodeUrl(const string& url, string& protocol, string& host, uint16_t
 		} else {
 			dcdebug("p");
 			port = Util::toInt(url.substr(portStart, authorityEnd - portStart));
-			
+
 			if(port == UINT16_MAX )
 				port = 0;
-						
+
 		}
 	}
 
@@ -505,7 +511,7 @@ string Util::getAwayMessage(ParamMap& params) {
 	return formatParams((awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg), params);
 }
 
-string Util::formatBytes(int64_t aBytes) {
+string Util::formatBytes(const int64_t aBytes) {
 	char buf[128];
 	if(aBytes < 1024) {
 		snprintf(buf, sizeof(buf), ("%d B"), (int)(aBytes&0xffffffff));
@@ -524,7 +530,7 @@ string Util::formatBytes(int64_t aBytes) {
 	return buf;
 }
 
-string Util::formatExactSize(int64_t aBytes) {
+string Util::formatExactSize(const int64_t aBytes) {
 #ifdef _WIN32
 		TCHAR tbuf[128];
 		TCHAR number[64];
@@ -557,13 +563,51 @@ string Util::formatExactSize(int64_t aBytes) {
 #endif
 }
 
-string Util::getLocalIp() {//@TODO:IPv6?
+string Util::getLocalIp() {
 	const string& bindAddr = CONNSETTING(BIND_ADDRESS);
 	if(!bindAddr.empty() && bindAddr != SettingsManager::getInstance()->getDefault(SettingsManager::BIND_ADDRESS)) {
 		return bindAddr;
 	}
+	//string tmp;
+	struct addrinfo hints;
+	memset(&hints, 0, sizeof(addrinfo));
+	hints.ai_family = AF_UNSPEC;
+	addrinfo *result;
 
-	string tmp;
+	int ret = ::getaddrinfo("localhost",NULL,&hints,&result);
+	if( ret == 0)
+	{
+		struct addrinfo *res;
+		char buf[INET6_ADDRSTRLEN + 1];
+		for(res = result; res != NULL; res = res->ai_next)
+		{
+			if ( res->ai_family == AF_INET )
+			{
+				#ifdef _WIN32
+				Socket::inet_ntop(&((struct sockaddr_in *)res->ai_addr)->sin_addr,buf,sizeof(buf));
+				#else
+				inet_ntop(AF_INET,&((struct sockaddr_in *)res->ai_addr)->sin_addr,buf,sizeof(buf));
+				#endif
+				if(Util::isPrivateIp(buf) || strncmp(buf, "169.254", 7) == 0)
+				{
+					return buf;
+				}
+			}
+			else
+			{
+				#ifdef _WIN32
+				Socket::inet_ntop(&((struct sockaddr_in *)res->ai_addr)->sin_addr,buf,sizeof(buf));
+				#else
+				inet_ntop(AF_INET6, &((struct sockaddr_in6 *)res->ai_addr)->sin6_addr, buf, sizeof(buf));
+				#endif
+				if(strncmp(buf,"fe80",4)==0) continue;
+
+			}
+		}
+		return buf;
+	}
+	return emptyString;
+/*	string tmp;
 
 	char buf[256];
 	gethostname(buf, 255);
@@ -572,9 +616,9 @@ string Util::getLocalIp() {//@TODO:IPv6?
 		return Util::emptyString;
 	sockaddr_in dest;
 	int i = 0;
-
+*/
 	// We take the first ip as default, but if we can find a better one, use it instead...
-	memcpy(&(dest.sin_addr), he->h_addr_list[i++], he->h_length);
+	/*memcpy(&(dest.sin_addr), he->h_addr_list[i++], he->h_length);
 	tmp = inet_ntoa(dest.sin_addr);
 	if(Util::isPrivateIp(tmp) || strncmp(tmp.c_str(), "169.254", 7) == 0) {
 		while(he->h_addr_list[i]) {
@@ -585,8 +629,8 @@ string Util::getLocalIp() {//@TODO:IPv6?
 			}
 			i++;
 		}
-	}
-	return tmp;
+	}*/
+	//return tmp;
 }
 
 bool Util::isPrivateIp(string const& ip) {
@@ -901,7 +945,7 @@ string Util::formatTime(const string &msg, const time_t t) {
 			return Util::emptyString;
 		gsize oread,owrite;
 		buf = g_filename_to_utf8(buf.c_str(),-1,&oread,&owrite,NULL);
-		
+
 		return buf;
 	}
 	return Util::emptyString;
@@ -950,7 +994,7 @@ uint32_t Util::rand() {
 		//...
 		static unsigned long mag01[2]={0x0, MATRIX_A};
 		/* mag01[x] = x * MATRIX_A  for x=0,1 */
-		
+
 		int kk;
 
 		if (mti == N+1)   /* if sgenrand() has not been called, */
@@ -1101,6 +1145,7 @@ std::string Util::formatRegExp(const string& msg, ParamMap& params) {
 }
 
 bool Util::fileExists(const string& aFile) {
+    #ifndef _WIN32
     struct stat stFileInfo;
 	bool blnReturn;
 	int intStat;
@@ -1122,6 +1167,9 @@ bool Util::fileExists(const string& aFile) {
   }
 
   return blnReturn;
+  #else
+  return !(File::getSize(aFile) == -1);
+  #endif
 }
 
 string Util::getBackupTimeString(time_t t /*= time(NULL) */ ) {
@@ -1144,7 +1192,7 @@ string Util::convertCEscapes(string tmp)
 			{
 				return tmp;
 				break;
-			}	
+			}
 			case 'a': tmp.replace(i, 2, "\a"); break;
 			case 'b': tmp.replace(i, 2, "\b"); break;
 			case 'e': tmp.replace(i, 2, "\033"); break;
@@ -1161,7 +1209,7 @@ string Util::convertCEscapes(string tmp)
 					tmp.replace(i, 4, string(1, (char)num));
 				}
 				break;
-			}	
+			}
 			default:
 				if(tmp[i + 1] >= '0' && tmp[i + 1] <= '7') {
 					int c = 1;
@@ -1183,9 +1231,9 @@ string Util::convertCEscapes(string tmp)
 string Util::getIETFLang() {
 #ifdef _WIN32
 	auto lang = SETTING(LANGUAGE);
-	if(lang.empty()) {
+	/*if(lang.empty()) {
 		string lang = _nl_locale_name_default();
-	}
+	}*/
 	if(lang.empty() || lang == "C") {
 		lang = "en-US";
 	}
@@ -1211,7 +1259,7 @@ bool Util::isIp6(const string& name)
 	if( (n==2) && (name.size() == 2) ) return true;//Fix for "::"
 	if( n < 2)
 			return false;
-			
+
 	bool ok = false;
 	for(auto i = name.begin();i!=name.end();++i) {
 			if(*i==':') {//cechk this
@@ -1233,7 +1281,11 @@ bool Util::isIp6(const string& name)
 	bool isOkIpV6 = false;
 	if( (ok == true ) || (ok2 == true)) {
 		struct sockaddr_in sa;
+		#ifdef _WIN32
+		int result = Socket::inet_pton(name.c_str() , &(sa.sin_addr));//6
+		#else
 		int result = inet_pton(AF_INET6,name.c_str() , &(sa.sin_addr));//6
+		#endif
 		isOkIpV6 = result == 1;
 	}
 

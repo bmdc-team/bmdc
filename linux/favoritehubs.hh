@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2014 Jens Oknelid, paskharen@gmail.com
- * Copyright © 2011-2015 Mank freedcpp@seznam.cz
+ * Copyright © 2011-2016 BMDC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ class FavoriteHubs:
 		void addGroupComboBox_gui(const std::string &group);
 		void setFavoriteHubs_gui(bool remove, const std::string &group);
 		void popupMenu_gui();
-		static bool showErrorDialog_gui(const std::string &description, FavoriteHubs *fh);
+		static bool showErrorDialog_gui(const std::string description, FavoriteHubs *fh);
 		void updateFavHubGroups_gui(bool updated);
 		void saveFavHubGroups();
 		void initFavHubGroupsDialog_gui();
@@ -67,6 +67,7 @@ class FavoriteHubs:
 		static void onRemoveEntry_gui(GtkWidget *widget, gpointer data);
 		static void onConnect_gui(GtkButton *widget, gpointer data);
 		static void onCopyAddress(GtkWidget *item, gpointer data);
+		static void onAdvancedSettings(GtkWidget* item , gpointer data);
 		static void onAddGroupClicked_gui(GtkWidget *widget, gpointer data);
 		static void onRemoveGroupClicked_gui(GtkWidget *widget, gpointer data);
 		static void onUpdateGroupClicked_gui(GtkWidget *widget, gpointer data);
@@ -94,8 +95,8 @@ class FavoriteHubs:
 		GdkEventType previous;
 		UnMapIter GroupsIter;
 		UnMapIter HubsIter;
-		void edit_online_status(std::string url,bool online);
-		bool checkAddys(std::string url);//@True if not find in FavList
+		void edit_online_status(const std::string url,bool online);
+		bool checkAddys(const std::string url);//@True if not find in FavList
 
 };
 

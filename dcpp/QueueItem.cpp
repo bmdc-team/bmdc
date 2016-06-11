@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,15 +26,13 @@
 
 namespace dcpp {
 
-namespace {
+//no need of anon namespace	
+static string getTempName(const string& aFileName, const TTHValue& aRoot) {
 	const string TEMP_EXTENSION = ".dctmp";
-
-	string getTempName(const string& aFileName, const TTHValue& aRoot) {
-		string tmp(aFileName);
-		tmp += "." + aRoot.toBase32();
-		tmp += TEMP_EXTENSION;
-		return tmp;
-	}
+	string tmp(aFileName);
+	tmp += "." + aRoot.toBase32();
+	tmp += TEMP_EXTENSION;
+	return tmp;
 }
 
 int QueueItem::countOnlineUsers() const {
@@ -71,7 +69,7 @@ void QueueItem::removeSource(const UserPtr& aUser, int reason) {
 	sources.erase(i);
 }
 
-const string& QueueItem::getTempTarget() {
+const string QueueItem::getTempTarget() {
 	if(!isSet(QueueItem::FLAG_USER_LIST) && tempTarget.empty()) {
 		if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty() && (File::getSize(getTarget()) == -1)) {
 #ifdef _WIN32

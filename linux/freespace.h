@@ -13,12 +13,16 @@
 #include <cstring>
 #include <cstdio>
 #include <errno.h>
-#include <mntent.h> /* for getmntent(), et al. */
+
+#ifndef _WIN32
+	#include <mntent.h> /* for getmntent(), et al. */
+#endif
+
 #include <dcpp/Util.h>
 
 struct FreeSpace {
         static bool FreeDiscSpace ( std::string path, unsigned long long * res, unsigned long long * res2);
-        
+#ifndef WIN32
         static std::string process_mounts(const char *filename)
 		{
 			FILE *fp;
@@ -44,11 +48,11 @@ static void print_mount(std::string &s,const struct mntent *fs)
 {
 	if(strcmp(fs->mnt_type,MNTTYPE_SWAP) == 0 ||  strcmp(fs->mnt_type,MNTTYPE_IGNORE) == 0)
 			return;
-		unsigned long long  aviable = 0,total = 0;
+	unsigned long long  aviable = 0,total = 0;
 			
-			if(FreeDiscSpace(fs->mnt_dir,&aviable,&total) == false){
-						aviable = total = 0;
-			}	
+	if(FreeDiscSpace(fs->mnt_dir,&aviable,&total) == false){
+			aviable = total = 0;
+	}	
 		char buf[1000];
 		//@some unneeded FS
 		if(strcmp (fs->mnt_fsname,"none") == 0)
@@ -85,13 +89,14 @@ static void print_mount(std::string &s,const struct mntent *fs)
 						dcpp::Util::formatBytes(aviable).c_str(),
 						dcpp::Util::formatBytes(total).c_str()
 					);
-					_aviable += aviable;
-					_total += total;
-			s+=std::string(buf);
+		_aviable += aviable;
+		_total += total;
+		s+=std::string(buf);
 }
 
         static unsigned long long _aviable;
         static unsigned long long _total;
+#endif        
         
 };
 

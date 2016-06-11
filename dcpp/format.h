@@ -20,8 +20,12 @@
 #define DCPLUSPLUS_DCPP_FORMAT_H_
 #include <string>
 //
+#ifdef _WIN32
 #include <libintl.h>
+#endif
+#ifndef _WIN32
 #include <glib/gi18n.h>
+#endif
 
 #ifdef BUILDING_DCPP
 
@@ -29,6 +33,13 @@
 #define LOCALEDIR dcpp::Util::getPath(Util::PATH_LOCALE).c_str()
 #define F_(String) _(string(String).c_str())
 #endif
+
+#ifdef _WIN32
+#define _(String) gettext(String)
+#define N_(String) gettext(String)
+#endif
+
+
 
 namespace dcpp {
 

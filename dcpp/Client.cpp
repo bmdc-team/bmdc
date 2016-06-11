@@ -40,6 +40,7 @@ Client::Client(const string& hubURL, char separator_, bool secure_) :
 	secure(secure_), countType(COUNT_UNCOUNTED),
 	hideShare(true),checkClients(false), checkFilelists(false),
 	port(0),bIPv6(false),bIPv4(true)//defualt is ipv4
+	,ipv6(true)//defualt allow ipv6
 {
 	string file, proto, query, fragment;
 	Util::decodeUrl(hubURL, proto, address, port, file, query, fragment);
@@ -103,20 +104,18 @@ void Client::reloadSettings(bool updateNick) {
 			setPassword(fav->getPassword());
 		//[BMDC
 		setHideShare(fav->getHideShare());
-		setChatExtraInfo(fav->getChatExtraInfo());
-		setProtectUser(fav->getProtectUsers());
 		setCheckAtConnect(fav->getCheckAtConn());
 		setCheckClients(fav->getCheckClients());
 		setCheckFilelists(fav->getCheckFilelists());
+		seteIPv6(fav->geteIPv6());
 		//]
 	}else{
 		//[BMDC++
 		setHideShare(false);
-		setChatExtraInfo(Util::emptyString);
-		setProtectUser(Util::emptyString);
 		setCheckAtConnect(false);
 		setCheckClients(false);
 		setCheckFilelists(false);
+		seteIPv6(false);
 		//]
 	}
 	
@@ -128,7 +127,7 @@ void Client::reloadSettings(bool updateNick) {
 		set(SettingsManager::NICK,prevNick);
 }
 
-const string& Client::getUserIp() const {
+const string Client::getUserIp() const {
 	if(!HUBSETTING(EXTERNAL_IP).empty()) {
 		return HUBSETTING(EXTERNAL_IP);
 	}
@@ -156,9 +155,9 @@ void Client::connect() {
 	state = STATE_CONNECTING;
 
 	try {
-		sock = BufferedSocket::getSocket(separator/*, v4only()*/);
+		sock = BufferedSocket::getSocket(separator);
 		sock->addListener(this);
-		sock->connect(address, port, secure, SETTING(ALLOW_UNTRUSTED_HUBS), true);
+		sock->connect(address, port, secure, SETTING(ALLOW_UNTRUSTED_HUBS), true, keyprint);
 	} catch(const Exception& e) {
 		state = STATE_DISCONNECTED;
 		fire(ClientListener::Failed(), this, e.getError());
@@ -204,7 +203,13 @@ void Client::on(Connected) noexcept {
 	sLocalIP = sock->getLocalIp();
 	
 	 if(sock->isV6Valid() && sLocalIP.empty() == false && strchr(sLocalIP.c_str(), '.') == NULL) {
-		bIPv6 = true;
+		if(geteIPv6())
+		{//we allow ipv6 in fav
+			bIPv6 = true;
+		}else
+		{
+			bIPv6 = false;
+		}	
 	} else {
 		bIPv4 = true;
 	}
@@ -306,14 +311,14 @@ bool Client::isActionActive(const int aAction) const {
 	return hub ? FavoriteManager::getInstance()->getEnabledAction(hub, aAction) : true;
 }
 
-const string& Client::getUserIp4() const {
+const string Client::getUserIp4() const {
 	if(!HUBSETTING(EXTERNAL_IP).empty()) {
 		return HUBSETTING(EXTERNAL_IP);
 	}
 	return CONNSETTING(EXTERNAL_IP);
 }
 
-const string& Client::getUserIp6() const {
+const string Client::getUserIp6() const {
 	if(bIPv6 && sLocalIP.empty())
 	{
 		return sLocalIP;

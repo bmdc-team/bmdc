@@ -27,6 +27,16 @@ autoConnect(false),share(NULL)
 
 }
 
+
+HubSettings::~HubSettings()
+{
+	if(share != NULL)
+	{
+		if(!share->getName().empty())
+			delete share;
+	}
+}
+
 void HubSettings::merge(const HubSettings& sub) {
 	
 	for(auto i = sub.strings.begin(); i != sub.strings.end(); ++i) {
@@ -39,7 +49,7 @@ void HubSettings::merge(const HubSettings& sub) {
 		bools[i->first] = i->second;
 	}
 	setAutoConnect(sub.getAutoConnect());
-	share = sub.share;
+	setShareManager(sub.share);
 }
 
 void HubSettings::load(SimpleXML& xml) {
@@ -80,13 +90,14 @@ void HubSettings::load(SimpleXML& xml) {
 	if(xml.findChild("AutoConnect"))
 		setAutoConnect(Util::toInt(xml.getChildData()));
 	
-	share = new ShareManager();
-	share->setName(getId());
-	share->load(xml);
-	share->refresh(true,true,false);
-	
 	xml.stepOut();
-
+	xml.stepIn();
+	if(xml.findChild("Share")) {
+		setShareManager(new ShareManager(getId()));
+		share->load(xml);
+		share->refresh(true,false,true);
+	}	
+	xml.stepOut();
 }
 
 void HubSettings::save(SimpleXML& xml) const {
@@ -113,10 +124,15 @@ void HubSettings::save(SimpleXML& xml) const {
 	xml.addTag("AutoConnect",getAutoConnect());
 	xml.addChildAttrib(type,curType);
 	
-	if(share != NULL)
-		share->save(xml);
-
 	xml.stepOut();
+	xml.stepIn();
+	if(share != NULL)
+	{
+		if(!share->getName().empty())
+			share->save(xml);
+	}
+	xml.stepOut();
+	
 }
 
 HubSettings& HubSettings::operator=(const HubSettings& rhs)
@@ -129,7 +145,7 @@ HubSettings& HubSettings::operator=(const HubSettings& rhs)
 	return *this;
 }
 
-const string& HubSettings::get(SettingsManager::StrSetting key, const string& defValue) const
+const string HubSettings::get(SettingsManager::StrSetting key, const string& defValue) const
 {
 	auto i = strings.find(key);
 	return (i == strings.end()) ? defValue : i->second;
@@ -176,6 +192,11 @@ void HubSettings::set(SettingsManager::BoolSetting key, bool value)
 		bools.erase(key);
 	else
 		bools[key] = value;
+}
+
+
+ShareManager* HubSettings::getShareManager() const {
+	return (share == NULL || share->getName().empty()) ? ShareManager::getInstance() : share;
 }
 
 } // namespace dcpp

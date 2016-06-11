@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2012 Jens Oknelid, paskharen@gmail.com
- * Copyright © 2010-2016 BMDC
+ * Copyright © 2010-2016 BMDC++
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,18 +33,27 @@
 #include <dcpp/RegEx.h>
 #include <dcpp/HighlightManager.h>
 #include <dcpp/RawManager.h>
+
+#include <dcpp/UserManager.h>
+
 #include <iostream>
+
+#ifndef _WIN32
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <sys/utsname.h>
 #include <sys/sysinfo.h>
-
+#include "freespace.h"
+#endif
+#ifdef _WIN32
+#include "diskinfo.hh"
+#endif
 #include "settingsmanager.hh"
 #include "wulformanager.hh"
 #include "ShellCommand.hh"
 #include "hub.hh"
 #include "version.hh"
-#include "freespace.h"
+
 
 using namespace std;
 using namespace dcpp;
@@ -231,7 +240,7 @@ string WulforUtil::getHubNames(const UserPtr& user, const string& hintUrl)
 
 StringList WulforUtil::getHubAddress(const CID& cid, const string& hintUrl)
 {
-	return ClientManager::getInstance()->getHubs(cid, hintUrl);
+	return UsersManager::getInstance()->getHubs(cid, hintUrl);
 }
 
 StringList WulforUtil::getHubAddress(const UserPtr& user, const string& hintUrl)
@@ -427,6 +436,7 @@ bool WulforUtil::isHubURL(const string &text)
 
 bool WulforUtil::profileIsLocked()
 {
+	#ifndef _WIN32
 	static bool profileIsLocked = false;
 
 	if (profileIsLocked)
@@ -435,7 +445,7 @@ bool WulforUtil::profileIsLocked()
 	// We can't use Util::getConfigPath() since the core has not been started yet.
 	// Also, Util::getConfigPath() is utf8 and we need system encoding for g_open().
 	char *home = getenv("HOME");
-	string configPath = home ? string(home) + "/.bmdc++-s/" : "/tmp/";//@
+	string configPath = home ? string(home) + "/.bmdc++-s/" : "/tmp/";
 	string profileLockingFile = configPath + "profile.lck";
 	int flags = O_WRONLY | O_CREAT;
 	int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
@@ -459,6 +469,9 @@ bool WulforUtil::profileIsLocked()
 	}
 	g_close(fd,NULL);
 	return profileIsLocked;
+	#else
+	return false;
+	#endif
 }
 
 gboolean WulforUtil::getNextIter_gui(GtkTreeModel *model, GtkTreeIter *iter, bool children /* = TRUE */, bool parent /* = TRUE */)
@@ -536,12 +549,21 @@ void WulforUtil::copyValue_gui(GtkTreeStore *store, GtkTreeIter *fromIter, GtkTr
  * Registers either the custom icons or the GTK+ icons as stock icons in
  * GtkIconFactory according to the user's preference. If the icons have
  * previously been loaded, they are removed and re-added.
+ * Note: Win need specified path to runtime bin
  */
 void WulforUtil::registerIcons()
 {
 	#if GTK_CHECK_VERSION(3,9,0)
 	icon_theme = gtk_icon_theme_get_default ();
-	gtk_icon_theme_prepend_search_path(icon_theme,_DATADIR PATH_SEPARATOR_STR GUI_LOCALE_PACKAGE "icons");
+			#ifdef _WIN32
+			#undef _DATADIR
+			#define _DATADIR "%s"
+			gchar buf[256];
+			sprintf(buf,_DATADIR PATH_SEPARATOR_STR GUI_LOCALE_PACKAGE "icons",WulforManager::get()->getPath().c_str());
+			gtk_icon_theme_prepend_search_path(icon_theme,buf);
+		#else
+			gtk_icon_theme_prepend_search_path(icon_theme,_DATADIR PATH_SEPARATOR_STR GUI_LOCALE_PACKAGE "icons");
+		#endif
 	#else
 	// Holds a mapping of custom icon names -> stock icon names.
 	// Not all icons have stock representations.
@@ -680,7 +702,7 @@ void WulforUtil::registerIcons()
 	#endif
 }
 
-GdkPixbuf *WulforUtil::LoadCountryPixbuf(const string &country)
+GdkPixbuf *WulforUtil::LoadCountryPixbuf(const string country)
 {
 	if(country.empty())
 	{
@@ -703,9 +725,18 @@ GdkPixbuf *WulforUtil::LoadCountryPixbuf(const string &country)
 	if( it  != countryIcon.end() )
 			return it->second;
 	GError *error = NULL;
-	gchar *path = g_strdup_printf(_DATADIR PATH_SEPARATOR_STR "bmdc/country/%s.png",
-		                              (gchar *)country.c_str());
+	#ifdef _WIN32
+		#undef _DATADIR
+		#define _DATADIR "%s"
+		gchar *path = g_strdup_printf(_DATADIR PATH_SEPARATOR_STR "country/%s.png",
+                              WulforManager::get()->getPath().c_str(),(gchar *)country.c_str());
+		#undef _DATADIR
+	#else
+		gchar *path = g_strdup_printf(_DATADIR PATH_SEPARATOR_STR "bmdc/country/%s.png",
+                              (gchar *)country.c_str());
+	#endif	                              
 	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size(path,15,15,&error);
+	
 	if (error != NULL || pixbuf == NULL) {
 			g_warning("[BMDC::Country] Cannot open image: %s => %s", path, error->message);
 			g_error_free(error);
@@ -881,6 +912,7 @@ bool WulforUtil::checkCommand(string& cmd, string& param, string& message, strin
 	}
 	else if (cmd == "stats")
 	{
+		#ifndef _WIN32
 			int z = 0 ,y = 0;
 			struct utsname u_name; //instance of utsname
 			z = uname(&u_name);
@@ -924,6 +956,7 @@ bool WulforUtil::checkCommand(string& cmd, string& param, string& message, strin
 					+ "-=" + getStatsForMem() + " =-\n"
 					+ "-=" + cpuinfo() + " =-\n";
 		return true;
+		#endif
 	}
 	else if ( cmd == "g" || cmd == "google"){
 	  if(param.empty())
@@ -1055,9 +1088,15 @@ bool WulforUtil::checkCommand(string& cmd, string& param, string& message, strin
 	// End of "Now Playing"
 	else if ( cmd == "df" )
 	{
+		#ifdef _WIN32
+		message += DiskInfo::diskInfoList();
+		message += "\n\r";
+		message += DiskInfo::diskSpaceInfo(true);
+		#else
 		string tmp = "\n\t\t\t-=Free Space=-\t\t\t\n" +  FreeSpace::process_mounts("/etc/mtab");
 		tmp += "\n\t\t\tTotal:\t" + Util::formatBytes(FreeSpace::_aviable) + "/" + Util::formatBytes(FreeSpace::_total) + "\t\n";
 		message += tmp;
+		#endif
 		return true;
 	}
 	else if (cmd == "uptime")
@@ -1257,18 +1296,11 @@ bool WulforUtil::isHighlightingWorld( GtkTextBuffer *buffer, GtkTextTag* &tag, s
 		ColorList* cList = HighlightManager::getInstance()->getList();
 		for(auto i = cList->begin();i != cList->end(); ++i) {
 			ColorSettings* cs = &(*i);
-			bool tBold = false;
-			bool tItalic = false;
-			bool tUnderline = false;
+			bool tBold = cs->getBold();
+			bool tItalic = cs->getItalic();
+			bool tUnderline = cs->getUnderline();
 			string fore("");
 			string back("");
-
-			if(cs->getBold())
-				tBold = true;
-			if(cs->getItalic())
-				tItalic = true;
-			if(cs->getUnderline())
-				tUnderline = true;
 
 			if(cs->getHasBgColor())
 				back = cs->getBgColor();
@@ -1280,8 +1312,7 @@ bool WulforUtil::isHighlightingWorld( GtkTextBuffer *buffer, GtkTextTag* &tag, s
 			else
 				fore = WGETS("text-general-fore-color");
 
-			if(cs->getTab())
-				tTab = true;
+			tTab = cs->getTab();
 
 			string w = cs->getMatch();
 			string sW;
@@ -1308,7 +1339,6 @@ bool WulforUtil::isHighlightingWorld( GtkTextBuffer *buffer, GtkTextTag* &tag, s
 							NULL);
 						}
 						ret = true;
-//						continue;
 					}
 				}
 			}
@@ -1316,7 +1346,6 @@ bool WulforUtil::isHighlightingWorld( GtkTextBuffer *buffer, GtkTextTag* &tag, s
 			if((ret == false) && cs->usingRegexp())
 			{
 				string q = cs->getMatch().substr(4);
-				//bool reMatch  = dcpp::RegEx::match<string>(sMsgLower,q,cs->getCaseSensitive());
 				bool reMatch = g_pattern_match_simple (q.c_str(),word.c_str());
 				ret = false;
 				if(reMatch)
@@ -1332,7 +1361,6 @@ bool WulforUtil::isHighlightingWorld( GtkTextBuffer *buffer, GtkTextTag* &tag, s
 					}
 					dcdebug("regexp hilg");
 					ret = true;
-//					continue;
 				}
 			}
 
@@ -1351,7 +1379,6 @@ bool WulforUtil::isHighlightingWorld( GtkTextBuffer *buffer, GtkTextTag* &tag, s
 
 				}
 				ret = true;
-//				continue;
 			}	
 
 			if(ret && cs->getPopup())
@@ -1426,10 +1453,12 @@ GdkPixbuf *WulforUtil::loadIconShare(string ext)
 		return buf;
 		#endif
 	}
-	std::transform(ext.begin(), ext.end(), ext.begin(), (int(*)(int))tolower);
+
+	string tmp = "dummy"+ext;
+	gchar *tmp2 = g_utf8_strup(tmp.c_str(),-1);
 
 	gboolean is_certain = FALSE;
-	gchar *content_type = g_content_type_guess ( (gchar*)(string("dummy.")+ext).c_str(), NULL, 0, &is_certain);
+	gchar *content_type = g_content_type_guess (tmp2, NULL, 0, &is_certain);
 	if (content_type == NULL)
 	{
 		
@@ -1456,6 +1485,7 @@ GdkPixbuf *WulforUtil::loadIconShare(string ext)
 	g_object_unref(icon);
 	g_free (mime_type);
 	g_free (content_type);
+	g_free(tmp2);//lowercase dummy
 	return icon_d;
 }
 //Main point of this code is from ? Px
@@ -1527,7 +1557,7 @@ string WulforUtil::getStatsForMem() {
 			return temp;
 }
 
-std::string WulforUtil::formatSized(std::string& nonf)
+string WulforUtil::formatSized(string nonf)
 {
 	size_t needle = nonf.find_last_of(' ');
 	if(needle != string::npos) {
@@ -1539,51 +1569,18 @@ std::string WulforUtil::formatSized(std::string& nonf)
 	return nonf;
 }
 
-bool WulforUtil::HitIP(string& name/*, string &sIp*/)
+bool WulforUtil::HitIP(string name)
 {
-	/*bool isOkIpV6 = false;
-	if(name.empty()) return false;
-	size_t n = std::count(name.begin(), name.end(), ':');
-	if( (n==2) && (name.size() == 2) ) return true;//Fix for "::"
-	if(n == 0 || n < 2)
-			return Ipv4Hit(name,sIp);
-	bool ok = false;
-	for(auto i = name.begin();i!=name.end();++i) {
-			if(*i==':') {
-				for(int j = 5; j>0;--j){
-						if(isxdigit(name[j])){ ok = true; }
-				}
-		}
-			if(ok){break;}
-	}
-	bool ok2 = false;
-	for(auto i = name.end();i!=name.begin();--i) {
-			if(*i==':') {
-				for(int q = 0; q<5;++q){
-						if(isxdigit(name[q])) { ok2 = true; }
-				}
-			}
-		if(ok2) {break;}
-	}
-	if( (ok == true ) || (ok2 == true)) {
-		struct sockaddr_in sa;
-		int result = inet_pton(AF_INET6,name.c_str() , &(sa.sin_addr));
-		isOkIpV6 = result == 1;
-	}
-
-	if(isOkIpV6)
-	{
-		sIp = name;
-		return isOkIpV6;
-	}*/
 	bool isOk = Util::isIp6(name);
 	if(isOk) {
 		return true;
 	}	
-	return Ipv4Hit(name/*,sIp*/);
+	return Ipv4Hit(name);
 }
-/* Inspired by StrongDC catch code ips */
-bool WulforUtil::Ipv4Hit(string &name/*, string &sIp*/) {
+/* 
+ * Inspired by StrongDC catch code ips 
+ * */
+bool WulforUtil::Ipv4Hit(string name) {
 	for(uint32_t i = 0;i < name.length(); i++)
 	{
 		if(!((name[i] == 0) || (name[i] == '.') || ((name[i] >= '0') && (name[i] <= '9')))) {
@@ -1612,9 +1609,12 @@ bool WulforUtil::Ipv4Hit(string &name/*, string &sIp*/) {
 	{
 		size_t nedle = name.find_last_of(".");
 		name = name.substr(0,nedle);
-//		sIp = name.substr(0,pos);
 		struct sockaddr_in sa;
+		#ifdef _WIN32
+		int result = dcpp::Socket::inet_pton(name.c_str() , &(sa.sin_addr));
+		#else
 		int result = inet_pton(AF_INET,name.c_str() , &(sa.sin_addr));
+		#endif
 		isOk = result == 1;
 	}
 	return isOk;

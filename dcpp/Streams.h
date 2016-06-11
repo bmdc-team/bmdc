@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,7 +155,7 @@ public:
 
 	virtual size_t write(const void* buf, size_t len) {
 		if(maxBytes < len) {
-			throw FileException(_("More bytes written than requested"));
+			throw FileException("More bytes written than requested");
 		}
 		maxBytes -= len;
 		return s->write(buf, len);
