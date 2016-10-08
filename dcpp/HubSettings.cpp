@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 #include "stdinc.h"
 #include "SettingsManager.h"
 #include "HubSettings.h"
+
 namespace dcpp {
 
 HubSettings::HubSettings():
@@ -49,7 +50,8 @@ void HubSettings::merge(const HubSettings& sub) {
 		bools[i->first] = i->second;
 	}
 	setAutoConnect(sub.getAutoConnect());
-	setShareManager(sub.share);
+	if(sub.share != NULL)
+		setShareManager(sub.share);
 }
 
 void HubSettings::load(SimpleXML& xml) {
@@ -93,7 +95,7 @@ void HubSettings::load(SimpleXML& xml) {
 	xml.stepOut();
 	xml.stepIn();
 	if(xml.findChild("Share")) {
-		setShareManager(new ShareManager(getId()));
+		setShareManager(new ShareManager(url));
 		share->load(xml);
 		share->refresh(true,false,true);
 	}	
@@ -128,8 +130,7 @@ void HubSettings::save(SimpleXML& xml) const {
 	xml.stepIn();
 	if(share != NULL)
 	{
-		if(!share->getName().empty())
-			share->save(xml);
+		share->save(xml);
 	}
 	xml.stepOut();
 	
@@ -142,6 +143,7 @@ HubSettings& HubSettings::operator=(const HubSettings& rhs)
 	bools = rhs.bools;
 	share = rhs.share;
 	autoConnect = rhs.autoConnect;
+	url = rhs.url;
 	return *this;
 }
 

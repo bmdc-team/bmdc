@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ static string getDownloadsPath(const string& def) {
 	             // Defined in KnownFolders.h.
 	             static GUID downloads = {0x374de290, 0x123f, 0x4565, {0x91, 0x64, 0x39, 0xc4, 0x92, 0x5e, 0x46, 0x7b}};
 	    		 if(getKnownFolderPath(downloads, 0, NULL, &path) == S_OK) {
-	    			 string ret = Util::emptyString;
+	    			 string ret;// = Util::emptyString;
 	    			 Text::wcToUtf8(*path,ret);
 	    			 //string ret = Text::fromT(path) + "\\";
 	    			 ::CoTaskMemFree(path);
@@ -108,13 +108,12 @@ static string getDownloadsPath(const string& def) {
 }
 
 #endif
-//#include "TimerManager.h"//fix?
+
 void Util::initialize(PathsMap pathOverrides) {
 	Text::initialize();
 
 	sgenrand((unsigned long)time(NULL));
 
-	//TimerManager::newInstance();
 #ifdef _WIN32
 	TCHAR buf[MAX_PATH+1] = { 0 };
 	::GetModuleFileName(NULL, buf, MAX_PATH);
@@ -381,6 +380,7 @@ string Util::getShortTimeString(time_t t) {
  * Decodes a URL the best it can...
  * Default ports:
  * http:// -> port 80
+ * https:// -> port 443
  * dchub:// -> port 411
  */
 void Util::decodeUrl(const string& url, string& protocol, string& host, uint16_t& port, string& path, string& query, string& fragment) {
@@ -421,7 +421,7 @@ void Util::decodeUrl(const string& url, string& protocol, string& host, uint16_t
 		fileStart = authorityEnd;
 	}
 
-	protocol = (protoEnd == string::npos ? Util::emptyString : url.substr(protoStart, protoEnd - protoStart));
+	protocol = (protoEnd == string::npos ? string() : url.substr(protoStart, protoEnd - protoStart));
 
 	if(authorityEnd > authorityStart) {
 		dcdebug("x");
@@ -588,7 +588,7 @@ string Util::getLocalIp() {
 				#else
 				inet_ntop(AF_INET,&((struct sockaddr_in *)res->ai_addr)->sin_addr,buf,sizeof(buf));
 				#endif
-				if(Util::isPrivateIp(buf) || strncmp(buf, "169.254", 7) == 0)
+				if(!Util::isPrivateIp(buf) || strncmp(buf, "169.254", 7) != 0)
 				{
 					return buf;
 				}
@@ -691,7 +691,7 @@ static wchar_t utf8ToLC(ccp& str) {
 
 string Util::toString(const StringList& lst) {
 	if(lst.empty())
-		return emptyString;
+		return string();
 	if(lst.size() == 1)
 		return lst[0];
 	return '[' + toString(",", lst) + ']';
@@ -916,7 +916,7 @@ string Util::formatTime(const string &msg, const time_t t) {
 	if(!msg.empty()) {
 		tm* loc = localtime(&t);
 		if(!loc) {
-			return Util::emptyString;
+			return string();
 		}
 
 		size_t bufsize = msg.size() + 256;
@@ -928,7 +928,7 @@ string Util::formatTime(const string &msg, const time_t t) {
 
 		while(buf.empty()) {
 			if(errno == EINVAL)
-				return Util::emptyString;
+				return string();
 
 			bufsize+=64;
 			buf.resize(bufsize);
@@ -942,13 +942,13 @@ string Util::formatTime(const string &msg, const time_t t) {
 			buf = Text::toUtf8(buf);
 		}*/
 		if(!g_utf8_validate(buf.c_str(),-1,NULL))
-			return Util::emptyString;
+			return string();
 		gsize oread,owrite;
 		buf = g_filename_to_utf8(buf.c_str(),-1,&oread,&owrite,NULL);
 
 		return buf;
 	}
-	return Util::emptyString;
+	return string();
 }
 
 /* Below is a high-speed random number generator with much
@@ -1053,7 +1053,7 @@ string Util::toAdcFile(const string& file) {
 }
 string Util::toNmdcFile(const string& file) {
 	if(file.empty())
-		return Util::emptyString;
+		return string();
 
 	string ret(file.substr(1));
 	for(string::size_type i = 0; i < ret.length(); ++i) {
@@ -1124,15 +1124,15 @@ string Util::getTempPath() {
 #endif
 }
 
-std::string Util::formatRegExp(const string& msg, ParamMap& params) {
-		std::string result = msg;
-		std::string::size_type i, j, k;
+string Util::formatRegExp(const string& msg, ParamMap& params) {
+		string result = msg;
+		string::size_type i, j, k;
 		i = 0;
 		while (( j = result.find("%[", i)) != string::npos) {
 			if( (result.size() < j + 2) || ((k = result.find(']', j + 2)) == string::npos) ) {
 				break;
 			}
-			std::string name = result.substr(j + 2, k - j - 2);
+			string name = result.substr(j + 2, k - j - 2);
 			ParamMap::iterator smi = params.find(name);
 			if(smi != params.end()) {
 				result.replace(j, k-j + 1, (smi->second));
@@ -1168,6 +1168,7 @@ bool Util::fileExists(const string& aFile) {
 
   return blnReturn;
   #else
+  //TODO: find correct ver for WINdoze
   return !(File::getSize(aFile) == -1);
   #endif
 }
@@ -1294,6 +1295,18 @@ bool Util::isIp6(const string& name)
 		return isOkIpV6;
 	}
 	return false;
+}
+
+string Util::trimUrl(string url)
+{
+	string currentUrl = url;
+		// Trim spaces
+		while(currentUrl[0] == ' ')
+			currentUrl.erase(0, 1);
+		while(currentUrl[currentUrl.length() - 1] == ' ') {
+			currentUrl.erase(currentUrl.length()-1);
+		}
+		return currentUrl;
 }
 
 

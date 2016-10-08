@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #endif
 
 namespace dcpp {
+	
 bool Socket::isV6Valid() const noexcept {
 	return sock6.valid();
 }
@@ -218,7 +219,9 @@ socket_t Socket::setSock(socket_t s, int af) {
 		sock4 = s;
 	} else if(af == AF_INET6) {
 		dcassert(sock6 == INVALID_SOCKET);
-		setSocketOpt2(s, IPPROTO_IPV6, IPV6_V6ONLY, 1);
+		int ret = setSocketOpt2(s, IPPROTO_IPV6, IPV6_V6ONLY, 1);
+		if(ret == -1)
+            throw SocketException("Unknow error");
 		sock6 = s;
 	} else {
 		throw SocketException(_("Unknown protocol ") + Util::toString(af));
@@ -424,7 +427,7 @@ void Socket::socksConnect(const string& aAddr, const int16_t& aPort, uint32_t ti
 
 	uint64_t start = GET_TICK();
 
-	connect(SETTING(SOCKS_SERVER), SETTING(SOCKS_PORT),Util::emptyString);
+	connect(SETTING(SOCKS_SERVER), SETTING(SOCKS_PORT),"");
 
 	if(!waitConnected(timeLeft(start, timeout))) {
 		throw SocketException(_("The socks server failed establish a connection"));
@@ -654,11 +657,11 @@ int Socket::write(const void* aBuffer, int aLen) {
  * @param aLen Data length
  * @throw SocketExcpetion Send failed.
  */
-void Socket::writeTo(const string& aAddr, const string& aPort, const void* aBuffer, int aLen, bool proxy) {
+void Socket::writeTo(const string& aAddr, const uint16_t& aPort, const void* aBuffer, int aLen, bool proxy) {
 	if(aLen <= 0)
 		return;
 
-	if(aAddr.empty() || aPort.empty()) {
+	if(aAddr.empty()) {
 		throw SocketException(EADDRNOTAVAIL);
 	}
 
@@ -683,7 +686,7 @@ void Socket::writeTo(const string& aAddr, const string& aPort, const void* aBuff
 			connStr.push_back((uint8_t)aAddr.size());
 			connStr.insert(connStr.end(), aAddr.begin(), aAddr.end());
 		} else {
-			auto ai = resolveAddr(aAddr, Util::toInt(aPort));
+			auto ai = resolveAddr(aAddr, aPort);
 
 			if(ai->ai_family == AF_INET) {
 				connStr.push_back(1);		// Address type: IPv4
@@ -701,7 +704,7 @@ void Socket::writeTo(const string& aAddr, const string& aPort, const void* aBuff
 		sent = check([&] { return ::sendto( (((struct sockaddr*)&udpAddr)->sa_family == AF_INET) ? sock4 : sock6,
 			(const char*)&connStr[0], (int)connStr.size(), 0, (struct sockaddr*)&udpAddr, udpAddrLen); });
 	} else {
-		auto ai = resolveAddr(aAddr, Util::toInt(aPort));
+		auto ai = resolveAddr(aAddr, aPort);
 		if((ai->ai_family == AF_INET && !sock4.valid()) || (ai->ai_family == AF_INET6 && !sock6.valid())) {
 			create(*ai);
 		}
@@ -949,14 +952,14 @@ void Socket::disconnect() noexcept {
 
 string Socket::getRemoteHost(const string& aIp) {
 	if(aIp.empty())
-		return Util::emptyString;
+		return string();
 	hostent *h = NULL;
 	unsigned int addr;
 	addr = inet_addr(aIp.c_str());
 
 	h = gethostbyaddr(reinterpret_cast<char *>(&addr), 4, AF_INET);
 	if (h == NULL) {
-		return Util::emptyString;
+		return string();
 	} else {
 		return h->h_name;
 	}
@@ -966,7 +969,7 @@ string Socket::getLocalIp() noexcept  {
 	if(sock6.valid()) {
 	
 	if(sock6.get() == INVALID_SOCKET) {
-		return Util::emptyString;
+		return string();
     }
  
     sockaddr_storage sas_addr;
@@ -993,7 +996,7 @@ string Socket::getLocalIp() noexcept  {
  }else if(sock4.valid()) {
 	
 	if(sock4.get() == INVALID_SOCKET) {
-		return Util::emptyString;
+		return string();
     }
  
     sockaddr_storage sas_addr;
@@ -1018,7 +1021,7 @@ string Socket::getLocalIp() noexcept  {
         }
 	}
  }
-	return Util::emptyString;
+	return string();
 }
 
 //...

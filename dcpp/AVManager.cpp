@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-2016 BMDC, freedcpp on seznam point cz
+ * Copyright (C) 2014-2017 BMDC, freedcpp on seznam point cz
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ void AVManager::on(TimerManagerListener::Minute, uint64_t aTick) noexcept
 			 ("http://te-home.net/?do=tools&action=avdbload&time="+Util::toString(timestamp_db)+"&notime=1");
 				conn.reset( new HttpDownload(address,[this](bool s,const string& b) { if(s) loadDb(b); }, false));
 				timestamp_db = time(NULL);
-				LogManager::getInstance()->message(_("[AVDB] load ")+Util::toString(temp_tick)+" - "+Util::toString(timestamp_db)+" - "+Util::toString(aTick),LogManager::Sev::NORMAL);	
+				LogManager::getInstance()->message(_("[AVDB] load on ")+Util::toString(temp_tick)+"/"+Util::toString(timestamp_db)+"/"+Util::toString(aTick),LogManager::Sev::NORMAL);	
 				temp_tick = aTick+(60*60*1000);
 			}
 			#ifdef _DEBUG

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 			return false;
 		}
 	}
-	ShareManager* sm = ClientManager::getInstance()->getShareManagerClient(aSource.getHintedUser().hint);
+	ShareManager* sm = ClientManager::getInstance()->getShareManagerClient(aSource.getHubUrl());
 	
 
 	bool miniSlot;
@@ -131,7 +131,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 				// Check for tth root identifier
 				string tFile = aFile;
 				if ( (tFile.compare(0, 4, "TTH/") == 0) && (aFile.length() > 4))//check also size...
-					tFile = /*ShareManager::getInstance()*/sm->toVirtual(TTHValue(aFile.substr(4)));
+					tFile = sm->toVirtual(TTHValue(aFile.substr(4)));
 
 				aSource.maxedOut(addFailedUpload(aSource, tFile +
 					" (" +  Util::formatBytes(aStartPos) + " - " + Util::formatBytes(aStartPos + aBytes) + ")"));
@@ -188,7 +188,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 		case Transfer::TYPE_TREE:
 			{
-				MemoryInputStream* mis = /*ShareManager::getInstance()*/sm->getTree(aFile);
+				MemoryInputStream* mis = sm->getTree(aFile);
 				if(!mis /*|| !isInSharingHub*/) {
 					aSource.fileNotAvail();
 					return false;
@@ -203,7 +203,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 		case Transfer::TYPE_PARTIAL_LIST:
 			{
 				// Partial file list
-				MemoryInputStream* mis = /*ShareManager::getInstance()*/sm->generatePartialList(aFile, listRecursive, isInSharingHub);
+				MemoryInputStream* mis = sm->generatePartialList(aFile, listRecursive, isInSharingHub);
 				if(!mis) {
 					aSource.fileNotAvail();
 					return false;
@@ -313,10 +313,11 @@ void UploadManager::reserveSlot(const HintedUser& aUser) {
 		{
 			Lock l(cs);
 			auto it = find_if(waitingUsers.cbegin(), waitingUsers.cend(), [&](const UserPtr& u) { return u == aUser.user; });
-			return (it != waitingUsers.cend()) ? it->token : Util::emptyString;
+			return (it != waitingUsers.cend()) ? it->token : string();
 		};
-		string token;
-		if((token = userToken()) != Util::emptyString)
+		string token = userToken();
+		//if((token = userToken()) != Util::emptyString)
+		if(!token.empty())
 			ClientManager::getInstance()->connect(aUser,token);
 	}
 }
@@ -562,7 +563,7 @@ void UploadManager::on(TimerManagerListener::Minute, uint64_t  aTick ) noexcept 
 
 	for(UserList::iterator i = disconnects.begin(); i != disconnects.end(); ++i) {
 		LogManager::getInstance()->message(string(F_("Disconnected user leaving the hub: ") +
-			Util::toString(ClientManager::getInstance()->getNicks((*i)->getCID(), Util::emptyString))));
+			Util::toString(ClientManager::getInstance()->getNicks((*i)->getCID(), ""))));
 		ConnectionManager::getInstance()->disconnect(*i, false);
 	}
 

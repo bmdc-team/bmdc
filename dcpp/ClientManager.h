@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class ClientManager : public Speaker<ClientManagerListener>,
 //made clang happy
 private:
 	using ClientListener::on;
-	using TimerManagerListener::on;	
+	using TimerManagerListener::on;
 public:
 	typedef unordered_map<string,Client*> ClientList;
 	typedef unordered_map<CID, UserPtr> UserMap;
@@ -98,7 +98,7 @@ public:
 	OnlineUser* findOnlineUser(const CID& cid, const string& hintUrl);
 
 	UserPtr findUser(const string& aNick, const string& aHubUrl) const noexcept { return findUser(makeCid(aNick, aHubUrl),aHubUrl); }
-	UserPtr findUser(const CID& cid,const string& hubUrl = Util::emptyString) const noexcept;
+	UserPtr findUser(const CID& cid,const string& hubUrl = "") const noexcept;
 	UserPtr findLegacyUser(const string& aNick) const noexcept;
 
 	bool isOnline(const UserPtr& aUser) const {
@@ -121,7 +121,7 @@ public:
 	void connect(const HintedUser& user, const string& token);
 	void privateMessage(const HintedUser& user, const string& msg, bool thirdPerson);
 	void userCommand(const HintedUser& user, const UserCommand& uc, ParamMap& params, bool compatibility);
-	
+
 	Lock lock() { return Lock(cs); }
 
 	const ClientList& getClients() const { return clients; }
@@ -139,6 +139,7 @@ public:
 			return (!ou->getClient().getHideShare());
 		return true;
 	}
+	//custom share
 	ShareManager* getShareManagerClient(const string& hint){
 		Lock l(cs);
 		auto i = clients.find(hint);
@@ -150,7 +151,7 @@ public:
 
 	int getMode(const string& aHubUrl) const;
 	//bool getMode6(const string&) const;//@TODO?
-	bool isActive(const string& aHubUrl = Util::emptyString) const;
+	bool isActive(const string& aHubUrl = "") const;
 
 	void setIpAddress(const UserPtr& p, const string& ip);
 

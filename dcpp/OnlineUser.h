@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2015 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include "User.h"
 #include "PluginEntity.h"
 #include "TimerManager.h"
+#include "GetSet.h"
 
 namespace dcpp {
 
@@ -54,8 +55,6 @@ public:
 	GESET(Description, "DE")
 	GESET(Ip4, "I4")
 	GESET(Ip6, "I6")
-	GESET(Udp4Port, "U4")
-	GESET(Udp6Port, "U6")
 	GESET(Email, "EM")
 	GESET(ClientType, "CL")
 	GESET(MyInfoType, "MT")
@@ -66,6 +65,11 @@ public:
 	GESET(TestSURQueued, "TQ")
 	GESET(FileListComplete, "CF")
 	GESET(TestSURComplete, "TK")
+
+#undef GESET
+	
+	GETSET(uint16_t,upd4port,Udp4Port)
+	GETSET(uint16_t,upd6port,Udp6Port)
 
 	void setBytesShared(const string& bs) { set("SS", bs); }
 	int64_t getBytesShared() const { return Util::toInt64(get("SS")); }
@@ -92,7 +96,7 @@ public:
 	bool isUdp4Active() const;
 	bool isUdp6Active() const;
 	string getIp() const;
-	string getUdpPort() const;
+	uint16_t getUdpPort() const;
 
 	std::map<string, string> getInfo() const;
 	string get(const char* name) const;
@@ -134,7 +138,11 @@ private:
 	void getDetectionParams(ParamMap& p);
 };
 
-class OnlineUser : public PluginEntity<UserData> {
+class OnlineUser 
+#if 0 
+: public PluginEntity<UserData> 
+#endif
+{
 public:
 	typedef vector<OnlineUser*> List;
 	typedef List::iterator Iter;
@@ -178,8 +186,9 @@ public:
 	}
 
 	bool getChecked(bool filelist = false, bool checkComplete = true);
-
+#if 0
 	UserData* getPluginObject() noexcept;
+#endif	
 	GETSET(Identity, identity, Identity);
 private:
 

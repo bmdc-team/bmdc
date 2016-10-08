@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ struct HubSettings
 	void load(SimpleXML& xml);
 	void save(SimpleXML& xml) const;
 	GETSET(bool, autoConnect, AutoConnect);
-	GETSET(string , id , Id);
+	void setId(const string &_url) { url = _url;}
 	
 	ShareManager* getShareManager() const;
 	void setShareManager(ShareManager* sm)  { 
@@ -67,6 +67,8 @@ private:
 	map<SettingsManager::IntSetting, int> ints;
 	map<SettingsManager::BoolSetting, bool> bools;
 	ShareManager* share;
+	string url;
+
 };
 
 #define HUBSETTING(a) get(SettingsManager::a, SettingsManager::getInstance()->get(SettingsManager::a))

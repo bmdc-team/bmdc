@@ -58,12 +58,10 @@ namespace dcpp {
 
 using std::numeric_limits;
 
-atomic_flag ShareManager::refreshing = ATOMIC_FLAG_INIT;
-
-ShareManager::ShareManager(string _name) : hits(0), xmlListLen(0), bzXmlListLen(0),
+ShareManager::ShareManager(const string& _name) : hits(0), xmlListLen(0), bzXmlListLen(0),
 	xmlDirty(true), forceXmlRefresh(true), refreshDirs(false), update(false), listN(0),
 	lastXmlUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20), bzXmlRoot(NULL),xmlRoot(NULL),
-	id(_name)
+	id(_name) , refreshing(ATOMIC_FLAG_INIT)
 {
 	if(id.empty())
 		SettingsManager::getInstance()->addListener(this);
@@ -86,7 +84,7 @@ ShareManager::ShareManager(string _name) : hits(0), xmlListLen(0), bzXmlListLen(
 
 ShareManager::~ShareManager() {
 	
-	if(getName().empty())
+	if(id.empty())
 		SettingsManager::getInstance()->removeListener(this);
 	
 	TimerManager::getInstance()->removeListener(this);
@@ -133,7 +131,7 @@ string ShareManager::Directory::getFullName() const noexcept {
 	return getParent()->getFullName() + getName() + '\\';
 }
 
-string ShareManager::Directory::getRealPath(const ShareManager* manager,const std::string& path) const {
+string ShareManager::Directory::getRealPath(const ShareManager* manager, const std::string& path) const {
 	if(getParent()) {
 		return getParent()->getRealPath(manager,getRealName() + PATH_SEPARATOR_STR + path);
 	} else {
@@ -190,15 +188,18 @@ string ShareManager::toReal(const string& virtualFile,bool isShared) {
 	return toRealWithSize(virtualFile,isShared).first;
 }
 
-pair<string, int64_t> ShareManager::toRealWithSize(const string& virtualFile, bool isInSharedHub) {
+pair<string, int64_t> ShareManager::toRealWithSize(const string& virtualFile, bool isInSharingHub) {
 	Lock l(cs);
-	if(!isInSharedHub) return make_pair((Util::getPath(Util::PATH_USER_CONFIG) + "Emptyfiles.xml.bz2"),0);
-
+	
 	if(virtualFile == "MyList.DcLst") {
 		throw ShareException("NMDC-style lists no longer supported, please upgrade your client");
 	}
 	if(virtualFile == Transfer::USER_LIST_NAME_BZ || virtualFile == Transfer::USER_LIST_NAME) {
 		generateXmlList();
+		if (!isInSharingHub) {
+			string emptyList = Util::getPath(Util::PATH_USER_CONFIG) + "Emptyfiles.xml.bz2";
+			return make_pair(emptyList, 0);
+		}
 		return make_pair(getBZXmlFile(), 0);
 	}
 
@@ -881,8 +882,8 @@ void ShareManager::runRefresh(function<void (float)> progressF) {
 
 	if(refreshDirs) {
 		HashManager::HashPauser pauser;
-
-		LogManager::getInstance()->message(_("File list refresh initiated ") + getName() );
+		string shareName = id.empty() ? Util::emptyString : " for " + id;
+		LogManager::getInstance()->message(_("File list refresh initiated ") + shareName );
 
 		lastFullUpdate = GET_TICK();
 
@@ -917,7 +918,7 @@ void ShareManager::runRefresh(function<void (float)> progressF) {
 		}
 		refreshDirs = false;
 
-		LogManager::getInstance()->message(_("File list refresh finished ") + !getName().empty() ? ":"+getName() : " ");
+		LogManager::getInstance()->message(_("File list refresh finished ") + shareName );
 	}
 
 	if(update) {
@@ -952,12 +953,7 @@ void ShareManager::generateXmlList() {
 			string tmp2;
 			string indent;
 			
-			string _name = getName();
-			string newXmlName = Util::emptyString;
-			if(_name.empty())
-				newXmlName = Util::getPath(Util::PATH_USER_CONFIG) + "files" + Util::toString(listN) + ".xml.bz2";
-			else
-				newXmlName	= Util::getPath(Util::PATH_USER_CONFIG) + "files" + _name + ".xml.bz2";
+			string newXmlName =  Util::getPath(Util::PATH_USER_CONFIG) + "files" + Util::toString(listN) + ".xml.bz2";
 			{
 				File f(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE);
 				// We don't care about the leaves...

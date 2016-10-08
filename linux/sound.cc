@@ -1,6 +1,6 @@
 /*
  * Copyright © 2009-2012 freedcpp, http://code.google.com/p/freedcpp
- * Copyright © 2012-2016 BMDC++
+ * Copyright © 2012-2017 BMDC++
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ void Sound::playSound(TypeSound sound)
 
 void Sound::playSound(const string &target)
 {
-	//if we on win call PlaySound not cannbera
+	//we on win call PlaySound not cannbera
 	#ifdef _WIN32
 		PlaySound(Text::toT(target).c_str(), NULL, SND_FILENAME | SND_ASYNC);
 	#elif defined(_HAVECANBERRA)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -268,7 +268,7 @@ bool SSLSocket::verifyKeyprint(const string& expKP, bool allowUntrusted) noexcep
 				err = X509_STORE_CTX_get_error(vrfy_ctx);
 				// Watch out for weird library errors that might not set the context error code
 				if(err == X509_V_OK && verify_result == 0)
-					err = X509_V_ERR_UNSPECIFIED;
+					err = 1/*X509_V_ERR_UNSPECIFIED*/;
 				// This is for people who don't restart their clients and have low expiration time on their cert
 				result = (err == X509_V_OK || err == X509_V_ERR_CERT_HAS_EXPIRED);
 			}

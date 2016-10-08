@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,9 +55,9 @@ const string SettingsManager::settingTags[] =
 	"SharingSkiplistExtensions", "SharingSkiplistRegEx", "SharingSkiplistPaths",
 	//[BMDC
 	"BackupFilePattern", "LogFileRaw", "LogFormatRaw", "ProtectedUsers", "BackupTimeStamp", "EmotPack", "RipeDB",
-	"HubIconStr", "HubTextStr", "HubULOrder", "HubULVisible", "HubULSize", "ChatExtraInfo", 
+	"HubIconStr", "HubTextStr", "HubULOrder", "HubULVisible", "HubULSize", "ChatExtraInfo",
 	"BackgroundChatColor", "BackgroundChatImage", "BackgroundPmColor", "BackgroundPmImage",
-	"RatioTemplate",
+	"RatioTemplate","LogFileProto", "LogFormatProto", "WildcardForExportSet",
 	//]
 	"SENTRY",
 	// Ints
@@ -106,7 +106,7 @@ const string SettingsManager::settingTags[] =
 	"RmdcRaw",
 	"FileListVersionMisMatch",
 	"AdlRaw",
-
+	"NickPanePos",
 	"SENTRY",
 	// Bools
 	"AddFinishedInstantly", "AdlsBreakOnFirst", "AltSortOrder",
@@ -158,7 +158,9 @@ const string SettingsManager::settingTags[] =
 	"DisplayCheatsInMainChat",
 	"UseOemFont", "ServerCommands",
 	"UseAvFilter", "LogChatB",
-	"UseCountryFlag", "UseEmots", 
+	"UseCountryFlag", "UseEmots",
+	"UseHighliting",
+	"UseSock5",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload","SharingSkiplistMinSize", "SharingSkiplistMaxSize",
@@ -216,8 +218,8 @@ SettingsManager::SettingsManager()
 #else
 	setDefault(DOWNLOAD_DIRECTORY,Util::getPath(Util::PATH_DOWNLOADS));
 #endif
-	
 	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getPath(Util::PATH_USER_LOCAL) + "Incomplete" PATH_SEPARATOR_STR);
+
 	setDefault(BIND_ADDRESS, "0.0.0.0");
 	setDefault(BIND_ADDRESS6, "::");
 	setDefault(SLOTS, 3);
@@ -443,13 +445,18 @@ SettingsManager::SettingsManager()
 	setDefault(BACKGROUND_PM_COLOR, "white");
 	setDefault(BACKGROUND_PM_IMAGE, Util::emptyString);
 	setDefault(RATIO_TEMPLATE, "%[client] Ratio: %[ratio]  Uploads: %[up] / Downloads %[down] ");
+	setDefault(USE_HIGHLITING,true);
+	
+	setDefault(NICK_PANE_POS,400);//hub tab
+	setDefault(WILDCARD_FOR_EXPORT_SET,"profile.lck;Emptyfiles.xml.bz2;..;.;GeoIP*.dat;GeoIP*.gz;TestSUR*;");
+	setDefault(USE_SOCK5,false);
 
 	setSearchTypeDefaults();
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
 	setDefault(MAIN_WINDOW_SIZE_X, CW_USEDEFAULT);
-	setDefault(MAIN_WINDOW_SIZE_Y, CW_USEDEFAULT);
+	setDefault(MAIN_WINDOW,_SIZE_Y, CW_USEDEFAULT);
 	setDefault(MAIN_WINDOW_POS_X, CW_USEDEFAULT);
 	setDefault(MAIN_WINDOW_POS_Y, CW_USEDEFAULT);
 	setDefault(UPLOAD_TEXT_COLOR, RGB(255, 255, 255));

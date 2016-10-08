@@ -24,7 +24,7 @@
  *	- Current implementation does not correctly run HOOK_CHAT_PM_OUT for PM's sent as a result of Client::sendUserCmd
  *	- dcpp may run HOOK_HUB_OFFLINE for hubs that never ran HOOK_HUB_ONLINE before (if socket creation fails in Client::connect)
  */
-
+#if 0
 #include "stdinc.h"
 #include "PluginApiImpl.h"
 
@@ -468,7 +468,7 @@ void PluginApiImpl::terminateConnection(ConnectionDataPtr conn, Bool graceless) 
 }
 
 void PluginApiImpl::sendUdpData(const char* ip, uint32_t port, dcptr_t data, size_t n) {
-	try { getUdpSocket().writeTo(ip, Util::toString(port), data, n); } catch (const Exception&) { /* ... */ }
+	try { getUdpSocket().writeTo(ip, port, data, n); } catch (const Exception&) { /* ... */ }
 }
 
 UserDataPtr PluginApiImpl::getUserFromConn(ConnectionDataPtr conn) {
@@ -781,3 +781,4 @@ void PluginApiImpl::releaseData(UserDataPtr user) {
 }
 
 } // namespace dcpp
+#endif

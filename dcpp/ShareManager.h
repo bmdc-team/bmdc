@@ -217,8 +217,8 @@ private:
 
 	friend class Singleton<ShareManager>;
 public:	
-	ShareManager(std::string name = Util::emptyString);
-	virtual ~ShareManager();
+	ShareManager(const std::string& name = Util::emptyString);
+	~ShareManager();
 private:	
 
 	struct SearchQuery {
@@ -256,7 +256,8 @@ private:
 
 	int listN;
 
-	static std::atomic_flag refreshing;
+	//static 
+	std::atomic_flag refreshing;
 
 	uint64_t lastXmlUpdate;
 	uint64_t lastFullUpdate;
@@ -280,7 +281,7 @@ private:
 
 	const Directory::File& findFile(const string& virtualFile) const;
 
-	Directory::Ptr buildTree(const string& realPath, const string& dirName = Util::emptyString, const Directory::Ptr& parent = nullptr);
+	Directory::Ptr buildTree(const string& realPath, const string& dirName = "", const Directory::Ptr& parent = nullptr);
 	bool checkHidden(const string& realPath) const;
 	bool checkInvalidFileName(const string& realPath) const;
 	bool checkInvalidPaths(const string& realPath) const;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,10 +57,10 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) noexc
 
 	if(aLine[0] == '$')
 		setFlag(FLAG_NMDC);
-
+#if 0
 	if(PluginManager::getInstance()->runHook(HOOK_NETWORK_CONN_IN, this, aLine))
 		return;
-
+#endif
 	if(aLine[0] == 'C' && !isSet(FLAG_NMDC)) {
 		if(!Text::validateUtf8(aLine)) {
 			fire(UserConnectionListener::ProtocolError(), this, _("Non-UTF-8 data in an ADC connection"));
@@ -74,7 +74,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) noexc
 	}
 
 	string cmd;
-	string param = Util::emptyString;
+	string param ;//= Util::emptyString;
 
 	string::size_type x = 0;
 
@@ -129,9 +129,9 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) noexc
 				x = param.find(' ');
 				if(x != string::npos) {
 					setFlag(FLAG_INVALIDKEY);
-					fire(UserConnectionListener::CLock(), this, param.substr(0, x), Util::emptyString);
+					fire(UserConnectionListener::CLock(), this, param.substr(0, x), string());
 				} else {
-					fire(UserConnectionListener::CLock(), this, param, Util::emptyString);
+					fire(UserConnectionListener::CLock(), this, param, string());
 				}
 			}
 		}
@@ -164,8 +164,8 @@ void UserConnection::connect(const string& aServer, const uint16_t& aPort, const
 	socket = BufferedSocket::getSocket(0);
 	socket->addListener(this);
 	// TODO: verify that this KeyPrint was mediated by a trusted hub?
-    string expKP = user ? ClientManager::getInstance()->getField(user->getCID(), hubUrl, "KP") : Util::emptyString;
-    socket->connect(aServer, aPort, localPort, natRole, secure, SETTING(ALLOW_UNTRUSTED_CLIENTS), true, expKP);
+    //string expKP = user ? ClientManager::getInstance()->getField(user->getCID(), hubUrl, "KP") : Util::emptyString;
+    socket->connect(aServer, aPort, localPort, natRole, secure, SETTING(ALLOW_UNTRUSTED_CLIENTS));
 }
 
 void UserConnection::accept(const Socket& aServer) {
@@ -281,7 +281,7 @@ void UserConnection::updateChunkSize(int64_t leafSize, int64_t lastChunk, uint64
 
 	chunkSize = targetSize;
 }
-
+#if 0
 ConnectionData* UserConnection::getPluginObject() noexcept {
 	resetEntity();
 
@@ -294,12 +294,14 @@ ConnectionData* UserConnection::getPluginObject() noexcept {
 
 	return &pod;
 }
-
+#endif
 void UserConnection::send(const string& aString) {
 	lastActivity = GET_TICK();
 	COMMAND_DEBUG(aString,TYPE_CLIENT,OUTGOING,getRemoteIp());
+#if 0
 	if(PluginManager::getInstance()->runHook(HOOK_NETWORK_CONN_OUT, this, aString))
 		return;
+#endif		
 	socket->write(aString);
 }
 

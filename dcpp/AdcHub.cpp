@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,9 @@
 #include "ThrottleManager.h"
 #include "UploadManager.h"
 #include "format.h"
+#if 0
 #include "PluginManager.h"
+#endif
 #include "DebugManager.h"
 #include <cmath>
 #include "BufferedSocket.h"
@@ -168,12 +170,16 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) noexcept {
 
 	if(!u) {
 		dcdebug("AdcHub::INF Unknown user / no ID\n");
+		LOG(PROTO,"AdcHub::INF Unknown user / no ID");
+		DebugManager::getInstance()->SendCommandMessage("AdcHub::INF Unknown user / no ID\n",DebugManager::TYPE_HUB,DebugManager::INCOMING,"Unknow");
 		return;
 	}
 
 	for(auto i = c.getParameters().begin(); i != c.getParameters().end(); ++i) {
 		if(i->length() < 2)
 			continue;
+		if(*i == "U4") { u->getIdentity().setUdp4Port(Util::toInt(i->substr(2)));continue; }
+		if(*i == "U6") { u->getIdentity().setUdp6Port(Util::toInt(i->substr(2)));continue; }
 
 		u->getIdentity().set(i->c_str(), i->substr(2));
 	}
@@ -238,6 +244,7 @@ void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) noexcept {
 void AdcHub::handle(AdcCommand::SID, AdcCommand& c) noexcept {
 	if(state != STATE_PROTOCOL) {
 		dcdebug("Invalid state for SID\n");
+		LOG(PROTO,"Invalid state for SID");
 		return;
 	}
 
@@ -269,11 +276,17 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) noexcept {
 			return;
 
 		replyTo = findUser(AdcCommand::toSID(temp));
-		if(!replyTo || PluginManager::getInstance()->runHook(HOOK_CHAT_PM_IN, replyTo, chatMessage))
+		if(!replyTo 
+		#if 0
+		|| PluginManager::getInstance()->runHook(HOOK_CHAT_PM_IN, replyTo, chatMessage)
+		 #endif
+		)
 			return;
-	} else if(PluginManager::getInstance()->runHook(HOOK_CHAT_IN, this, chatMessage))
+	}
+	#if 0
+	 else if(PluginManager::getInstance()->runHook(HOOK_CHAT_IN, this, chatMessage))
 		return;
-
+	#endif
 	fire(ClientListener::Message(), this, ChatMessage(chatMessage, from, to, replyTo, c.hasFlag("ME", 1),
 		c.getParam("TS", 1, temp) ? Util::toInt64(temp) : 0));
 }
@@ -306,9 +319,9 @@ void AdcHub::handle(AdcCommand::QUI, AdcCommand& c) noexcept {
 			tmp = victim->getIdentity().getNick();
 
 			if(source) {
-				tmp += F_(" was kicked by ") + source->getIdentity().getNick() + ": " + dMessage;
+				tmp += " was kicked by " + source->getIdentity().getNick() + ": " + dMessage;
 			} else {
-				tmp += F_(" was kicked: " ) + dMessage;
+				tmp += " was kicked: "  + dMessage;
 			}
 			fire(ClientListener::StatusMessage(), this, tmp, ClientListener::FLAG_IS_SPAM);
 		}
@@ -407,10 +420,15 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) noexcept {
 void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) noexcept {
 	if(c.getParameters().size() < 1)
 		return;
+	/*
+		Did we need this?
+	if(c.getFrom() != AdcCommand::HUB_SID)
+		return;
+	*/
 	const string& name = c.getParam(0);
 	bool rem = c.hasFlag("RM", 1);
 	if(rem) {
-		fire(ClientListener::HubUserCommand(), this, (int)UserCommand::TYPE_REMOVE, 0, name, Util::emptyString);
+		fire(ClientListener::HubUserCommand(), this, (int)UserCommand::TYPE_REMOVE, 0, name, string());
 		return;
 	}
 	bool sep = c.hasFlag("SP", 1);
@@ -421,7 +439,7 @@ void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) noexcept {
 	if(ctx <= 0)
 		return;
 	if(sep) {
-		fire(ClientListener::HubUserCommand(), this, (int)UserCommand::TYPE_SEPARATOR, ctx, name, Util::emptyString);
+		fire(ClientListener::HubUserCommand(), this, (int)UserCommand::TYPE_SEPARATOR, ctx, name, string());
 		return;
 	}
 	bool once = c.hasFlag("CO", 1);
@@ -434,12 +452,13 @@ void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) noexcept {
 void AdcHub::sendUDP(const AdcCommand& cmd) noexcept {
 	string command;
 	string ip;
-	string port;
+	uint16_t port;
 	{
 		Lock l(cs);
 		SIDIter i = users.find(cmd.getTo());
 		if(i == users.end()) {
 			dcdebug("AdcHub::sendUDP: invalid user\n");//Possible alow logging?
+			LOG(PROTO,"AdcHub::sendUDP: invalid user");
 			return;
 		}
 		OnlineUser& ou = *i->second;
@@ -517,7 +536,7 @@ void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) noexcept {
 
 	OnlineUser* ou = findUser(c.getFrom());
 	if(!ou) {
-		dcdebug("Invalid user in AdcHub::onSCH\n");//should be logged ? sql...
+		dcdebug("Invalid user in AdcHub::onSCH\n");//should be logged ?
 		return;
 	}
 
@@ -527,7 +546,7 @@ void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) noexcept {
 void AdcHub::handle(AdcCommand::RES, AdcCommand& c) noexcept {
 	OnlineUser* ou = findUser(c.getFrom());
 	if(!ou) {
-		dcdebug("Invalid user in AdcHub::onRES\n");//logging? sql
+		dcdebug("Invalid user in AdcHub::onRES\n");//logging?
 		return;
 	}
 	SearchManager::getInstance()->onRES(c, ou->getUser());
@@ -579,10 +598,6 @@ void AdcHub::handle(AdcCommand::GET, AdcCommand& c) noexcept {
 				"Unsupported m", AdcCommand::TYPE_HUB));
 			return;
 		}
-
-//		if (m > 0) {
-//			sm->getBloom(v, k, m, h);
-//		}
 
 		AdcCommand cmd(AdcCommand::CMD_SND, AdcCommand::TYPE_HUB);
 		cmd.addParam(c.getParam(0));
@@ -718,10 +733,10 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 void AdcHub::hubMessage(const string& aMessage, bool thirdPerson) {
 	if(state != STATE_NORMAL)
 		return;
-
+#if 0
 	if(PluginManager::getInstance()->runHook(HOOK_CHAT_OUT, this, aMessage))
 		return;
-
+#endif
 	AdcCommand c(AdcCommand::CMD_MSG, AdcCommand::TYPE_BROADCAST);
 	c.addParam(aMessage);
 	if(thirdPerson)
@@ -1148,9 +1163,10 @@ void AdcHub::on(Line l, const string& aLine) noexcept {
 	}
 
 	COMMAND_DEBUG(aLine,TYPE_HUB,INCOMING,getHubUrl());
+	#if 0
 	if(PluginManager::getInstance()->runHook(HOOK_NETWORK_HUB_IN, this, aLine))
 		return;
-
+	#endif
 	dispatch(aLine);
 }
 

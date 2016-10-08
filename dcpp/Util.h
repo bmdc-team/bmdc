@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,10 @@
 #define DCPLUSPLUS_DCPP_UTIL_H
 
 #include "compiler.h"
-//For locale
+//--
+//-- For locale
 #include <glib.h>
+
 #ifndef _WIN32
 #include <glib/gi18n.h>
 #endif
@@ -41,7 +43,7 @@
 #include <fcntl.h>
 #include <map>
 #include <cstring>
-#include <algorithm> //we dont need boost
+#include <algorithm> 
 
 #ifdef _WIN32
 
@@ -123,6 +125,7 @@ inline int compare(const T1& v1, const T1& v2) { return (v1 < v2) ? -1 : ((v1 ==
 class Util
 {
 public:
+//...
 	static tstring emptyStringT;
 	static string emptyString;
 	static wstring emptyStringW;
@@ -184,12 +187,12 @@ public:
 	}
 	static string getFileExt(const string& path) {
 		string::size_type i = path.rfind('.');
-		return (i != string::npos) ? path.substr(i) : Util::emptyString;
+		return (i != string::npos) ? path.substr(i) : string();
 	}
 	static string getLastDir(const string& path, char separator = PATH_SEPARATOR) {
 		string::size_type i = path.rfind(separator);
 		if(i == string::npos)
-			return Util::emptyString;
+			return string();
 		string::size_type j = path.rfind(separator, i-1);
 		return (j != string::npos) ? path.substr(j+1, i-j-1) : path;
 	}
@@ -209,7 +212,7 @@ public:
 	static wstring getLastDir(const wstring& path) {
 		wstring::size_type i = path.rfind(PATH_SEPARATOR);
 		if(i == wstring::npos)
-			return Util::emptyStringW;
+			return wstring();
 		wstring::size_type j = path.rfind(PATH_SEPARATOR, i-1);
 		return (j != wstring::npos) ? path.substr(j+1, i-j-1) : path;
 	}
@@ -239,8 +242,8 @@ public:
 
 	static string getShortTimeString(time_t t = time(NULL) );
 	static string getBackupTimeString(time_t t = time(NULL));
-
 	static string getTimeString();
+
 	static string toAdcFile(const string& file);
 	static string toNmdcFile(const string& file);
 
@@ -414,7 +417,16 @@ public:
 	}
 
 	static string encodeURI(const string& /*aString*/, bool reverse = false);
+	/*
+	 * getLocalIP:
+	 * @return: local ip of system
+	 * */
 	static string getLocalIp();
+	/*
+	 * isPrivateIP:
+	 * @p: string to be scaned for
+	 * @return: if ip is from private network
+	 * */
 	static bool isPrivateIp(string const& ip);
 	/**
 	 * Case insensitive substring search.
@@ -459,26 +471,55 @@ public:
 	static uint32_t rand(uint32_t low, uint32_t high) { return rand(high-low) + low; }
 	static double randd() { return ((double)rand()) / ((double)0xffffffff); }
 	//[BMDC++
-	static bool fileExists(const string& aFile);// true if File exist otherwise false
+	/*
+	* fileExists:
+	* @aFile: file to be scaned by func
+	* @return: true if aFile exist otherwise false
+	*
+	*/
+	static bool fileExists(const string& aFile);
+	/*
+	 * formatRegExp:
+	 * @msg: string to be scaned
+	 * @params: aray of items for be replaced to param["name"] = stringbyreplace
+	 * @return: modified string
+	 * */
 	static string formatRegExp(const string& msg, ParamMap& params);
+	/*
+	 * getUptime:
+	 * @return: uptime of client
+	 * */
 	static uint64_t getUptime() { return uptime;}
+	/*
+	 * convertCEscapes
+	 * tmp: string to be modified
+	 * return: modified string
+	 * */
 	static string convertCEscapes(string tmp);
-
-	static string trimUrl(string url)
-	{
-		string currentUrl = url;
-		// Trim spaces
-		while(currentUrl[0] == ' ')
-			currentUrl.erase(0, 1);
-		while(currentUrl[currentUrl.length() - 1] == ' ') {
-			currentUrl.erase(currentUrl.length()-1);
-		}
-		return currentUrl;
-	}
-
+	/*
+	 * trimUrl: delete space by and after chars
+	 * url: string to be scaned by
+	 * return: replaced and scaned string
+	 * */
+	static string trimUrl(string url);
+	/*
+	 *
+	 * getIETFLang
+	 * return: get language from system run on
+	 *
+	 * */
 	static string getIETFLang();
+	/*
+	 * isIp6: check if @name is ipv6 or not
+	 * @name: string to be scaned
+	 * return: True if it IPv6
+	 * */
 	static bool isIp6(const string& name);
-	
+	/*
+	 * isAdc:
+	 * h: string to be scaned to
+	 * return: true if ADC or ADCS
+	 * */
 	static bool isAdc(const string& h) {
 		return !h.empty() ?  h.compare(0, 6, "adc://") == 0 || h.compare(0, 7, "adcs://") == 0 : false;
 	}

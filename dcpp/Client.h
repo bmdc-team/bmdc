@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,9 @@
 #include "ClientListener.h"
 #include "OnlineUser.h"
 #include "CommandQueue.h"
+#if 0
 #include "PluginEntity.h"
+#endif
 #include "HubSettings.h"
 
 namespace dcpp {
@@ -37,7 +39,9 @@ namespace dcpp {
 using std::atomic;
 /** Yes, this should probably be called a Hub */
 class Client :
+#if 0
 	public PluginEntity<HubData>,
+#endif	
 	public Speaker<ClientListener>,
 	public BufferedSocketListener,
 	protected TimerManagerListener,
@@ -118,9 +122,9 @@ public:
 	bool isActiveV4() const;
 	bool isActiveV6() const; 
 	void putDetectors() { stopMyInfoCheck(); stopChecking();  }
-
+#if 0
 	HubData* getPluginObject() noexcept;
-
+#endif
 	GETSET(Identity, myIdentity, MyIdentity);
 	GETSET(Identity, hubIdentity, HubIdentity);
 

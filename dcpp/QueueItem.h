@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,12 +33,17 @@
 #include "Segment.h"
 #include "Util.h"
 #include "HintedUser.h"
+#if 0
 #include "PluginEntity.h"
-
+#endif
 namespace dcpp {
 
 class QueueManager;
-class QueueItem : public Flags, public PluginEntity<QueueData> {
+class QueueItem : public Flags
+#if 0
+, public PluginEntity<QueueData>
+#endif
+ {
 public:
 	typedef unordered_map<string*, QueueItemPtr, noCaseStringHash, noCaseStringEq> StringMap;
 
@@ -188,9 +193,9 @@ public:
 
 	const string getTempTarget();
 	void setTempTarget(const string& aTempTarget) { tempTarget = aTempTarget; }
-
+#if 0
 	QueueData* getPluginObject() noexcept;
-
+#endif
 	GETSET(SegmentSet, done, Done);
 	GETSET(DownloadList, downloads, Downloads);
 	GETSET(string, target, Target);

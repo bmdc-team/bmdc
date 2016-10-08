@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -198,10 +198,12 @@ string ClientManager::findHub(const string& ipPort) const {
 	uint16_t port = 411;
 
 	parsePortIp(ipPort,ip, port);
-	//NOTE: *should* never get valua over 65535 since is it uint16_t
+	//NOTE: *should* never get value over 65535 since is it uint16_t
+	//NOTE: dont allow 0 as port
 	if( port < 1)
 		return Util::emptyString;
 	bool ok = false;
+	
 	if(Util::isIp6(ip) == true)
 		ok = true;
 	else
@@ -398,7 +400,7 @@ OnlineUser* ClientManager::findOnlineUser(const CID& cid, const string& hintUrl)
 		return nullptr;
 
 	// return a random user that matches the given CID but not the hint.
-	return p.first->second;
+	return p.first->second;//should we do this?
 }
 //TODO ? needed....
 string ClientManager::findMySID(const HintedUser& p) {
@@ -460,7 +462,7 @@ void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 		} else {
 			try {
 				string ip = u.getIdentity().getIp();
-				string port = u.getIdentity().getUdpPort();
+				uint16_t port = u.getIdentity().getUdpPort();
 				bool ok = false;
 
 				if(Util::isIp6(ip) == true)
@@ -530,9 +532,6 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 				
 				parsePortIp(seek,ip,port);
 				
-				//if(static_cast<NmdcHub*>(aClient)->isProtectedIP(ip))
-				//	return;
-						
 				bool isOk = false;
 				if(Util::isIp6(ip) == true)
 					isOk = true;
@@ -547,7 +546,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 					
 				for(SearchResultList::const_iterator i = l.begin(); i != l.end(); ++i) {
 					const SearchResultPtr& sr = *i;
-					udp.writeTo(ip, Util::toString(port), sr->toSR(*aClient));
+					udp.writeTo(ip, port, sr->toSR(*aClient));
 				}
 			  }
 			} catch(const SocketException& /* e */) {
@@ -675,7 +674,7 @@ int ClientManager::getMode(const string& aHubUrl) const {
 	return SETTING(INCOMING_CONNECTIONS);
 }
 
-bool ClientManager::isActive(const string& aHubUrl /*= Util::emptyString*/) const
+bool ClientManager::isActive(const string& aHubUrl /**/) const
 {
 	return ( (getMode(aHubUrl) != SettingsManager::INCOMING_FIREWALL_PASSIVE) );
 }
@@ -920,8 +919,8 @@ void ClientManager::sendRawCommand(OnlineUser& ou, const string& aRaw, bool chec
 		}
 		if(!skipRaw || !checkProtection) {
 			ParamMap ucParams;
-			UserCommand uc = UserCommand(0, 0, 0, 0, "", aRaw, "", Util::emptyString);
-			userCommand(HintedUser(ou.getUser(),Util::emptyString), uc, ucParams, true);
+			UserCommand uc = UserCommand(0, 0, 0, 0, "", aRaw, "", "");
+			userCommand(HintedUser(ou.getUser(),""), uc, ucParams, true);
 			if(SETTING(LOG_RAW_CMD)) {
 				LOG(LogManager::RAW, ucParams);
 			}

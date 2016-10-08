@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,9 @@
 #include "UserCommand.h"
 #include "StringTokenizer.h"
 #include "format.h"
+#if 0
 #include "PluginManager.h"
+#endif
 #include "AVManager.h"
 
 namespace dcpp {
@@ -238,9 +240,10 @@ void NmdcHub::onLine(const string& aLine) noexcept {
 		}
 		COMMAND_DEBUG(aLine,TYPE_HUB,INCOMING,getHubUrl());
 		auto chatMessage = unescape(message);
+		#if 0
 		if(PluginManager::getInstance()->runHook(HOOK_CHAT_IN, this, chatMessage))
 			return;
-
+		#endif
 		fire(ClientListener::Message(), this, ChatMessage(chatMessage, from));
 		return;
 	}
@@ -813,9 +816,10 @@ void NmdcHub::onLine(const string& aLine) noexcept {
 		//}
 
 		auto chatMessage = unescape(toUtf8(param.substr(j + 2)));
+		#if 0
 		if(PluginManager::getInstance()->runHook(HOOK_CHAT_PM_IN, replyTo, chatMessage))
 			return;
-
+		#endif
 		fire(ClientListener::Message(), this, ChatMessage(chatMessage, from, &getUser(getMyNick()), replyTo));
 	} else if(cmd == "$GetPass") {
 		OnlineUser& ou = getUser(getMyNick());
@@ -867,14 +871,15 @@ void NmdcHub::connectToMe(const OnlineUser& aUser) {
 			return;
 	}	
 	
-	bool isOkIp6 = aUser.getIdentity().getIp6().empty() == true;
+	bool isOkIp6 = !aUser.getIdentity().get("IX").empty();
+	//bool isOkIp6 = !aUser.getIdentity().getIp6().empty();
 	dcdebug("%d - %d - %d - %d",(int)bIPv6,isActiveV6(),(int)((supportFlags & SUPPORTS_IP64) == SUPPORTS_IP64 ),isOkIp6);
 	
 	//alows ports only above 0
 	uint16_t cport = ConnectionManager::getInstance()->getPort();
 	if(cport == 0)
 		return;
-	
+	//we have IPv6, Hub Support that and User too
 	if(bIPv6 && ((supportFlags & SUPPORTS_IP64) == SUPPORTS_IP64 ) && isOkIp6) {
 		send("$ConnectToMe " + nick + " [" + getUserIp6() + "]:" + Util::toString(cport) + "|");
 		dcdebug("\n%s",getUserIp6().c_str());
@@ -894,7 +899,9 @@ void NmdcHub::revConnectToMe(const OnlineUser& aUser) {
 
 void NmdcHub::hubMessage(const string& aMessage, bool thirdPerson) {
 	checkstate();
+	#if 0
 	if(!PluginManager::getInstance()->runHook(HOOK_CHAT_OUT, this, aMessage))
+	#endif
 		send(fromUtf8( "<" + getMyNick() + "> " + escape(thirdPerson ? "/me " + aMessage : aMessage) + "|" ) );
 }
 
@@ -1042,10 +1049,10 @@ void NmdcHub::privateMessage(const string& nick, const string& message) {
 
 void NmdcHub::privateMessage(const OnlineUser& aUser, const string& aMessage, bool /*thirdPerson*/) {
 	checkstate();
-
+#if 0
 	if(PluginManager::getInstance()->runHook(HOOK_CHAT_PM_OUT, (void*)&(aUser), (void*)&(aMessage)))
 		return;
-
+#endif
 	privateMessage(aUser.getIdentity().getNick(), aMessage);
 	// Emulate a returning message...
 	Lock l(cs);
@@ -1119,8 +1126,10 @@ void NmdcHub::on(Connected) noexcept {
 
 void NmdcHub::on(Line, const string& aLine) noexcept {
 	Client::on(Line(), aLine);
+	#if 0
 	if(PluginManager::getInstance()->runHook(HOOK_NETWORK_HUB_IN, this, validateMessage(aLine, true)))
 		return;
+	#endif
 	onLine(aLine);
 }
 

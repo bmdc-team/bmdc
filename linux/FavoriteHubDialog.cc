@@ -152,10 +152,10 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 	//
 	boxAdvanced	= gtk_grid_new();
 	GtkWidget* labelAdvanced = lan(_("Chat&Misc"));
-	checkHideShare = g_c_b_n(_("Hide Share")); //@TODO: Possible move
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkHideShare), p_entry->getHideShare() );
+	checkHigh = g_c_b_n(_("Use Highliting"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkHigh), p_entry->get(SettingsManager::USE_HIGHLITING, SETTING(USE_HIGHLITING) ));
 
-	g_g_a_a(checkHideShare,0,0,1,1);
+	g_g_a_a(checkHigh,0,0,1,1);
 
 	g_g_a_a(lan(_("Extra Chat Info:")),0,1,1,1);
 	extraChatInfoEntry = gen;
@@ -283,11 +283,17 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 	enableIp6 = g_c_b_n("Enable IPv6 Support");
 	g_g_a_c_s(enableIp6,0,3,1,1);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enableIp6),p_entry->geteIPv6());
+	
+	checkUseSock5 = g_c_b_n("Enable Sock5 Conn");
+	g_g_a_c_s(checkUseSock5,0,4,1,1);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkUseSock5),p_entry->get(SettingsManager::USE_SOCK5,SETTING(USE_SOCK5)));
+
 
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), boxConnection ,lan(_("Connection Setup")) );
 	//Actions Page
 	treeView = gtk_tree_view_new();
 	GtkWidget* boxKickAction = gtk_grid_new();
+	g_object_set(G_OBJECT(treeView),"expand",TRUE,NULL);
 	gtk_grid_attach(GTK_GRID(boxKickAction),treeView,0,0,3,3);
 	///Actions
 	actionView.setView(GTK_TREE_VIEW(treeView));
@@ -311,6 +317,7 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 
 	GtkWidget *scroll = gtk_scrolled_window_new(NULL,NULL);
 	GtkWidget *shareTree = gtk_tree_view_new();
+	g_object_set(G_OBJECT(shareTree),"expand",TRUE,NULL);//this fixes size
 	shareView.setView(GTK_TREE_VIEW(shareTree));
 	shareView.insertColumn(_("Virtual Name"), G_TYPE_STRING, TreeView::STRING, -1);
 	shareView.insertColumn(_("Directory"), G_TYPE_STRING, TreeView::STRING, -1);
@@ -320,9 +327,10 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 	shareStore = gtk_list_store_newv(shareView.getColCount(), shareView.getGTypes());
 	gtk_tree_view_set_model(shareView.get(), GTK_TREE_MODEL(shareStore));
 	shareView.setSortColumn_gui(_("Size"), "Real Size");
-	gtk_container_add(GTK_CONTAINER(shareTree),GTK_WIDGET(shareView.get()));
+	g_signal_connect(shareView.get(), "button-release-event", G_CALLBACK(onShareButtonReleased_gui), (gpointer)this);
+	gtk_container_add(GTK_CONTAINER(scroll),GTK_WIDGET(shareView.get()));
 
-	gtk_grid_attach(GTK_GRID(boxShare),scroll,0,0,4,4);
+	gtk_grid_attach(GTK_GRID(boxShare),scroll,0,0,7,7);
 
 	button_add = gtk_button_new_with_label("Add");
 	button_rem = gtk_button_new_with_label("Remove");
@@ -333,11 +341,17 @@ FavoriteHubDialog::FavoriteHubDialog(FavoriteHubEntry* entry):
 //	gtk_grid_attach(GTK_GRID(grid),button_edit,2,0,1,1);
 	labelShareSize = gtk_label_new("");
 	gtk_grid_attach(GTK_GRID(grid),labelShareSize,2,5,1,1);
-	gtk_grid_attach(GTK_GRID(boxShare),grid,0,5,1,1);
+	gtk_grid_attach(GTK_GRID(boxShare),grid,0,8,1,1);
 
+	updateShares_gui();
 
 	g_signal_connect(button_add, "clicked", G_CALLBACK(onAddShare_gui), (gpointer)this);
 	g_signal_connect(button_rem, "clicked", G_CALLBACK(onRemoveShare_gui), (gpointer)this);
+	//check
+	checkHideShare = g_c_b_n(_("Hide Share"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkHideShare), p_entry->getHideShare() );
+
+	gtk_grid_attach(GTK_GRID(boxShare),checkHideShare,0,9,1,1);
 
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook) , boxShare, lan("Share Setup"));
 
@@ -417,6 +431,10 @@ bool FavoriteHubDialog::initDialog(UnMapIter &groups)
 			p_entry->setAutoConnect(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkAutoConnect)));
 			p_entry->set(SettingsManager::LOG_CHAT_B, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(enableLog)));
 			p_entry->setHideShare(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkHideShare)));
+			p_entry->set(SettingsManager::USE_HIGHLITING,gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkHigh)));
+			
+			p_entry->set(SettingsManager::USE_SOCK5,gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkUseSock5)));
+			
 			p_entry->setCheckAtConn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkOnConn)));
 			p_entry->setCheckFilelists(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkFilelists)));
 			p_entry->setCheckClients(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkClients)));
@@ -613,7 +631,6 @@ void FavoriteHubDialog::onAddShare_gui(GtkWidget*, gpointer data)
                                       _("_Cancel"),
                                       GTK_RESPONSE_CANCEL,
                                       NULL);
-                        //gtk_window_set_transient_for(GTK_WINDOW(dialog),GTK_WINDOW(s->getContainer()));
 
 			GtkWidget *box = gtk_dialog_get_content_area (GTK_DIALOG(dialog));
 			GtkWidget *entry = gtk_entry_new();
@@ -637,12 +654,12 @@ void FavoriteHubDialog::onAddShare_gui(GtkWidget*, gpointer data)
 					if(share->getName().empty())
 					{
 						share = new ShareManager(s->p_entry->getServer());
+						share->addDirectory(path, name);
+						s->p_entry->setShareManager(share);
+						FavoriteManager::getInstance()->save();
+						s->p_entry->getShareManager()->refresh(true,false,false,NULL);
 					}
-					share->addDirectory(path, name);
-					s->p_entry->setShareManager(share);
-					FavoriteManager::getInstance()->save();
-					s->p_entry->getShareManager()->refresh();
-					//s->updateShares_gui();
+						
 				}
 				catch (const ShareException &e)
 				{
@@ -718,5 +735,19 @@ void FavoriteHubDialog::addShare_gui(string path, string name)
 		shareView.col(_("Size")), Util::formatBytes(size).c_str(),
 		shareView.col("Real Size"), size,
 		-1);
+}
+
+
+gboolean FavoriteHubDialog::onShareButtonReleased_gui(GtkWidget*, GdkEventButton*, gpointer data)
+{
+	FavoriteHubDialog *fd = (FavoriteHubDialog*)data;
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(fd->shareView.get());
+
+	if (gtk_tree_selection_count_selected_rows(selection) == 0)
+		gtk_widget_set_sensitive(fd->button_rem, FALSE);
+	else
+		gtk_widget_set_sensitive(fd->button_rem, TRUE);
+
+	return FALSE;
 }
 

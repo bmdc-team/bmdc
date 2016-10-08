@@ -36,7 +36,9 @@
 #include <dcpp/HttpDownload.h>
 #include <dcpp/version.h>
 #include <dcpp/ThrottleManager.h>
+#if 0
 #include <dcpp/PluginManager.h>
+#endif
 #include <dcpp/ConnectivityManager.h>
 #include <dcpp/HashManager.h>
 
@@ -280,12 +282,12 @@ MainWindow::MainWindow():
 
 	// Set all windows to the default icon
 	gtk_window_set_default_icon_name(g_get_prgname());
-	#ifdef _WIN32
+	//#ifdef _WIN32
 	//note do not check Gerror here
 	GdkPixbuf* buf = NULL;
-	buf = gdk_pixbuf_new_from_resource("/org/gtk/bmdc/icons/hicolor/96x96/apps/bmdc.png",NULL);
+	buf = gdk_pixbuf_new_from_resource("/org/bmdc-team/bmdc/icons/hicolor/96x96/apps/bmdc.png",NULL);
 	gtk_window_set_default_icon(buf);
-	#endif
+	//#endif
 
 	// All notebooks created in glade need one page.
 	// In our case, this is just a placeholder, so we remove it.
@@ -450,8 +452,9 @@ MainWindow::MainWindow():
 	setInitThrotles();
 	Sound::start();
 	Notify::start();
-
+#if 0
 	PluginManager::getInstance()->runHook(HOOK_UI_CREATED, getContainer(), NULL);
+#endif	
 }
 
 MainWindow::~MainWindow()
@@ -2846,9 +2849,9 @@ void MainWindow::onIdle()
 	XScreenSaverQueryInfo(display, DefaultRootWindow(display), _mit_info);
 			
 if(_idleDetectionPossible) {
-	g_print("Detection Part 2");
+	//g_print("Detection Part 2");
 		long idlesecs = (_mit_info->idle/1000); // in sec
-		//TODO: (1000 ms = 1s)
+		//NOTE: (1000 ms = 1s)
 		if (idlesecs > SETTING(AWAY_IDLE)) {
 				if(!dcpp::Util::getAway()) {//dont set away twice
 

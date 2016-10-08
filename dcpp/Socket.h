@@ -86,7 +86,7 @@ public:
 		TYPE_UDP = IPPROTO_UDP
 	};
 
-	explicit Socket(SocketType type) : /*v4only(false),*/type(type) { }
+	explicit Socket(SocketType type) : type(type) { }
 
 	virtual ~Socket() { }
 
@@ -97,8 +97,8 @@ public:
 	 * @param aPort Server port.
 	 * @throw SocketException If any connection error occurs.
 	 */
-	virtual void connect(const string& aIp, const int16_t& aPort, const string& localPort = Util::emptyString);
-	void connect(const string& aIp, uint16_t aPort, uint16_t localPort = 0) { connect(aIp, aPort == 0 ? -1 : aPort, localPort == 0 ? Util::emptyString : Util::toString(localPort)); }
+	virtual void connect(const string& aIp, const int16_t& aPort, const string& localPort = "");
+	void connect(const string& aIp, uint16_t aPort, uint16_t localPort = 0) { connect(aIp, aPort == 0 ? -1 : aPort, localPort == 0 ? "" : Util::toString(localPort)); }
 
 	/**
 	 * Same as connect(), but through the SOCKS5 server
@@ -114,8 +114,8 @@ public:
 	void writeAll(const void* aBuffer, int aLen, uint32_t timeout = 0);
 	virtual int write(const void* aBuffer, int aLen);
 	int write(const string& aData) { return write(aData.data(), (int)aData.length()); }
-	virtual void writeTo(const string& aIp, const string& aPort, const void* aBuffer, int aLen, bool proxy = true);
-	void writeTo(const string& aIp, const string& aPort, const string& aData) { writeTo(aIp, aPort, aData.data(), (int)aData.length()); }
+	virtual void writeTo(const string& aIp, const uint16_t& aPort, const void* aBuffer, int aLen, bool proxy = true);
+	void writeTo(const string& aIp, const uint16_t& aPort, const string& aData) { writeTo(aIp, aPort, aData.data(), (int)aData.length()); }
 	virtual void shutdown() noexcept;
 	virtual void close() noexcept;
 	void disconnect() noexcept;
@@ -188,7 +188,6 @@ public:
 	GETSET(string, ip, Ip);
 	GETSET(string, localIp4, LocalIp4);
 	GETSET(string, localIp6, LocalIp6);
-//	GETSET(bool, v4only, V4only);
 	socket_t getSock() const;
 protected:
 	mutable SocketHandle sock4;

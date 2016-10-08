@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2016 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,9 @@
 #include "ConnectivityManager.h"
 #include "FavoriteManager.h"
 #include "TimerManager.h"
+#if 0
 #include "PluginManager.h"
+#endif
 #include "DebugManager.h"
 #include "LogManager.h"
 
@@ -94,7 +96,7 @@ void Client::reloadSettings(bool updateNick) {
 // reset HubSettings to refresh it without a need to reopen hub window
 	HubSettings emptySettings;
 	*static_cast<HubSettings*>(this) = emptySettings;
-	
+
 	FavoriteHubEntry* fav = FavoriteManager::getInstance()->getFavoriteHubEntry(getHubUrl());
 	if(fav)
 	{
@@ -124,7 +126,7 @@ void Client::reloadSettings(bool updateNick) {
 		checkNick(curNick);
 		set(SettingsManager::NICK, curNick);
 	}else
-		set(SettingsManager::NICK,prevNick);
+		set(SettingsManager::NICK, prevNick);
 }
 
 const string Client::getUserIp() const {
@@ -157,7 +159,7 @@ void Client::connect() {
 	try {
 		sock = BufferedSocket::getSocket(separator);
 		sock->addListener(this);
-		sock->connect(address, port, secure, SETTING(ALLOW_UNTRUSTED_HUBS), true, keyprint);
+		sock->connect(address, port, secure, SETTING(ALLOW_UNTRUSTED_HUBS), HUBSETTING(USE_SOCK5) && (HUBSETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5) , keyprint);
 	} catch(const Exception& e) {
 		state = STATE_DISCONNECTED;
 		fire(ClientListener::Failed(), this, e.getError());
@@ -173,16 +175,16 @@ void Client::send(const char* aMessage, size_t aLen) {
 		return;
 	}
 	dcdebug("\nPlugins");
-	
+#if 0	
 	if(PluginManager::getInstance()->runHook(HOOK_NETWORK_HUB_OUT, this, aMessage))
 		return;
-		
+#endif		
 	Lock l(cs);
 	updateActivity();
 	sock->write(aMessage, aLen);
 	COMMAND_DEBUG(aMessage,TYPE_HUB,OUTGOING, getHubUrl());
 }
-
+#if 0
 HubData* Client::getPluginObject() noexcept {
 	resetEntity();
 
@@ -196,7 +198,7 @@ HubData* Client::getPluginObject() noexcept {
 
 	return &pod;
 }
-
+#endif
 void Client::on(Connected) noexcept {
 	updateActivity();
 	ip = sock->getIp();
