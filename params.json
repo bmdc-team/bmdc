@@ -1,6 +1,6 @@
 {
   "name": "BMDC",
   "tagline": "BMDC++ Client",
-  "body": "#### BMDC++ ####\r\nProject BMDC++ is based on FreeDC++ client and some more up-to-date dcpp core.\r\n\r\nCode of it is on [[https://launchpad.net/bmdc++|Launchpad.net]].\r\n\r\nIts Run on any modern Linux Distro.\r\n\r\n#### Attention ####\r\nBMDC++ has been designed to share a non-copyrighted material only! Program developer isn't responsible for activities which the users use this software to. \r\n\r\n\r\n",
+  "body": "#### BMDC++ ####\r\n[![Build Status](https://travis-ci.org/bmdcpp/bmdc.svg?branch=master)](https://travis-ci.org/bmdcpp/bmdc)\r\nProject BMDC++ is based on FreeDC++ client and some more up-to-date dcpp core.\r\n\r\nCode of it is on [[https://launchpad.net/bmdc++|Launchpad.net]].\r\n\r\nIts Run on any modern Linux Distro.\r\n\r\n#### Attention ####\r\nBMDC++ has been designed to share a non-copyrighted material only! Program developer isn't responsible for activities which the users use this software to. \r\n\r\n\r\n",
   "note": "Don't delete this file! It's used internally to help with page regeneration."
 }
