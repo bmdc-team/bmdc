@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2012 Jens Oknelid, paskharen@gmail.com
- * Copyright © 2010-2016 BMDC++
+ * Copyright © 2010-2017 BMDC++
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -706,46 +706,12 @@ GdkPixbuf *WulforUtil::LoadCountryPixbuf(const string country)
 {
 	if(country.empty())
 	{
-		GdkPixbuf* buf = NULL;
-		#if GTK_CHECK_VERSION(3,9,0)
-		GError* error = NULL;
-		buf = gtk_icon_theme_load_icon(icon_theme,"gtk-dialog-question",GTK_ICON_SIZE_MENU,GTK_ICON_LOOKUP_USE_BUILTIN,&error);
-		if(error != NULL || buf == NULL) {
-			g_print("[BMDC:Country] Failed %s",error->message);
-			g_error_free(error);
-			return NULL;
-		}	
-		#else
-		GtkWidget* iwid = gtk_invisible_new ();
-		buf = gtk_widget_render_icon_pixbuf(iwid, BMDC_STOCK_DIALOG_QUESTION, GTK_ICON_SIZE_MENU);
-		#endif
-		return buf;
+		//@GTK3 icons exist all time....
+		return gtk_icon_theme_load_icon(icon_theme,"gtk-dialog-question",GTK_ICON_SIZE_MENU,GTK_ICON_LOOKUP_USE_BUILTIN,NULL);
 	}
-	unordered_map<string,GdkPixbuf*>::const_iterator it = countryIcon.find(country);
-	if( it  != countryIcon.end() )
-			return it->second;
-	GError *error = NULL;
-	#ifdef _WIN32
-		#undef _DATADIR
-		#define _DATADIR "%s"
-		gchar *path = g_strdup_printf(_DATADIR PATH_SEPARATOR_STR "country/%s.png",
-                              WulforManager::get()->getPath().c_str(),(gchar *)country.c_str());
-		#undef _DATADIR
-	#else
-		gchar *path = g_strdup_printf(_DATADIR PATH_SEPARATOR_STR "bmdc/country/%s.png",
-                              (gchar *)country.c_str());
-	#endif	                              
-	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size(path,15,15,&error);
+	string res = "/org/bmdc-team/bmdc/country/"+country+".png";
+	return gdk_pixbuf_new_from_resource_at_scale(res.c_str(),15,15,FALSE,NULL);
 	
-	if (error != NULL || pixbuf == NULL) {
-			g_warning("[BMDC::Country] Cannot open image: %s => %s", path, error->message);
-			g_error_free(error);
-			g_free(path);
-			return NULL;
-	}
-	g_free(path);
-	countryIcon.insert(make_pair(country,pixbuf));
-	return pixbuf;
 }
 
 string WulforUtil::getCountryCode(string _countryname)
@@ -1708,10 +1674,10 @@ void WulforUtil::setTextDeufaults(GtkWidget* widget, std::string strcolor, std::
 		std::string strwhat = (pm ? "pm" : ( hubCid.empty() ? "Hub": hubCid ));
 		if(!where.empty()) strwhat = where;
 				
-		std::string t_css =std::string("GtkTextView#"+strwhat+":insensitive, GtkTextView#"+strwhat+" { background: "+strcolor+" ;}\n\0");
+		std::string t_css =std::string("GtkTextView#"+strwhat+" { background: "+strcolor+" ;}\n\0");
 				
 		if(!mono.empty()) {
-			t_css =	std::string("GtkTextView#"+strwhat+":insensitive, GtkTextView#"+strwhat+" { background: "+strcolor+" ;\n font: "+mono+"; }\n\0");	
+			t_css =	std::string("GtkTextView#"+strwhat+" { background: "+strcolor+" ;\n font: "+mono+"; }\n\0");	
 		}	
 
 		gtk_css_provider_load_from_data (GTK_CSS_PROVIDER (provider),t_css.c_str(),-1, NULL);
@@ -1728,7 +1694,7 @@ void WulforUtil::setTextColor(std::string color,std::string where /*= dcpp::Util
 		GtkCssProvider *provider = gtk_css_provider_new ();
 		GdkDisplay *display = gdk_display_get_default ();
 		GdkScreen *screen = gdk_display_get_default_screen (display);
-		std::string t_css = std::string("GtkTextView#"+where+" ,GtkTextView#"+where+":insensitive, GtkTextView#"+where+":focused, GtkTextView#"+where+":active { color: "+color+" ;} GtkTextView#"+where+":selected { color: red ; }	\n\0");
+		std::string t_css = std::string("GtkTextView#"+where+" ,GtkTextView#"+where+":focus, GtkTextView#"+where+":active { color: "+color+" ;} GtkTextView#"+where+":selected { color: red ; }	\n\0");
 
 		gtk_css_provider_load_from_data (GTK_CSS_PROVIDER (provider),t_css.c_str(),-1, NULL);
 

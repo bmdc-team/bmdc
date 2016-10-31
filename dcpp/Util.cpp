@@ -590,7 +590,7 @@ string Util::getLocalIp() {
 				#endif
 				if(!Util::isPrivateIp(buf) || strncmp(buf, "169.254", 7) != 0)
 				{
-					return buf;
+					break;
 				}
 			}
 			else

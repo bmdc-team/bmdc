@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2012 Jens Oknelid, paskharen@gmail.com
- * Copyright © 2011-2016 BMDC
+ * Copyright © 2011-2017 BMDC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -428,6 +428,7 @@ void TreeView::addColumn_gui(Column& column)
 			g_object_set(renderer, "xalign", 0.0, NULL); // Doesn't work yet. See: http://bugzilla.gnome.org/show_bug.cgi?id=334576
 			col = gtk_tree_view_column_new_with_attributes(column.title.c_str(),
 				renderer, "text", column.pos, "value", TreeView::col(column.linkedCol), NULL);
+				
 			break;
 		}	
 		case EXSIZE:
