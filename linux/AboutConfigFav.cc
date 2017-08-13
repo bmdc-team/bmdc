@@ -18,7 +18,7 @@
 #include "../dcpp/stdinc.h"
 #include "../dcpp/SettingsManager.h"
 #include "AboutConfigFav.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "settingsmanager.hh"
 #include "treeview.hh"
 

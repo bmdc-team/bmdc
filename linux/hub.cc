@@ -37,7 +37,7 @@
 #include "../dcpp/HighlightManager.h"
 #include "../dcpp/AVManager.h"
 #include "../dcpp/Text.h"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "privatemessage.hh"
 #include "search.hh"
 #include "settingsmanager.hh"
@@ -45,7 +45,6 @@
 #include "emoticons.hh"
 #include "UserCommandMenu.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
 #include "version.hh"
 
 #include "ignoremenu.hh"

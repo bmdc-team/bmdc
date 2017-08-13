@@ -25,7 +25,7 @@
 #include <iomanip>
 #include <iterator>
 #include "transfers.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "wulformanager.hh"
 #include "settingsmanager.hh"
 #include "func.hh"

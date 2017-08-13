@@ -20,7 +20,7 @@
  */
 
 #include "settingsmanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include <glib/gi18n.h>
 #include "../dcpp/Util.h"
 #include "ignoremenu.hh"

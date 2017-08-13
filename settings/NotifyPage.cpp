@@ -19,7 +19,7 @@
 #include "NotifyPage.hh"
 #include "definitons.hh"
 #include <dcpp/Text.h>
-#include <linux/WulforUtil.hh>
+#include <linux/GuiUtil.hh>
 #include <linux/notify.hh>
 #include "seUtil.hh"
 

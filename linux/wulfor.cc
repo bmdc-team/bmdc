@@ -34,7 +34,7 @@
 #include "settingsmanager.hh"
 #include "IgnoreTempManager.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "Splash.hh"
 #include "version.hh"
 #include <iostream>

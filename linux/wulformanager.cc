@@ -21,7 +21,7 @@
  */
 
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 
 #include <iostream>
 #include <glib/gi18n.h>

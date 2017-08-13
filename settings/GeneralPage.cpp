@@ -22,7 +22,7 @@
 #include "definitons.hh"
 #include "seUtil.hh"
 #include <dcpp/SettingsManager.h>
-#include <linux/WulforUtil.hh>
+#include <linux/GuiUtil.hh>
 #include <linux/settingsmanager.hh>
 
 using namespace std;

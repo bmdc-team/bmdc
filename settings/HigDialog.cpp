@@ -19,7 +19,7 @@
 #include <dcpp/Util.h>
 #include <dcpp/ColorSettings.h>
 #include <linux/entry.hh>
-#include <linux/WulforUtil.hh>
+#include <linux/GuiUtil.hh>
 #include "HigDialog.hh"
 #include "definitons.hh"
 

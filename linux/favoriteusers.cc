@@ -26,7 +26,7 @@
 #include "../dcpp/ClientManager.h"
 #include "settingsmanager.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "message.hh"
 
 using namespace std;

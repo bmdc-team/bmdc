@@ -36,7 +36,7 @@
  */
 
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "settingsmanager.hh"
 #include "../dcpp/Text.h"
 #include "notify.hh"

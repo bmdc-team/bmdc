@@ -20,7 +20,7 @@
  * using OpenSSL with this program is allowed.
  */
 
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 

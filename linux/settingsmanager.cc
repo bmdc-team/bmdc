@@ -25,7 +25,7 @@
 #include "../dcpp/SimpleXML.h"
 #include "../dcpp/Util.h"
 #include "../dcpp/StringTokenizer.h"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "message.hh"
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>

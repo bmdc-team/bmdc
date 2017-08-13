@@ -27,7 +27,7 @@
 #include "../dcpp/DCPlusPlus.h"
 #include "../dcpp/FavoriteManager.h"
 #include "../dcpp/ClientManager.h"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "bookentry.hh"
 #include "treeview.hh"
 

@@ -24,7 +24,7 @@
 
 #include "settingsmanager.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "emoticons.hh"
 #include "emoticonsdialog.hh"
 

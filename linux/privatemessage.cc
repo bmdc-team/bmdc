@@ -33,7 +33,7 @@
 #include "emoticonsdialog.hh"
 #include "emoticons.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "search.hh"
 #include "sound.hh"
 

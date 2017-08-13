@@ -40,7 +40,7 @@
 #include "sound.hh"
 #include "notify.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 
 #define ICON_SIZE 32
 #define ICON_SIZE_NORMAL 22

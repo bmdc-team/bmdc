@@ -27,7 +27,7 @@
 #include "settingsmanager.hh"
 #include "search.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 
 using namespace std;
 using namespace dcpp;

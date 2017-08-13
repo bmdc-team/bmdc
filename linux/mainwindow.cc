@@ -61,7 +61,7 @@
 #include "emoticons.hh"
 #include "UserCommandMenu.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "version.hh"
 #include "System.hh"
 #include "cmddebug.hh"

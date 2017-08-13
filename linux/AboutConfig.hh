@@ -22,7 +22,7 @@
 #include "../dcpp/stdinc.h"
 #include "../dcpp/DCPlusPlus.h"
 #include "../dcpp/SettingsManager.h"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "bookentry.hh"
 #include "treeview.hh"
 

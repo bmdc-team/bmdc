@@ -18,7 +18,7 @@
 
 #include "System.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "settingsmanager.hh"
 #include "../dcpp/LogManager.h"
 

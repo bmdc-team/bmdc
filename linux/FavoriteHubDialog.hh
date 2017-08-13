@@ -26,7 +26,7 @@
 #include "../dcpp/RawManager.h"
 #include "entry.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "treeview.hh"
 
 using namespace std;

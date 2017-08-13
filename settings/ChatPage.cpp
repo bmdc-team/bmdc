@@ -16,7 +16,7 @@
 
 #include <dcpp/format.h>
 #include <dcpp/Util.h>
-#include <linux/WulforUtil.hh>
+#include <linux/GuiUtil.hh>
 #include "ChatPage.hh"
 #include "seUtil.hh"
 

@@ -32,7 +32,7 @@
 #if 0
 #include "../dcpp/PluginManager.h"
 #endif
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "dialogentry.hh"
 #include "treeview.hh"
 

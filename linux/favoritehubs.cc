@@ -23,7 +23,7 @@
 #include "favoritehubs.hh"
 #include "settingsmanager.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "FavoriteHubDialog.hh"
 #include "AboutConfigFav.hh"
 

@@ -22,7 +22,7 @@
 
 #include "treeview.hh"
 #include "settingsmanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "../dcpp/Util.h"
 #include <glib/gi18n.h>
 

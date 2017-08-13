@@ -35,7 +35,7 @@
 #include "sound.hh"
 #include "notify.hh"
 #include "message.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include <queue>
 #include <map>
 #include "ignoremenu.hh"

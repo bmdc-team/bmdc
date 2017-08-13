@@ -6,7 +6,7 @@
 #include "../dcpp/Util.h"
 #include "ShellCommand.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 
 using namespace std;
 

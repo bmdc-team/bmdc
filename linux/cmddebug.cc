@@ -22,7 +22,7 @@
 
 #include "cmddebug.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "settingsmanager.hh"
 #include "../dcpp/DebugManager.h"
 

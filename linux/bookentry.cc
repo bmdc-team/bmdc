@@ -23,7 +23,7 @@
 #include "bookentry.hh"
 #include "wulformanager.hh"
 #include "settingsmanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "gtk-fixies.hh"
 
 

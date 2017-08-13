@@ -16,7 +16,7 @@
 
 #include "TabsPage.hh"
 #include <linux/settingsmanager.hh>
-#include <linux/WulforUtil.hh>
+#include <linux/GuiUtil.hh>
 #include "seUtil.hh"
 
 using namespace std;

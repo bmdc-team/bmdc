@@ -18,7 +18,7 @@
 
 #include "recenthub.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "hub.hh"
 #include "settingsmanager.hh"
 

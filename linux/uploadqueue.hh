@@ -26,7 +26,7 @@
 #include "../dcpp/UploadManager.h"
 #include <unordered_map>
 #include "bookentry.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "treeview.hh"
 
 class UploadQueue:

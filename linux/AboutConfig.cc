@@ -19,7 +19,7 @@
 #include "../dcpp/stdinc.h"
 #include "../dcpp/SettingsManager.h"
 #include "AboutConfig.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "settingsmanager.hh"
 #include "treeview.hh"
 

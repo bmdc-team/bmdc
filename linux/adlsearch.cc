@@ -21,7 +21,7 @@
  */
 
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "adlsearch.hh"
 
 using namespace std;

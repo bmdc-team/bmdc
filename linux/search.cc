@@ -33,7 +33,7 @@
 #include "../dcpp/format.h"
 #include "UserCommandMenu.hh"
 #include "wulformanager.hh"
-#include "WulforUtil.hh"
+#include "GuiUtil.hh"
 #include "settingsmanager.hh"
 #include "gtk-fixies.hh"
 
