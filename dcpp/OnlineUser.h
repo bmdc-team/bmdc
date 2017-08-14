@@ -140,9 +140,6 @@ private:
 };
 
 class OnlineUser 
-#if 0 
-: public PluginEntity<UserData> 
-#endif
 {
 public:
 	typedef vector<OnlineUser*> List;
@@ -187,9 +184,6 @@ public:
 	}
 
 	bool getChecked(bool filelist = false, bool checkComplete = true);
-#if 0
-	UserData* getPluginObject() noexcept;
-#endif	
 	GETSET(Identity, identity, Identity);
 private:
 

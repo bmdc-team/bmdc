@@ -34,9 +34,6 @@
 #include "ThrottleManager.h"
 #include "UploadManager.h"
 #include "format.h"
-#if 0
-#include "PluginManager.h"
-#endif
 #include "DebugManager.h"
 #include <cmath>
 #include "BufferedSocket.h"
@@ -279,17 +276,9 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) noexcept {
 			return;
 
 		replyTo = findUser(AdcCommand::toSID(temp));
-		if(!replyTo
-		#if 0
-		|| PluginManager::getInstance()->runHook(HOOK_CHAT_PM_IN, replyTo, chatMessage)
-		 #endif
-		)
+		if(!replyTo)
 			return;
 	}
-	#if 0
-	 else if(PluginManager::getInstance()->runHook(HOOK_CHAT_IN, this, chatMessage))
-		return;
-	#endif
 	fire(ClientListener::Message(), this, ChatMessage(chatMessage, from, to, replyTo, c.hasFlag("ME", 1),
 		c.getParam("TS", 1, temp) ? Util::toInt64(temp) : 0));
 }
@@ -736,10 +725,6 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 void AdcHub::hubMessage(const string& aMessage, bool thirdPerson) {
 	if(state != STATE_NORMAL)
 		return;
-#if 0
-	if(PluginManager::getInstance()->runHook(HOOK_CHAT_OUT, this, aMessage))
-		return;
-#endif
 	AdcCommand c(AdcCommand::CMD_MSG, AdcCommand::TYPE_BROADCAST);
 	c.addParam(aMessage);
 	if(thirdPerson)
@@ -1167,10 +1152,7 @@ void AdcHub::on(Line l, const string& aLine) noexcept {
 	}
 
 	COMMAND_DEBUG(aLine,TYPE_HUB,INCOMING,getHubUrl());
-	#if 0
-	if(PluginManager::getInstance()->runHook(HOOK_NETWORK_HUB_IN, this, aLine))
-		return;
-	#endif
+
 	dispatch(aLine);
 }
 

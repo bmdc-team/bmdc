@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2012 Jens Oknelid, paskharen@gmail.com
- * Copyright © 2010-2017 BMDC
+ * Copyright © 2010-2018 BMDC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,9 +39,7 @@
 #include "../dcpp/HttpDownload.h"
 #include "../dcpp/version.h"
 #include "../dcpp/ThrottleManager.h"
-#if 0
-#include "../dcpp/PluginManager.h"
-#endif
+
 #include "../dcpp/ConnectivityManager.h"
 #include "../dcpp/HashManager.h"
 
@@ -444,9 +442,6 @@ MainWindow::MainWindow():
 	setInitThrotles();
 	Sound::start();
 	Notify::start();
-#if 0
-	PluginManager::getInstance()->runHook(HOOK_UI_CREATED, getContainer(), NULL);
-#endif	
 }
 
 MainWindow::~MainWindow()

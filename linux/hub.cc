@@ -30,9 +30,6 @@
 #include "../dcpp/version.h"
 #include "../dcpp/ChatMessage.h"
 #include "../dcpp/GeoManager.h"
-#if 0
-#include "../dcpp/PluginManager.h"
-#endif
 #include "../dcpp/ConnectivityManager.h"
 #include "../dcpp/HighlightManager.h"
 #include "../dcpp/AVManager.h"
@@ -1099,10 +1096,6 @@ void Hub::nickToChat_gui(const string &nick)
 
 void Hub::addMessage_gui(string cid, string message, Msg::TypeMsg typemsg, string sCountry)
 {
-#if 0
-	PluginManager::getInstance()->onChatDisplay(message);
-#endif
-	
 	message = message.c_str();
 	if (message.empty())
 		return;
@@ -2423,13 +2416,6 @@ void Hub::onSendMessage_gui(GtkEntry *entry, gpointer data)
 		{
 			params = text.substr(separator + 1);
 		}
-#if 0
-		if(PluginManager::getInstance()->onChatCommand(hub->client, text )) {
-			// Plugins, chat commands
-		  return;
-		}
-	    else
-#endif	    
 	    if(WulforUtil::checkCommand(command, param, mess, status, thirdPerson))
         {
 			if(!mess.empty())
@@ -2609,10 +2595,6 @@ void Hub::onSendMessage_gui(GtkEntry *entry, gpointer data)
 			"\r\n/scmyinfo\r\n\t" + _("Start/Stop checkers of Myinfo") +
 			"\r\n/showjoins\r\n\t" + _("Join/Parts: 1 - enable , other disable ") +
 			"\r\n/showfavjoins\r\n\t" + _("Fav Joins/Parts: 1 - enable , other disable") +
-			#if 0
-			"\r\n/plgadd\r\n\t" + _("Add Plugin") +
-			"\r\n/plist\r\n\t" + _("List of Plugins") +
-			#endif
 			"\r\n/addfavorite\r\n\t" + _("Add Indepent Fav") +
 			"\r\n/topic\r\n\t" + _("Show topic") +
 			"\r\n/raw <rawtext>\r\n\t" + _("Send Raw data") +
@@ -2626,27 +2608,6 @@ void Hub::onSendMessage_gui(GtkEntry *entry, gpointer data)
 			WulforUtil::commands
 			,Msg::SYSTEM,"");
 		}
-#if 0		
-		else if(command == "plgadd")
-		{
-			if(!param.empty())
-				PluginManager::getInstance()->addPlugin(param);
-		}
-		else if(command == "plist") 
-		{
-			size_t idx = 0;
-			string status = string(_("Loaded plugins: ")) + _("\n");
-			PluginManager* pm = PluginManager::getInstance();
-			const auto list = pm->getPluginList();
-			for(auto i = list.begin(); i != list.end(); ++i, ++idx) {
-				Plugin p = pm->getPlugin(*i);
-				status += *i +"\t"+p.name+ ":\t";
-				status += pm->isLoaded(p.guid) ? _("Loaded") : _("Not loaded");
-				status += "\n";
-			}
-			hub->addMessage_gui("",status,Msg::SYSTEM,"");
-		}
-#endif		
 		else if (command == "join" && !param.empty())
 		{
 			if (SETTING(JOIN_OPEN_NEW_WINDOW))
@@ -4506,11 +4467,6 @@ string Hub::formatAdditionalInfo(const string& sIp, bool bIp, bool bCC) {
 
 void Hub::on(ClientListener::Message, Client*, const ChatMessage& message) noexcept
 {
-	#if 0
-	string txt = message.text;
-	if(PluginManager::getInstance()->onChatDisplay(txt))
-		return;
-	#endif
 	if (message.text.empty())
 		return;
 
@@ -4758,14 +4714,6 @@ void Hub::on(ClientListener::HubTopic, Client *, const string &top) noexcept
     F3 *func = new F3(this, &Hub::addStatusMessage_gui, _("Topic: ") + top, Msg::STATUS, Sound::NONE);
     WulforManager::get()->dispatchGuiFunc(func);
 }
-#if 0
-void Hub::on(ClientListener::ClientLine, Client* , const string &mess, int) noexcept
-{
-	typedef Func3<Hub, string, Msg::TypeMsg, Sound::TypeSound> F3;
-	F3 *func = new F3(this, &Hub::addStatusMessage_gui, mess, Msg::STATUS, Sound::NONE);
-	WulforManager::get()->dispatchGuiFunc(func);
-}
-#endif
 //Custom popup menu
 GtkWidget *Hub::createmenu()
 {
@@ -4834,7 +4782,7 @@ void Hub::onShareView(gpointer data)
 	Hub* hub = (Hub*)data;
 	ShareManager *sm = hub->client->getShareManager();
 	sm->generateXmlList();
-	WulforManager::get()->getMainWindow()->showShareBrowser_gui(HintedUser(ClientManager::getInstance()->getMe(),hub->client->getHubUrl()),sm->getBZXmlFile(),"",0, true);
+	WulforManager::get()->getMainWindow()->showShareBrowser_gui(HintedUser(ClientManager::getInstance()->getMe(),hub->client->getHubUrl()),sm->getBZXmlFile(),string(),0, true);
 }
 
 void Hub::onRefreshShare(gpointer data)
@@ -4901,7 +4849,7 @@ void Hub::on_setImage_tab(GtkButton*, gpointer data)
 			
 			FavoriteHubEntryPtr fav = FavoriteManager::getInstance()->getFavoriteHubEntry(hub->client->getHubUrl());
 			
-			if(fav != NULL) {
+			if(fav) {
 				fav->set(SettingsManager::HUB_ICON_STR,hub->client->get(SettingsManager::HUB_ICON_STR,SETTING(HUB_ICON_STR)));
 				FavoriteManager::getInstance()->save();
 			}
@@ -4970,7 +4918,7 @@ void Hub::SetTabText(gpointer data)
 		hub->client->fire(ClientListener::HubUpdated(), hub->client);
 
 		FavoriteHubEntryPtr fav = FavoriteManager::getInstance()->getFavoriteHubEntry(hub->client->getHubUrl());
-		if(fav != NULL) {
+		if(fav) {
 			fav->set(SettingsManager::HUB_TEXT_STR,hub->client->get(SettingsManager::HUB_TEXT_STR,SETTING(HUB_TEXT_STR)));
 			FavoriteManager::getInstance()->save();
 		}
@@ -4993,15 +4941,15 @@ void Hub::onToglleButtonIcon(GtkToggleButton *button, gpointer data)
 		pHub->client->fire(ClientListener::HubUpdated(), pHub->client);
 
 		FavoriteHubEntry* fav = FavoriteManager::getInstance()->getFavoriteHubEntry(pHub->client->getHubUrl());
-		if(fav != NULL) {
+		if(fav) {
 			fav->set(SettingsManager::HUB_ICON_STR,string());
 			FavoriteManager::getInstance()->save();
 		}
 	}
 	
-	if( pHub->tab_button == NULL) return;
-	gtk_widget_set_sensitive(pHub->tab_button, !bActive);
+	if( pHub->tab_button)
+        gtk_widget_set_sensitive(pHub->tab_button, !bActive);
 	
-	if( pHub->tab_image == NULL ) return;
-	gtk_widget_set_sensitive(pHub->tab_image, !bActive);
+	if( pHub->tab_image)
+        gtk_widget_set_sensitive(pHub->tab_image, !bActive);
 }

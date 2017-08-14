@@ -769,10 +769,10 @@ bool FavoriteUsers::findUser_gui(const string &cid, GtkTreeIter *iter)
 		if (iter)
 			*iter = it->second;
 
-		return TRUE;
+		return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
 bool FavoriteUsers::findNicks_gui(const string &nick, GtkTreeIter *iter)

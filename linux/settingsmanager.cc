@@ -25,8 +25,10 @@
 #include "../dcpp/SimpleXML.h"
 #include "../dcpp/Util.h"
 #include "../dcpp/StringTokenizer.h"
+
 #include "GuiUtil.hh"
 #include "message.hh"
+
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #ifdef _WIN32
@@ -585,7 +587,7 @@ void WulforSettingsManager::load()
 
 			xml.stepOut();
 		}
-
+//prewapps
 		if (xml.findChild("PreviewApps"))
 		{
 			xml.stepIn();
@@ -604,7 +606,7 @@ void WulforSettingsManager::load()
 void WulforSettingsManager::save()
 {
 	SimpleXML xml;
-	xml.addTag("BMDCPlusPlus");//@prg name
+	xml.addTag("BMDCPlusPlus");
 	xml.stepIn();
 	xml.addTag("Settings");
 	xml.stepIn();
@@ -624,7 +626,7 @@ void WulforSettingsManager::save()
 	}
 
 	xml.stepOut();
-
+//prevapp
 	xml.addTag("PreviewApps");
 	xml.stepIn();
 

@@ -36,18 +36,11 @@ using namespace dcpp;
 
 ShareBrowser::ShareBrowser(HintedUser user, const string &file, const string &initialDirectory, int64_t speed, bool full):
 	BookEntry(Entry::SHARE_BROWSER, _("List: ") + WulforUtil::getNicks(user), "sharebrowser", user.user->getCID().toBase32()),
-	user(user),
-	file(file),
+	user(user),	file(file),
 	initialDirectory(initialDirectory),
-	listing(user),
-	shareSize(0),
-	currentSize(0),
-	shareItems(0),
-	currentItems(0),
-	skipHits(0),
-	speed(speed),
-	updateFileView(true),
-	fullfl(full)
+	listing(user), shareSize(0), currentSize(0),
+	shareItems(0), currentItems(0), skipHits(0),
+	speed(speed), updateFileView(true), fullfl(full)
 {
 	// Use the nick from the file name in case the user is offline and core only returns CID
 	nick = WulforUtil::getNicks(user);
@@ -58,7 +51,8 @@ ShareBrowser::ShareBrowser(HintedUser user, const string &file, const string &in
 		nick = name.substr(0, loc);
 		setLabel_gui(_("List: ") + nick);
 	}
-	setName(CID(nick).toBase32());//@Nick can have in it .% and so thus reason why we use CID'ed ver
+    //@Nick can have in it .% and so on thus reason why we use CID'ed ver
+	setName(CID(nick).toBase32());
 
 	// Configure the dialogs
 	File::ensureDirectory(SETTING(DOWNLOAD_DIRECTORY));
@@ -215,7 +209,7 @@ void ShareBrowser::openDir_gui(const string &dir)
 bool ShareBrowser::findDir_gui(const string &dir, GtkTreeIter *parent)
 {
 	if (dir.empty())
-		return TRUE;
+		return true;
 
 	string::size_type i = dir.find_first_of(PATH_SEPARATOR);
 	const string &current = dir.substr(0, i);
@@ -578,7 +572,7 @@ void ShareBrowser::popupDirMenu_gui()
 	#if GTK_CHECK_VERSION(3,22,0)
 		gtk_menu_popup_at_pointer(GTK_MENU(getWidget("dirMenu")),NULL);
 	#else
-	gtk_menu_popup(GTK_MENU(getWidget("dirMenu")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
+        gtk_menu_popup(GTK_MENU(getWidget("dirMenu")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 	#endif
 	gtk_widget_show_all(getWidget("dirMenu"));
 }
@@ -1058,7 +1052,7 @@ void ShareBrowser::downloadDir_client(DirectoryListing::Directory *dir, string t
 
 void ShareBrowser::matchQueue_client()
 {
-	int matched = QueueManager::getInstance()->matchListing(listing);//NOTE: core 0.762
+	int matched = QueueManager::getInstance()->matchListing(listing);
 	string message = _("Matched ") + Util::toString(matched) + _(" files");
 
 	typedef Func2<ShareBrowser, string, string> F2;
@@ -1188,7 +1182,6 @@ int ShareBrowser::ThreadedDirectoryListing::run()
  	else
  	{
 		mDir = Text::toT(Util::toNmdcFile(mWindow->listing.updateXML(mTxt)));
-		//mWindow->listing->save(mWindow->path);
  	}
 		typedef Func2<ShareBrowser,dcpp::DirectoryListing::Directory*, GtkTreeIter*> F2;
 		F2 *func = new F2(mWindow,&ShareBrowser::buildDirs_gui,mWindow->listing.getRoot(),NULL);
