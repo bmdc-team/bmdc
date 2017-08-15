@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2012 Jens Oknelid, paskharen@gmail.com
- * Copyright © 2010-2017 BMDC
+ * Copyright © 2010-2018 BMDC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,8 +104,8 @@ class Hub:
 public:
 		void addStatusMessage_gui(std::string message, Msg::TypeMsg typemsg, Sound::TypeSound sound);
 		void addStatusMessage_gui(std::string message, Msg::TypeMsg typemsg, Sound::TypeSound sound, Notify::TypeNotify notify);
+private:
 		void nickToChat_gui(const std::string &nick);
-private:		
 		void addFavoriteUser_gui(dcpp::StringMap params);
 		void removeFavoriteUser_gui(dcpp::StringMap params);
 		//BMDC++
@@ -248,9 +248,6 @@ private:
 		virtual void on(dcpp::ClientListener::SearchFlood, dcpp::Client *, const std::string &message) noexcept;
 		virtual void on(dcpp::ClientListener::CheatMessage, dcpp::Client *, const std::string &msg) noexcept;
 		virtual void on(dcpp::ClientListener::HubTopic, dcpp::Client *, const std::string &top) noexcept;
-		#if 0
-		virtual void on(dcpp::ClientListener::ClientLine, dcpp::Client* , const std::string &mess, int type) noexcept;
-		#endif
 		virtual void on(dcpp::QueueManagerListener::Finished, dcpp::QueueItem *item, const std::string& dir, int64_t avSpeed) noexcept;
 		
 		UserMap userMap;
@@ -285,7 +282,7 @@ private:
 		GtkWidget *m_menu;
 		Tag::TypeTag tagMsg;
 		unsigned int historyIndex;
-		static const int maxLines = 500;//1000
+		static const int maxLines = 500;
 		int64_t totalShared;
 		int ImgLimit;
 		int width;

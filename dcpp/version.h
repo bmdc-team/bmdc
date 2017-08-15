@@ -39,8 +39,6 @@
 		#define BMDC_REVISION_STRING "1.0.0"
 	#endif	
 #endif
-#define xstrver(s) strver(s)
-#define strver(s) #s
 
 namespace dcpp {
 extern const string fullVersionString;

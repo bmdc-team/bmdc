@@ -20,10 +20,8 @@
 #define DCPLUSPLUS_DCPP_UTIL_H
 
 #include "compiler.h"
-//--
 //-- For locale
 #include <glib.h>
-
 #ifndef _WIN32
 #include <glib/gi18n.h>
 #endif
@@ -38,32 +36,17 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/utsname.h>
-
-#if 0
-#include <sys/sysinfo.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #endif
 
-#endif
 #include <fcntl.h>
 #include <map>
 #include <cstring>
 #include <algorithm> 
 
-#ifdef _WIN32
-
-#define PATH_SEPARATOR '\\'
-#define PATH_SEPARATOR_STR "\\"
-
-#else
-
-#define PATH_SEPARATOR '/'
-#define PATH_SEPARATOR_STR "/"
-
-#include <sys/stat.h>
-#include <unistd.h>
-#include <cstdlib>
-
-#endif
+#define PATH_SEPARATOR G_DIR_SEPARATOR
+#define PATH_SEPARATOR_STR G_DIR_SEPARATOR_S
 
 #include "Text.h"
 #include "GetSet.h"

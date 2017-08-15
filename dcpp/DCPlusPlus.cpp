@@ -41,7 +41,6 @@
 #include "DetectionManager.h"
 #include "RawManager.h"
 #include "CalcADLAction.h"
-#include "PluginApiImpl.h"
 #ifdef HAVE_LIBTAR
 	#include "BackupManager.h"
 	#include "ExportManager.h"

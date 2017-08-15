@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2012 Jens Oknelid, paskharen@gmail.com
- * Copyright © 2010-2017 BMDC++
+ * Copyright © 2010-2018 BMDC++
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@
  * In addition, as a special exception, compiling, linking, and/or
  * using OpenSSL with this program is allowed.
  */
+#include <gdk/gdk.h>
 
 #include "hub.hh"
-#include <gdk/gdk.h>
 #include "../dcpp/FavoriteManager.h"
 #include "../dcpp/HashManager.h"
 #include "../dcpp/SearchManager.h"
@@ -34,6 +34,7 @@
 #include "../dcpp/HighlightManager.h"
 #include "../dcpp/AVManager.h"
 #include "../dcpp/Text.h"
+#include "version.hh"
 #include "GuiUtil.hh"
 #include "privatemessage.hh"
 #include "search.hh"
@@ -42,8 +43,6 @@
 #include "emoticons.hh"
 #include "UserCommandMenu.hh"
 #include "wulformanager.hh"
-#include "version.hh"
-
 #include "ignoremenu.hh"
 #include "IgnoreTempManager.hh"
 
@@ -128,10 +127,10 @@ Hub::Hub(const string &address, const string &encoding):
 	set_Header_tooltip_gui();
 
 	// Initialize the chat window
-	string color = p_faventry ? p_faventry->get(SettingsManager::BACKGROUND_CHAT_COLOR, SETTING(BACKGROUND_CHAT_COLOR)) : SETTING(BACKGROUND_CHAT_COLOR);
-	string image = p_faventry ? p_faventry->get(SettingsManager::BACKGROUND_CHAT_IMAGE, SETTING(BACKGROUND_CHAT_IMAGE)) : SETTING(BACKGROUND_CHAT_IMAGE);
+	string sColor = p_faventry ? p_faventry->get(SettingsManager::BACKGROUND_CHAT_COLOR, SETTING(BACKGROUND_CHAT_COLOR)) : SETTING(BACKGROUND_CHAT_COLOR);
+	string sImage = p_faventry ? p_faventry->get(SettingsManager::BACKGROUND_CHAT_IMAGE, SETTING(BACKGROUND_CHAT_IMAGE)) : SETTING(BACKGROUND_CHAT_IMAGE);
 
-	WulforUtil::setTextDeufaults(getWidget("chatText"),color,image,false,address);
+	WulforUtil::setTextDeufaults(getWidget("chatText"),sColor,sImage,false,address);
 
 	// the reference count on the buffer is not incremented and caller of this function won't own a new reference.
 	chatBuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(getWidget("chatText")));
@@ -146,13 +145,8 @@ Hub::Hub(const string &address, const string &encoding):
 	tag_mark = gtk_text_buffer_create_mark(chatBuffer, NULL, &iter, TRUE);//false
 	emot_mark = gtk_text_buffer_create_mark(chatBuffer, NULL, &iter, TRUE);
 
-
-#if GTK_CHECK_VERSION(3, 16, 0)
-	handCursor = gdk_cursor_new_for_display(gdk_display_get_default (),GDK_HAND2);
-#endif
-#if GTK_CHECK_VERSION(3,18,1)
 	handCursor = gdk_cursor_new_from_name(gdk_display_get_default(),"pointer");
-#endif
+
 	// image magnet
 	imageLoad.first = "";
 	imageLoad.second = NULL;
@@ -333,7 +327,7 @@ Hub::Hub(const string &address, const string &encoding):
 
 	RecentHubEntry* rhe = FavoriteManager::getInstance()->getRecentHubEntry(address);
 
-	if(rhe == NULL) {
+	if(!rhe) {
 		RecentHubEntry entry;
 		entry.setName("***");
 		entry.setDescription("***");
@@ -385,9 +379,6 @@ gint Hub::sort_iter_compare_func_nick(GtkTreeModel *model, GtkTreeIter  *a,
 	}
 	else
 	{
-		// NOTE:
-		// g_utf8_collate works better 
-		// that stricmp
 		g_autofree gchar* a_nick = g_utf8_casefold(nick_a,-1);
 		g_autofree gchar* b_nick = g_utf8_casefold(nick_b,-1);
 		ret = g_utf8_collate(a_nick,b_nick);
@@ -639,8 +630,8 @@ void Hub::set_Header_tooltip_gui()
 gboolean Hub::onUserListTooltip_gui(GtkWidget *widget, gint x, gint y, gboolean keyboard_tip, GtkTooltip *_tooltip, gpointer data)
 {
 	Hub* hub = (Hub*)data;
-	if(hub == NULL) return FALSE; //@Should never hapen but :-D
-	if( _tooltip == NULL) return FALSE;
+	if(!hub) return FALSE; //@Should never hapen but :-D
+	if(!_tooltip) return FALSE;
 
 	GtkTreeIter iter;
 	GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
@@ -696,7 +687,8 @@ void Hub::setStatus_gui(string statusBar, string text)
 		if (statusBar == "statusMain")
 		{
 			text = "[" + Util::getShortTimeString() + "] " + text;
-			if(statustext.size() > (uint32_t)WGETI("max-tooltips"))
+			
+            if(statustext.size() > (uint32_t)WGETI("max-tooltips"))
 			{
 			    statustext.pop();
 			}
@@ -749,7 +741,7 @@ bool Hub::findNick_gui(const string &nick, GtkTreeIter *iter)
 void Hub::updateUser_gui(ParamMap params)
 {
 	GtkTreeIter iter;
-	int64_t shared = Util::toInt64(params["Shared"]);
+	uint64_t shared = Util::toInt64(params["Shared"]);
 	const string& cid = params["CID"];
 	const string icon = "bmdc-" + params["Icon"];
 	const gchar* Nick = g_filename_to_utf8(params["Nick"].c_str(),-1,NULL,NULL,NULL);
@@ -976,11 +968,9 @@ void Hub::popupNickMenu_gui()
 	g_free(markup);
 	
 	ignoreMenu->buildMenu_gui(lastNick,cid,ip);	
-	#if GTK_CHECK_VERSION(3,22,0)
-		gtk_menu_popup_at_pointer(GTK_MENU(getWidget("nickMenu")),NULL);
-	#else
-		gtk_menu_popup(GTK_MENU(getWidget("nickMenu")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
-	#endif
+
+	gtk_menu_popup_at_pointer(GTK_MENU(getWidget("nickMenu")),NULL);
+
 	gtk_widget_show_all(getWidget("nickMenu"));
 }
 
@@ -1108,7 +1098,7 @@ void Hub::addMessage_gui(string cid, string message, Msg::TypeMsg typemsg, strin
 		line += "\n";
 
 	if( client && client->get(SettingsManager::TIME_STAMPS,SETTING(TIME_STAMPS)))
-			line += "[" + Util::getShortTimeString() + "] ";
+			line += string(g_filename_to_utf8( string("[" + Util::getShortTimeString() + "] ").c_str(),-1,NULL,NULL,NULL));
 			
 	line += string(g_filename_to_utf8(message.c_str(),-1,NULL,NULL,NULL));
 	
