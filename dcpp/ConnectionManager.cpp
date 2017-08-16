@@ -507,9 +507,10 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 
 	if(!aSource->getUser()) {
 		// Make sure we know who it is, i e that he/she is connected...
-
-		aSource->setUser(ClientManager::getInstance()->findUser(cid,aSource->getHubUrl()));
-		if(!aSource->getUser() || !ClientManager::getInstance()->isOnline(aSource->getUser())) {
+        OnlineUser* ou = ClientManager::getInstance()->findOnlineUser(aSource->getHintedUser());
+		//aSource->setUser(ClientManager::getInstance()->findUser(cid,aSource->getHubUrl()));
+		//if(!ClientManager::getInstance()->isOnline(aSource->getUser())) {
+        if(!ou) {
 			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", nick.c_str());
 			putConnection(aSource);
 			return;

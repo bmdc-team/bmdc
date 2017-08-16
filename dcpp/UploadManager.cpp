@@ -63,7 +63,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 		return false;
 	}
 	///@BMDC++
-	if((aFile.length() > 7) && (aFile.find("TestSUR") != string::npos)) { //Check also size
+	if((aFile.length() > 7) && (aFile.find("TestSUR") != string::npos)) { 
 		LogManager::getInstance()->message("User: " + ClientManager::getInstance()->getNicks((*aSource.getUser()),"")[0] + " (" + aSource.getRemoteIp() + ") testing me!");
 	}
 
@@ -122,7 +122,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 	if(!aSource.isSet(UserConnection::FLAG_HASSLOT)) {
 		bool hasReserved = hasReservedSlot(aSource.getUser());
 		bool isFavorite = FavoriteManager::getInstance()->hasSlot(aSource.getUser());
-		bool hasFreeSlot = [&]() -> bool { Lock l(cs); return (getFreeSlots() > 0) && ((waitingFiles.empty() && connectingUsers.empty()) || isConnecting(aSource.getUser())); }();
+		bool hasFreeSlot = [&]() -> bool { Lock l(cs); return ( (getFreeSlots() > 0) && ((waitingFiles.empty() && connectingUsers.empty()) || isConnecting(aSource.getUser()))); }();
 
 		if(!(hasReserved || isFavorite || getAutoSlot() || hasFreeSlot)) {
 			bool supportsMini = aSource.isSet(UserConnection::FLAG_SUPPORTS_MINISLOTS);
@@ -132,7 +132,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 			} else {
 				// Check for tth root identifier
 				string tFile = aFile;
-				if ( (tFile.compare(0, 4, "TTH/") == 0) && (aFile.length() > 4))//check also size...
+				if ( (tFile.compare(0, 4, "TTH/") == 0))//check also size...
 					tFile = sm->toVirtual(TTHValue(aFile.substr(4)));
 
 				aSource.maxedOut(addFailedUpload(aSource, tFile +

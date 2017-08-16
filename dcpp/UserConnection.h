@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2018 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,10 +114,11 @@ public:
 	void error(const string& aError) { send("$Error " + aError + '|'); }
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); }
 	void getListLen() { send("$GetListLen|"); }
-	void maxedOut(size_t queue_position = 0) {
+	void maxedOut(size_t queue_position = 0) 
+    {
 		 bool sendPos = queue_position > 0;
 		 if(isSet(FLAG_NMDC)) {
-			send("$MaxedOut" + (sendPos ? (" " + Util::toString(queue_position)) : Util::emptyString) + "|");
+			send("$MaxedOut" + (sendPos ? (" " + Util::toString(queue_position)) : std::string()) + "|");
 		 } else {
 		  	AdcCommand cmd(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_SLOTS_FULL, "Slots full");
 			if(sendPos) {

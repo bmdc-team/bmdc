@@ -250,7 +250,6 @@ void BufferedSocket::threadRead() {
 					line = l;
 					if(deleted == false)
 						delete [] buffer;
-					break;
 				}
 				break;
 			}	
@@ -304,7 +303,6 @@ void BufferedSocket::threadRead() {
 						}
 					}
 				}
-				break;
 			}
 			default:continue;
 		}
