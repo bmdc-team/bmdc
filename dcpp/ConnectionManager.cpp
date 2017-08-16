@@ -333,7 +333,7 @@ void ConnectionManager::nmdcConnect(const string& aServer, const uint16_t& aPort
 	UserConnection* uc = getConnection(true, false);
 	
 	
-	if (checkCTM2HUB(aServer, Util::toString(aPort), hubUrl))
+	if (checkCTM2HUB(aServer, aPort, hubUrl))
 		return;
 	
 	
@@ -507,8 +507,11 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 
 	if(!aSource->getUser()) {
 		// Make sure we know who it is, i e that he/she is connected...
-        OnlineUser* ou = ClientManager::getInstance()->findOnlineUser(aSource->getHintedUser());
-		//aSource->setUser(ClientManager::getInstance()->findUser(cid,aSource->getHubUrl()));
+        ClientManager::getInstance()->lock();
+        OnlineUser* ou = ClientManager::getInstance()->findOnlineUser(CID(cid),aSource->getHubUrl());
+		if(ou)
+            aSource->setUser(ou->getUser());
+        //aSource->setUser(ClientManager::getInstance()->findUser(cid,aSource->getHubUrl()));
 		//if(!ClientManager::getInstance()->isOnline(aSource->getUser())) {
         if(!ou) {
 			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", nick.c_str());
@@ -849,7 +852,7 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 	ClientManager::getInstance()->setSupports(conn->getHintedUser(),sup);
 }
 
- bool ConnectionManager::checkCTM2HUB(const string& aServer, const string& aPort, const string& aHubUrl)
+ bool ConnectionManager::checkCTM2HUB(const string& aServer, const uint16_t& aPort, const string& aHubUrl)
  {
 	const string server_lower = Text::toLower(aServer);
 	dcassert(server_lower == aServer);
@@ -863,7 +866,7 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
     if(is_ctm2hub)
 	{
-		LogManager::getInstance()->message(autosprintf(_("Block CTM2HUB = '%s:%s' on hub '%s'"), aServer.c_str(), aPort.c_str(), aHubUrl.c_str()));
+		LogManager::getInstance()->message(autosprintf(_("Block CTM2HUB = '%s:%d' on hub '%s'"), aServer.c_str(), aPort, aHubUrl.c_str()));
 		return true;
 	}
 

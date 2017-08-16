@@ -186,7 +186,8 @@ void putOffline(OnlineUser* ou, bool disconnect) noexcept {
 
 
 OnlineUser* findOnlineUserHint(const CID& cid, const string& hintUrl, OnlinePairC& p) const {
-	p = onlineUsers.equal_range(cid);
+	Lock l(cs);
+    p = onlineUsers.equal_range(cid);
 	if(p.first == p.second) // no user found with the given CID.
 		return nullptr;
 

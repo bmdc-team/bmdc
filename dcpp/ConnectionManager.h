@@ -194,7 +194,7 @@ private:
 	bool checkKeyprint(UserConnection *aSource);
 	
 	/*https://bugs.launchpad.net/dcplusplus/+bug/1419478*/
-	bool checkCTM2HUB(const string& aServer, const string& aPort, const string& aHubUrl);
+	bool checkCTM2HUB(const string& aServer, const uint16_t& aPort, const string& aHubUrl);
 
 	void failed(UserConnection* aSource, const string& aError, bool protocolError);
 

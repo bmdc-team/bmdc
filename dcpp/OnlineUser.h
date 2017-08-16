@@ -24,7 +24,6 @@
 #include "Flags.h"
 #include "Util.h"
 #include "User.h"
-#include "PluginEntity.h"
 #include "TimerManager.h"
 #include "GetSet.h"
 

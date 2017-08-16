@@ -326,17 +326,19 @@ void ClientManager::userCommand(const HintedUser& user, const UserCommand& uc, P
 
 void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 	Lock l(cs);
-	auto i = onlineUsers.find(cid);
-	if(i != onlineUsers.end()) {
-		OnlineUser& u = *i->second;
-		if(cmd.getType() == AdcCommand::TYPE_UDP && !u.getIdentity().isUdpActive()) {
+//	auto i = onlineUsers.find(cid);
+//	if(i != onlineUsers.end()) {
+    OnlineUser* ou = findOnlineUser(cid,string());
+    if(ou) {
+		//OnlineUser& u = *i->second;
+		if(cmd.getType() == AdcCommand::TYPE_UDP && !ou->getIdentity().isUdpActive()) {
 			cmd.setType(AdcCommand::TYPE_DIRECT);
-			cmd.setTo(u.getIdentity().getSID());
-			u.getClient().send(cmd);
+			cmd.setTo(ou->getIdentity().getSID());
+			ou->getClient().send(cmd);
 		} else {
 			try {
-				string ip = u.getIdentity().getIp();
-				uint16_t port = u.getIdentity().getUdpPort();
+				string ip = ou->getIdentity().getIp();
+				uint16_t port = ou->getIdentity().getUdpPort();
 				bool ok = false;
 
 				if(Util::isIp6(ip) == true)
@@ -478,8 +480,8 @@ void ClientManager::on(TimerManagerListener::Minute, uint64_t /* aTick */) noexc
 	auto i = users.begin();
 	while(i != users.end()) {
 		if(i->second.unique()) {
-			unordered_map<CID, NickMapEntry>::const_iterator n = nicks.find(i->second->getCID());//should also remove from nicks...
-			if(n != nicks.end()) nicks.erase(n);
+			//unordered_map<CID, NickMapEntry>::const_iterator n = nicks.find(i->second->getCID());//should also remove from nicks...
+			//if(n != nicks.end()) nicks.erase(n);
 			users.erase(i++);
 		} else {
 			++i;
@@ -779,7 +781,7 @@ void ClientManager::sendRawCommand(OnlineUser& ou, const string& aRaw, bool chec
 
 string ClientManager::getHubsLoadInfo() const {
     string hubsInfo = string();
-    int64_t overallShare = 0;
+    uint64_t overallShare = 0;
     uint32_t overallUsers = 0;
     {
  
