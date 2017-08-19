@@ -336,7 +336,7 @@ void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 			cmd.setTo(ou->getIdentity().getSID());
 			ou->getClient().send(cmd);
 		} else {
-			try {
+			
 				string ip = ou->getIdentity().getIp();
 				uint16_t port = ou->getIdentity().getUdpPort();
 				bool ok = false;
@@ -345,7 +345,8 @@ void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 					ok = true;
 				else
 					ok = (inet_addr(ip.c_str()) != INADDR_NONE);
-				
+			
+            try {	
 				if(ok == true) {
 					udp.writeTo(ip, port, cmd.toString(getMe()->getCID()));
 				}	
@@ -371,7 +372,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 	Speaker<ClientManagerListener>::fire(ClientManagerListener::IncomingSearch(), aString);
 	if(aSeeker.empty()) return;
 	if(aSeeker.length() < 4) return;
-	if(aClient == NULL) return;
+	if(!aClient) return;
 
 
 	bool isPassive = (aSeeker.compare(0, 4, "Hub:") == 0);
@@ -402,7 +403,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 
 		} else {
 			try {
-				string ip;
+				string ip = string();
 				uint16_t port = 0 ;
 				string seek = Util::trimUrl(aSeeker);
 				

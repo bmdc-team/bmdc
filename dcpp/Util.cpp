@@ -166,7 +166,7 @@ void Util::initialize(PathsMap pathOverrides) {
 	paths[PATH_GLOBAL_CONFIG] = paths[PATH_USER_CONFIG] = home + "/.bmdc++-debug/";
 	#endif
 	#ifdef _WIN32
-	loadBootConfig();
+        loadBootConfig();
 	#endif
 	if(!File::isAbsolute(paths[PATH_USER_CONFIG])) {
 		paths[PATH_USER_CONFIG] = paths[PATH_GLOBAL_CONFIG] + paths[PATH_USER_CONFIG];
@@ -946,8 +946,8 @@ string Util::formatTime(const string &msg, const time_t t) {
 		}*/
 		if(!g_utf8_validate(buf.c_str(),-1,NULL))
 			return string();
-		gsize oread,owrite;
-		buf = g_filename_to_utf8(buf.c_str(),-1,&oread,&owrite,NULL);
+		//gsize oread,owrite;
+		buf = g_filename_to_utf8(buf.c_str(),-1,NULL,NULL,NULL);
 
 		return buf;
 	}
@@ -1233,7 +1233,7 @@ string Util::convertCEscapes(string tmp)
 
 string Util::getIETFLang() {
 #ifdef _WIN32
-	auto lang = SETTING(LANGUAGE);
+	string lang = SETTING(LANGUAGE);
 	/*if(lang.empty()) {
 		string lang = _nl_locale_name_default();
 	}*/
