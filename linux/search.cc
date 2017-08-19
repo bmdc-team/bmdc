@@ -609,7 +609,7 @@ void Search::search_gui()
 
 	if (SearchManager::getInstance()->okToSearch())
 	{
-		dcdebug("Sent ADC extensions : %s\n",Util::toString(";", exts).c_str());//NOTE: core 0.770
+		dcdebug("Sent ADC extensions : %s\n",Util::toString(";", exts).c_str());
 		SearchManager::getInstance()->search(clients, text, llsize, (SearchManager::TypeModes)ftype, mode, "manual", exts);//NOTE: core 0.770
 
 		if (SETTING(CLEAR_SEARCH)) // Only clear if the search was sent.
@@ -618,7 +618,7 @@ void Search::search_gui()
 	else
 	{
 		int32_t waitFor = SearchManager::getInstance()->timeToSearch();
-		string line = _("Searching too soon, retry in ") + Util::toString(waitFor) + " s";
+		string line = _("Searching too soon, retry in ") + Util::formatSeconds(waitFor) + " s";
 		setStatus_gui("statusbar1", line);
 		setStatus_gui("statusbar2", "");
 		setStatus_gui("statusbar3", "");
