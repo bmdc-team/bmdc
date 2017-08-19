@@ -2266,11 +2266,12 @@ void Hub::onRipeDbItem_gui(GtkWidget* widget, gpointer data)
 	hub->setStatus_gui("statusMain",error);
 }
 
-gboolean Hub::onMagnetTagEvent_gui(GtkTextTag*, GObject*, GdkEvent *event, GtkTextIter*, gpointer data)
+gboolean Hub::onMagnetTagEvent_gui(GtkTextTag* tag, GObject*, GdkEvent *event, GtkTextIter*, gpointer data)
 {
 	if (event->type == GDK_BUTTON_PRESS)
 	{
 		Hub *hub = (Hub *)data;
+        hub->selectedTagStr = WulforUtil::getTagName(tag);
 		switch (event->button.button)
 		{
 			case 1:
