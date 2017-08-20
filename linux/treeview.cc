@@ -294,7 +294,7 @@ void TreeView::addColumn_gui(Column& column)
 			renderer = gtk_cell_renderer_text_new();
 			col = gtk_tree_view_column_new_with_attributes(column.title.c_str(),
 				renderer, "text", column.pos, NULL);
-			gtk_tree_view_column_add_attribute(col, renderer, "foreground-set", TRUE);
+			//gtk_tree_view_column_add_attribute(col, renderer, "foreground-set", TRUE);
 			gtk_tree_view_column_add_attribute(col, renderer, "foreground", TreeView::col(column.linkedCol));
 			column.renderer2 = renderer;
 			break;
@@ -392,7 +392,7 @@ void TreeView::addColumn_gui(Column& column)
 			renderer = gtk_cell_renderer_text_new();
 			gtk_tree_view_column_pack_start(col, renderer, true);
 			gtk_tree_view_column_add_attribute(col, renderer, "text", column.pos);
-			gtk_tree_view_column_add_attribute(col, renderer, "foreground-set", TRUE);
+			//gtk_tree_view_column_add_attribute(col, renderer, "foreground-set", TRUE);
 			gtk_tree_view_column_add_attribute(col, renderer, "foreground", TreeView::col(column.linkedTextColor));
 			break;
 		}	
@@ -409,7 +409,7 @@ void TreeView::addColumn_gui(Column& column)
 			renderer = gtk_cell_renderer_text_new();
 			gtk_tree_view_column_pack_start(col, renderer, true);
 			gtk_tree_view_column_add_attribute(col, renderer, "text", column.pos);
-			gtk_tree_view_column_add_attribute(col, renderer, "foreground-set", TRUE);
+			//gtk_tree_view_column_add_attribute(col, renderer, "foreground-set", TRUE);
 			gtk_tree_view_column_add_attribute(col, renderer, "foreground", TreeView::col(column.linkedTextColor));
 			break;
 		}	
