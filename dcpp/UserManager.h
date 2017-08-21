@@ -166,7 +166,7 @@ void putOnline(OnlineUser* ou) noexcept {
 	if(ou && !ou->getUser()->isOnline()) {
 		ou->getUser()->setFlag(User::ONLINE);
 		ou->initializeData(); //RSX++-like
-		//fire(ClientManagerListener::UserConnected(), ou->getUser());
+		fire(UsersManagerListener::UserConnected(), ou->getUser());
 	}
 }
 
