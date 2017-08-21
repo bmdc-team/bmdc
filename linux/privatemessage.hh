@@ -30,14 +30,14 @@
 #include "UserCommandMenu.hh"
 #include <vector>
 #include "../dcpp/Flags.h"
-
+#include "../dcpp/UserManager.h"
 
 class WulforSettingsManager;
 class EmoticonsDialog;
 
 class PrivateMessage:
 	public BookEntry,
-	public dcpp::ClientManagerListener,
+	public dcpp::UsersManagerListener,
 	public dcpp::Flags
 {
 	public:
@@ -54,7 +54,7 @@ class PrivateMessage:
 		bool getIsOffline() const { return isSet(OFFLINE); }
 
 	private:
-		using dcpp::ClientManagerListener::on;
+		using dcpp::UsersManagerListener::on;
 		//@ Status of PM's user
 		typedef enum
 		{
@@ -114,8 +114,8 @@ class PrivateMessage:
 		void grantSlot_client();
 
 		// client callback
-		virtual void on(dcpp::ClientManagerListener::UserConnected, const dcpp::UserPtr& aUser) noexcept;
-		virtual void on(dcpp::ClientManagerListener::UserDisconnected, const dcpp::UserPtr& aUser) noexcept;
+		virtual void on(dcpp::UsersManagerListener::UserConnected, const dcpp::UserPtr& aUser) noexcept;
+		virtual void on(dcpp::UsersManagerListener::UserDisconnected, const dcpp::UserPtr& aUser) noexcept;
 
 		GtkTextBuffer *messageBuffer;
 		GtkTextMark *mark, *start_mark, *end_mark, *tag_mark, *emot_mark;

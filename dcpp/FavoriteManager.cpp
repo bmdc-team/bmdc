@@ -59,7 +59,7 @@ FavoriteHubEntry::FavAction::FavAction(bool _enabled, string _raw /*= Util::empt
 
 FavoriteManager::FavoriteManager() : lastId(0), useHttp(false), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false) {
 	SettingsManager::getInstance()->addListener(this);
-	ClientManager::getInstance()->addListener(this);
+	UsersManager::getInstance()->addListener(this);
 
 	File::ensureDirectory(Util::getHubListsPath());
 
@@ -77,7 +77,7 @@ FavoriteManager::FavoriteManager() : lastId(0), useHttp(false), running(false), 
 }
 
 FavoriteManager::~FavoriteManager() {
-	ClientManager::getInstance()->removeListener(this);
+	UsersManager::getInstance()->removeListener(this);
 	SettingsManager::getInstance()->removeListener(this);
 	if(c) {
 		c->removeListener(this);

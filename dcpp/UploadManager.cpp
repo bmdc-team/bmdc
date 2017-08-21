@@ -38,13 +38,13 @@
 namespace dcpp {
 
 UploadManager::UploadManager() : running(0), extra(0), lastGrant(0), lastFreeSlots(-1) {
-	ClientManager::getInstance()->addListener(this);
+	UsersManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
 }
 
 UploadManager::~UploadManager() {
 	TimerManager::getInstance()->removeListener(this);
-	ClientManager::getInstance()->removeListener(this);
+	UsersManager::getInstance()->removeListener(this);
 	while(true) {
 		{
 			Lock l(cs);
@@ -621,7 +621,7 @@ void UploadManager::on(TimerManagerListener::Second, uint64_t) noexcept {
 	notifyQueuedUsers();
 }
 
-void UploadManager::on(ClientManagerListener::UserDisconnected, const UserPtr& aUser) noexcept {
+void UploadManager::on(UsersManagerListener::UserDisconnected, const UserPtr& aUser) noexcept {
 	if(!aUser->isOnline()) {
 		clearUserFiles(aUser);
 	}

@@ -19,16 +19,37 @@
 #define USER_MANAGER
 #include "format.h"
 #include "Singleton.h"
+#include "Speaker.h"
 #include "ConnectionManager.h"
+#include "Client.h"
+#include <unordered_map>
+#include <unordered_set>
 
 namespace dcpp
 {
+    
+class UsersManagerListener
+{   
+    public:
+	virtual ~UsersManagerListener() { }
+	template<int I>	struct X { enum { TYPE = I }; };
 
-class UsersManager: public Singleton<UsersManager>
+	typedef X<0> UserConnected;
+	typedef X<1> UserUpdated;
+	typedef X<2> UserDisconnected;
+
+	/** User online in at least one hub */
+	virtual void on(UserConnected, const UserPtr&) noexcept { }
+	virtual void on(UserUpdated, const OnlineUser&) noexcept { }
+	/** User offline in all hubs */
+	virtual void on(UserDisconnected, const UserPtr&) noexcept { }
+};
+
+class UsersManager: public Singleton<UsersManager>, public Speaker<UsersManagerListener>
 {
 	typedef map<CID,string> OnlineHubUserMap;
 	
-	typedef unordered_multimap<CID, OnlineUser*> OnlineMap;
+	typedef std::unordered_multimap<CID, OnlineUser*> OnlineMap;
 	typedef OnlineMap::iterator OnlineIter;
 	typedef OnlineMap::const_iterator OnlineIterC;
 	typedef pair<OnlineIter, OnlineIter> OnlinePair;
@@ -177,9 +198,9 @@ void putOffline(OnlineUser* ou, bool disconnect) noexcept {
 		if(disconnect)
 			ConnectionManager::getInstance()->disconnect(u);
 
-	//	fire(ClientManagerListener::UserDisconnected(), u);
+		fire(UsersManagerListener::UserDisconnected(), u);
 	} else if(diff > 1) {
-		//	fire(ClientManagerListener::UserUpdated(), *ou);
+			fire(UsersManagerListener::UserUpdated(), *ou);
 	}
 }
 
@@ -230,7 +251,7 @@ void setIpAddress(const UserPtr& p, const string& ip) {
 		if( ipv6 == false) {
 			i->second->getIdentity().set("I4", ip);
 		}
-		//fire(ClientManagerListener::UserUpdated(),(dynamic_cast<const OnlineUser&>(*i->second)));
+		fire(UsersManagerListener::UserUpdated(),(dynamic_cast<const OnlineUser&>(*i->second)));
 	}
 }
 private:

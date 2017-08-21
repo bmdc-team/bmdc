@@ -175,7 +175,7 @@ PrivateMessage::PrivateMessage(const string &_cid, const string &_hubUrl):
 
 PrivateMessage::~PrivateMessage()
 {
-	ClientManager::getInstance()->removeListener(this);
+	UsersManager::getInstance()->removeListener(this);
 
 	if (handCursor)
 	{
@@ -192,7 +192,7 @@ PrivateMessage::~PrivateMessage()
 
 void PrivateMessage::show()
 {
-	ClientManager::getInstance()->addListener(this);
+	UsersManager::getInstance()->addListener(this);
 }
 
 void PrivateMessage::addMessage_gui(string message, Msg::TypeMsg typemsg)
@@ -1501,7 +1501,7 @@ void PrivateMessage::grantSlot_client()
 	}
 }
 
-void PrivateMessage::on(ClientManagerListener::UserConnected, const UserPtr& aUser) throw()
+void PrivateMessage::on(UsersManagerListener::UserConnected, const UserPtr& aUser) throw()
 {
 	if (aUser->getCID() == CID(cid))
 	{
@@ -1514,7 +1514,7 @@ void PrivateMessage::on(ClientManagerListener::UserConnected, const UserPtr& aUs
 	}
 }
 
-void PrivateMessage::on(ClientManagerListener::UserDisconnected, const UserPtr& aUser) throw()
+void PrivateMessage::on(UsersManagerListener::UserDisconnected, const UserPtr& aUser) throw()
 {
 	if (aUser->getCID() == CID(cid))
 	{
