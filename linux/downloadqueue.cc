@@ -48,10 +48,10 @@ DownloadQueue::DownloadQueue():
 
 	// Initialize directory treeview
 	dirView.setView(GTK_TREE_VIEW(getWidget("dirView")));
-	dirView.insertColumn("Dir", G_TYPE_STRING, TreeView::ICON_STRING, -1, "Icon");
+	dirView.insertColumn("Dir", G_TYPE_STRING, TreeView::PIXBUF_STRING, -1, "Icon");
 	dirView.insertHiddenColumn("Path", G_TYPE_STRING);
 	dirView.insertHiddenColumn("File Count", G_TYPE_INT);
-	dirView.insertHiddenColumn("Icon", G_TYPE_STRING);
+	dirView.insertHiddenColumn("Icon", GDK_TYPE_PIXBUF);
 	dirView.finalize();
 	dirStore = gtk_tree_store_newv(dirView.getColCount(), dirView.getGTypes());
 	gtk_tree_view_set_model(dirView.get(), GTK_TREE_MODEL(dirStore));
@@ -286,7 +286,7 @@ void DownloadQueue::addFile_gui(StringMap params, bool updateDirs)
 			fileView.col(_("Added")), params["Added"].c_str(),
 			fileView.col("TTH"), params["TTH"].c_str(),
 			fileView.col("Target"), params["Target"].c_str(),
-			fileView.col("Icon"), /*"bmdc-file"*/WulforUtil::loadIconShare(Util::getFileExt(params["Filename"])),
+			fileView.col("Icon"), WulforUtil::loadIconShare(Util::getFileExt(params["Filename"])),
 			-1);
 
 		if (SETTING(BOLD_QUEUE))
@@ -306,7 +306,7 @@ void DownloadQueue::addFile_gui(StringMap params, bool updateDirs)
 				dirView.col("Dir"), "/",
 				dirView.col("Path"), "/",
 				dirView.col("File Count"), 0,
-				dirView.col("Icon"), "bmdc-directory",
+				dirView.col("Icon"), WulforUtil::loadIconShare("directory"),
 				-1);
 		}
 
@@ -350,7 +350,7 @@ void DownloadQueue::addDir_gui(const string &path, GtkTreeIter *parent)
 		dirView.col("Dir"), dir.c_str(),
 		dirView.col("Path"), fullpath.c_str(),
 		dirView.col("File Count"), 0,
-		dirView.col("Icon"), "bmdc-directory",
+		dirView.col("Icon"), WulforUtil::loadIconShare("directory"),
 		-1);
 
 	GtkTreePath *treePath = gtk_tree_model_get_path(GTK_TREE_MODEL(dirStore), parent);

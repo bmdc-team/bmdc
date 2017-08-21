@@ -234,7 +234,7 @@ bool Client::isActiveV4() const {
 }
 
 bool Client::isActiveV6() const {
-	return !getUserIp6().empty();
+	return bIPv6 && (!getUserIp6().empty());
 }
 
 void Client::updateCounts(bool aRemove) {

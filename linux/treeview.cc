@@ -449,10 +449,6 @@ void TreeView::addColumn_gui(Column& column)
 	{
 		gtk_tree_view_column_set_resizable(col, TRUE);
 	}
-	//#if !GTK_CHECK_VERSION(3,8,0)
-	//if (column.width != -1)
-	//	gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
-	//#endif
 
 	//make columns sortable
 	if (column.type != BOOL && column.type != PIXBUF && column.type != EDIT_STRING)

@@ -19,7 +19,7 @@ msgstr ""
 "#-#-#-#-#  linux.pot  #-#-#-#-#\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://sourceforge.net/projects/freedcppmv/\n"
-"POT-Creation-Date: 2017-08-20 13:21+0200\n"
+"POT-Creation-Date: 2017-08-20 19:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -753,7 +753,7 @@ msgstr ""
 #: ui/settingsdialog.ui:4729 ui/settingsdialog.ui:6454
 #: ui/settingsdialog.ui:7608 ui/settingsdialog.ui:7624
 #: ui/settingsdialog.ui:7640 linux/search.cc:417 linux/search.cc:486
-#: linux/sharebrowser.cc:494 linux/sharebrowser.cc:550
+#: linux/sharebrowser.cc:490 linux/sharebrowser.cc:546
 msgid "Browse..."
 msgstr ""
 
@@ -1052,7 +1052,7 @@ msgstr ""
 #: linux/settingsdialog.cc:1061 linux/settingsdialog.cc:1503
 #: linux/settingsdialog.cc:4059 linux/settingsdialog.cc:4079
 #: linux/settingsdialog.cc:4109 linux/settingsdialog.cc:4123
-#: linux/settingsdialog.cc:4178 linux/sharebrowser.cc:291
+#: linux/settingsdialog.cc:4178 linux/sharebrowser.cc:287
 msgid "Directory"
 msgstr ""
 
@@ -1324,9 +1324,9 @@ msgstr ""
 #: linux/search.cc:1774 linux/search.cc:1785 linux/search.cc:1789
 #: linux/search.cc:2050 linux/search.cc:2132 linux/search.cc:2183
 #: linux/sharebrowser.cc:69 linux/sharebrowser.cc:91 linux/sharebrowser.cc:92
-#: linux/sharebrowser.cc:280 linux/sharebrowser.cc:311
-#: linux/sharebrowser.cc:511 linux/sharebrowser.cc:611
-#: linux/sharebrowser.cc:970 linux/sharebrowser.cc:1004 linux/transfers.cc:69
+#: linux/sharebrowser.cc:281 linux/sharebrowser.cc:307
+#: linux/sharebrowser.cc:507 linux/sharebrowser.cc:607
+#: linux/sharebrowser.cc:965 linux/sharebrowser.cc:999 linux/transfers.cc:69
 #: linux/transfers.cc:717 linux/transfers.cc:756 linux/transfers.cc:762
 #: linux/transfers.cc:926 linux/transfers.cc:928 linux/transfers.cc:930
 msgid "Filename"
@@ -2571,8 +2571,8 @@ msgstr ""
 #: linux/search.cc:1795 linux/search.cc:2135 linux/search.cc:2186
 #: linux/settingsdialog.cc:1062 linux/settingsdialog.cc:1068
 #: linux/settingsdialog.cc:4110 linux/settingsdialog.cc:4179
-#: linux/sharebrowser.cc:70 linux/sharebrowser.cc:93 linux/sharebrowser.cc:288
-#: linux/sharebrowser.cc:330 linux/transfers.cc:70 linux/transfers.cc:591
+#: linux/sharebrowser.cc:70 linux/sharebrowser.cc:93 linux/sharebrowser.cc:284
+#: linux/sharebrowser.cc:326 linux/transfers.cc:70 linux/transfers.cc:591
 #: linux/transfers.cc:672 linux/transfers.cc:764 linux/transfers.cc:781
 #: linux/transfers.cc:934
 msgid "Size"
@@ -2752,8 +2752,8 @@ msgstr ""
 #: linux/search.cc:226 linux/search.cc:704 linux/search.cc:783
 #: linux/search.cc:923 linux/search.cc:1774 linux/search.cc:1775
 #: linux/search.cc:1776 linux/search.cc:1790 linux/search.cc:2134
-#: linux/search.cc:2185 linux/sharebrowser.cc:71 linux/sharebrowser.cc:291
-#: linux/sharebrowser.cc:312
+#: linux/search.cc:2185 linux/sharebrowser.cc:71 linux/sharebrowser.cc:287
+#: linux/sharebrowser.cc:308
 msgid "Type"
 msgstr ""
 
@@ -3141,7 +3141,7 @@ msgstr ""
 msgid " empty..."
 msgstr ""
 
-#: linux/finishedtransfers.cc:254 linux/sharebrowser.cc:1056
+#: linux/finishedtransfers.cc:254 linux/sharebrowser.cc:1051
 msgid " files"
 msgstr ""
 
@@ -3423,7 +3423,7 @@ msgstr ""
 msgid "Are you sure you want to delete this item \"%s\"?"
 msgstr ""
 
-#: linux/sharebrowser.cc:78 linux/sharebrowser.cc:336
+#: linux/sharebrowser.cc:78 linux/sharebrowser.cc:332
 msgid "Audio"
 msgstr ""
 
@@ -3486,7 +3486,7 @@ msgstr ""
 msgid "Background Chat Image:"
 msgstr ""
 
-#: linux/sharebrowser.cc:75 linux/sharebrowser.cc:333
+#: linux/sharebrowser.cc:75 linux/sharebrowser.cc:329
 msgid "Bitrate"
 msgstr ""
 
@@ -3587,7 +3587,7 @@ msgid "Client Type"
 msgstr ""
 
 #: linux/bookentry.cc:282 linux/privatemessage.cc:1577 linux/search.cc:2215
-#: linux/sharebrowser.cc:1074
+#: linux/sharebrowser.cc:1069
 msgid "Close"
 msgstr ""
 
@@ -3660,11 +3660,11 @@ msgstr ""
 msgid "Connection Setup"
 msgstr ""
 
-#: linux/treeview.cc:647
+#: linux/treeview.cc:643
 msgid "Copy All"
 msgstr ""
 
-#: linux/privatemessage.cc:1576 linux/sharebrowser.cc:1073
+#: linux/privatemessage.cc:1576 linux/sharebrowser.cc:1068
 msgid "Copy CID"
 msgstr ""
 
@@ -3696,7 +3696,7 @@ msgid ""
 "Core version: %s"
 msgstr ""
 
-#: linux/sharebrowser.cc:74 linux/sharebrowser.cc:332
+#: linux/sharebrowser.cc:74 linux/sharebrowser.cc:328
 msgid "Date"
 msgstr ""
 
@@ -3928,8 +3928,8 @@ msgstr ""
 #: linux/downloadqueue.cc:279 linux/downloadqueue.cc:386 linux/search.cc:108
 #: linux/search.cc:134 linux/search.cc:232 linux/search.cc:707
 #: linux/search.cc:762 linux/search.cc:2140 linux/search.cc:2191
-#: linux/sharebrowser.cc:73 linux/sharebrowser.cc:94 linux/sharebrowser.cc:289
-#: linux/sharebrowser.cc:331
+#: linux/sharebrowser.cc:73 linux/sharebrowser.cc:94 linux/sharebrowser.cc:285
+#: linux/sharebrowser.cc:327
 msgid "Exact Size"
 msgstr ""
 
@@ -4050,7 +4050,7 @@ msgstr ""
 msgid "Files"
 msgstr ""
 
-#: linux/downloadqueue.cc:238 linux/sharebrowser.cc:356
+#: linux/downloadqueue.cc:238 linux/sharebrowser.cc:352
 msgid "Files: "
 msgstr ""
 
@@ -4072,7 +4072,7 @@ msgstr ""
 msgid "Forbiden File"
 msgstr ""
 
-#: linux/sharebrowser.cc:633 linux/sharebrowser.cc:675
+#: linux/sharebrowser.cc:629 linux/sharebrowser.cc:671
 msgid "Found a match"
 msgstr ""
 
@@ -4275,11 +4275,11 @@ msgstr ""
 msgid "Invalid number of slots"
 msgstr ""
 
-#: linux/downloadqueue.cc:236 linux/sharebrowser.cc:361
+#: linux/downloadqueue.cc:236 linux/sharebrowser.cc:357
 msgid "Items: "
 msgstr ""
 
-#: linux/sharebrowser.cc:366
+#: linux/sharebrowser.cc:362
 msgid "Items: 0"
 msgstr ""
 
@@ -4357,7 +4357,7 @@ msgstr ""
 msgid "Magnet Properties / Choice"
 msgstr ""
 
-#: linux/sharebrowser.cc:1056
+#: linux/sharebrowser.cc:1051
 msgid "Matched "
 msgstr ""
 
@@ -4465,11 +4465,11 @@ msgstr ""
 msgid "No errors"
 msgstr ""
 
-#: linux/sharebrowser.cc:645 linux/sharebrowser.cc:833
+#: linux/sharebrowser.cc:641 linux/sharebrowser.cc:829
 msgid "No matches"
 msgstr ""
 
-#: linux/sharebrowser.cc:844
+#: linux/sharebrowser.cc:840
 msgid "No search text entered"
 msgstr ""
 
@@ -4654,7 +4654,7 @@ msgstr ""
 msgid "Requesting"
 msgstr ""
 
-#: linux/sharebrowser.cc:76 linux/sharebrowser.cc:334
+#: linux/sharebrowser.cc:76 linux/sharebrowser.cc:330
 msgid "Resolution"
 msgstr ""
 
@@ -4895,11 +4895,11 @@ msgid "Shutting down dcpp client..."
 msgstr ""
 
 #: linux/downloadqueue.cc:237 linux/downloadqueue.cc:239
-#: linux/sharebrowser.cc:362
+#: linux/sharebrowser.cc:358
 msgid "Size: "
 msgstr ""
 
-#: linux/sharebrowser.cc:367
+#: linux/sharebrowser.cc:363
 msgid "Size: 0 B"
 msgstr ""
 
@@ -4952,7 +4952,7 @@ msgstr ""
 msgid "Speed"
 msgstr ""
 
-#: linux/sharebrowser.cc:374
+#: linux/sharebrowser.cc:370
 msgid "Speed: "
 msgstr ""
 
@@ -5090,7 +5090,7 @@ msgstr ""
 msgid "Total size: "
 msgstr ""
 
-#: linux/sharebrowser.cc:357
+#: linux/sharebrowser.cc:353
 msgid "Total: "
 msgstr ""
 
@@ -5311,7 +5311,7 @@ msgstr ""
 msgid "User unIgnored "
 msgstr ""
 
-#: linux/sharebrowser.cc:1160
+#: linux/sharebrowser.cc:1155
 msgid "User went Offline"
 msgstr ""
 
@@ -5479,7 +5479,7 @@ msgstr ""
 msgid "Users: "
 msgstr ""
 
-#: linux/sharebrowser.cc:77 linux/sharebrowser.cc:335
+#: linux/sharebrowser.cc:77 linux/sharebrowser.cc:331
 msgid "Video"
 msgstr ""
 

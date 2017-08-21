@@ -1267,19 +1267,22 @@ void WulforUtil::drop_combo(GtkWidget *widget, map<std::string,int> m)
 
 GdkPixbuf *WulforUtil::loadIconShare(string ext)
 {
-	if(ext == "directory" || ext.empty())
+	/*if(ext == "directory" || ext.empty())
 	{
 		GError* error = NULL;
-		GdkPixbuf* buf = gtk_icon_theme_load_icon(icon_theme,"folder",GTK_ICON_SIZE_MENU,GTK_ICON_LOOKUP_USE_BUILTIN,&error);
+		GdkPixbuf* buf = gtk_icon_theme_load_icon(icon_theme,"inode-directory",GTK_ICON_SIZE_MENU,GTK_ICON_LOOKUP_USE_BUILTIN,&error);
 		if(error){
 			g_print("Failed %s",error->message);
 			g_error_free(error);
 			return NULL;
 		}	
 		return buf;
-	}
+	}*/
 
 	string tmp = "dummy"+ext;
+    if(ext == "directory")
+        tmp = "inode/directory";
+    
 	g_autofree gchar *tmp2 = g_utf8_strup(tmp.c_str(),-1);
 
 	gboolean is_certain = FALSE;
@@ -1299,7 +1302,7 @@ GdkPixbuf *WulforUtil::loadIconShare(string ext)
 	g_autofree gchar *mime_type = g_content_type_get_mime_type (content_type);
 	GIcon *icon = g_content_type_get_icon(mime_type);
 	GtkIconTheme *theme = gtk_icon_theme_get_default ();
-	GtkIconInfo *info = gtk_icon_theme_lookup_by_gicon(theme,icon, (GtkIconSize)16, GTK_ICON_LOOKUP_GENERIC_FALLBACK);
+	GtkIconInfo *info = gtk_icon_theme_lookup_by_gicon(theme,icon, (GtkIconSize)GTK_ICON_SIZE_MENU,  (GtkIconLookupFlags)(GTK_ICON_LOOKUP_GENERIC_FALLBACK | GTK_ICON_LOOKUP_USE_BUILTIN));
 	GdkPixbuf *icon_d = gtk_icon_info_load_icon (info, NULL);
 	g_object_unref(icon);
 	return icon_d;
