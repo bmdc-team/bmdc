@@ -268,7 +268,7 @@ void TreeView::timeLeftDataFunc(GtkTreeViewColumn*, GtkCellRenderer *renderer, G
 
 	if (seconds >= 0)
 	{
-		timeLeftString = dcpp::Util::formatSeconds(seconds);
+		timeLeftString = dcpp::Util::formatTime("%H:%M:%S",seconds);
 	}
 
 	g_object_set(renderer, "text", timeLeftString.c_str(), NULL);
@@ -294,7 +294,6 @@ void TreeView::addColumn_gui(Column& column)
 			renderer = gtk_cell_renderer_text_new();
 			col = gtk_tree_view_column_new_with_attributes(column.title.c_str(),
 				renderer, "text", column.pos, NULL);
-			//gtk_tree_view_column_add_attribute(col, renderer, "foreground-set", TRUE);
 			gtk_tree_view_column_add_attribute(col, renderer, "foreground", TreeView::col(column.linkedCol));
 			column.renderer2 = renderer;
 			break;

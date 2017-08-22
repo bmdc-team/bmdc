@@ -669,7 +669,9 @@ void Transfers::updateTransfer_gui(StringMap params, bool download, Sound::TypeS
 
 	for (StringMap::const_iterator it = params.begin(); it != params.end(); ++it)
 	{
-		if (it->first == _("Size") || it->first == _("Speed") || it->first == "Download Position" || it->first == _("Time Left"))
+        if(it->first == _("Time Left")) //just in case
+            gtk_tree_store_set(transferStore, &iter, transferView.col(it->first), Util::toInt64(it->second), -1);
+		else if (it->first == _("Size") || it->first == _("Speed") || it->first == "Download Position")
 			gtk_tree_store_set(transferStore, &iter, transferView.col(it->first), Util::toInt64(it->second), -1);
 		else if (it->first == "Progress" || it->first == "Failed")
 			gtk_tree_store_set(transferStore, &iter, transferView.col(it->first), Util::toInt(it->second), -1);
@@ -873,7 +875,7 @@ void Transfers::grantExtraSlot_client(string cid, string hubUrl)
 	if (!cid.empty() && !hubUrl.empty())
 	{
 		UserPtr user = ClientManager::getInstance()->getUser(CID(cid));
-		UploadManager::getInstance()->reserveSlot(HintedUser(user, hubUrl));//NOTE: core 0.762
+		UploadManager::getInstance()->reserveSlot(HintedUser(user, hubUrl));
 	}
 }
 
@@ -938,11 +940,11 @@ void Transfers::getParams_client(StringMap& params, Transfer* tr)
 		percent = static_cast<double>(tr->getPos() * 100.0)/ tr->getSize();
 	params["Progress"] = Util::toString(static_cast<int>(percent));
 	params["IP"] = tr->getUserConnection().getRemoteIp();
-	//params[_("Time Left")] = tr->getSecondsLeft() > 0 ? Util::toString(tr->getSecondsLeft()) : "0";
+	params[_("Time Left")] = tr->getSecondsLeft() > 0 ? Util::toString(tr->getSecondsLeft()) : "0";
 	//double timeleft = static_cast<double>(tr->getSize() - tr->getPos()) / tr->getAverageSpeed();
 	
-	params[_("Time Left")] = Util::formatSeconds((GET_TICK() - tr->getStart())/1000);
-	//Util::formatSeconds(timeleft);
+	//params[_("Time Left")] = Util::formatSeconds((GET_TICK() - tr->getStart())/1000);
+	//params[_("Time Left")] = Util::toString(timeleft);
 	params["Target"] = tr->getPath();
 	params["Hub URL"] = tr->getUserConnection().getHubUrl();
 	params["TTH"] = tr->getTTH().toBase32();
@@ -1002,9 +1004,9 @@ void Transfers::on(DownloadManagerListener::Tick, const DownloadList& dls) noexc
 		if (dl->isSet(Download::FLAG_ZDOWNLOAD))
 			stream << _("[Z]");
 
-		//stream << setiosflags(ios::fixed); //<< setprecision(1);
+		stream << setiosflags(ios::fixed); //<< setprecision(1);
 		stream << " " << _("Downloaded ") << Util::formatBytes(dl->getPos()) << " (" << params["Progress"]
-		<< "%) in " << Util::formatSeconds((int64_t)(GET_TICK() - dl->getStart()) / 1000);
+		<< "%) in " << Util::formatTime/*Seconds*/("%H:%M:%S",(int64_t)(GET_TICK() - dl->getStart()) / 1000);
 		params[_("Status")] = stream.str();
 
 		typedef Func3<Transfers, StringMap, bool, Sound::TypeSound> F3;
