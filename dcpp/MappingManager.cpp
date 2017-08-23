@@ -251,13 +251,13 @@ string MappingManager::deviceString(Mapper& mapper) const {
 void MappingManager::renewLater(Mapper& mapper) {
 	uint32_t minutes = mapper.renewal();
 	if(minutes) {
-		//bool addTimer = (bool)renewal;
+		bool addTimer = (bool)!renewal;
 		renewal = GET_TICK() + std::max(minutes, 10u) * 60 * 1000;
-		//if(addTimer) {
-		TimerManager::getInstance()->addListener(this);
-		//}
+		if(addTimer) {
+            TimerManager::getInstance()->addListener(this);
+		}
 
-	} else if(renewal >=1) {
+	} else if(renewal) {
 		renewal = 0;
 		TimerManager::getInstance()->removeListener(this);
 	}

@@ -580,7 +580,7 @@ map<string, string> Identity::getReport() const
 				reportSet.insert(make_pair(name, value));
 		}
 		//hack to show port
-		reportSet.insert(make_pair("UP",Util::toString((int16_t)getUdpPort())));
+		//reportSet.insert(make_pair("UP",Util::toString((int16_t)getUdpPort())));
 		//reportSet.insert(make_pair("U6",Util::toString(getUdp6Port())));
 	}
 	return reportSet;
