@@ -57,7 +57,7 @@ class Hub:
 		using dcpp::QueueManagerListener::on;	
 		typedef enum
 		{
-			BOT,OPERATOR,FAVORITE,IGNORED,PROTECTED,PASIVE,NORMAL	
+			BOT = 0,OPERATOR,FAVORITE,IGNORED,PROTECTED,PASIVE,NORMAL	
 		} UserType;		
 	public:
 		Hub(const std::string &address, const std::string &encoding);

@@ -63,7 +63,7 @@ Hub::Hub(const string &address, const string &encoding):
 	//@ use the CID'ing of it
 	setName(CID(address).toBase32());
 	// Initialize nick treeview
-	nickView.setView(GTK_TREE_VIEW(getWidget("nickView")), false, "hub");
+	nickView.setView(GTK_TREE_VIEW(getWidget("nickView"))/**, true, "hub"*/);
 	nickView.insertColumn(_("Nick"), G_TYPE_STRING, TreeView::ICON_STRING_TEXT_COLOR, 100, "Icon", "NickColor");
 	nickView.insertColumn(_("Shared"), G_TYPE_INT64, TreeView::SIZE, 75);
 	nickView.insertColumn(_("Description"), G_TYPE_STRING, TreeView::STRING, 85);
@@ -103,8 +103,8 @@ Hub::Hub(const string &address, const string &encoding):
 	gtk_tree_view_set_model(nickView.get(), GTK_TREE_MODEL(nickStore));
 	g_object_unref(nickStore);
 
+    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(nickView.get()), GTK_SELECTION_MULTIPLE);
 	nickSelection = gtk_tree_view_get_selection(nickView.get());
-	gtk_tree_selection_set_mode(gtk_tree_view_get_selection(nickView.get()), GTK_SELECTION_MULTIPLE);
 
 	sort = SETTING(SORT_FAVUSERS_FIRST) ? "Client Type" : "Nick Order";
 	if(p_faventry)
@@ -113,8 +113,9 @@ Hub::Hub(const string &address, const string &encoding):
 	gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(nickView.get(), nickView.col(_("Nick"))), TRUE);
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(nickStore), nickView.col(sort), sort_iter_compare_func_nick,
                                     (gpointer)this, NULL);
-	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(nickStore), nickView.col(sort), GTK_SORT_ASCENDING);
-                                     
+	nickView.setSortColumn_gui(_("Nick"),"Nick Order");                                 
+    gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(nickStore), nickView.col(sort), GTK_SORT_ASCENDING);
+    
 	
 	//BMDC++
 	nickView.setSelection(nickSelection);
@@ -122,7 +123,7 @@ Hub::Hub(const string &address, const string &encoding):
 
 	g_object_set(G_OBJECT(nickView.get()), "has-tooltip", TRUE, NULL);
 	g_signal_connect(nickView.get(), "query-tooltip", G_CALLBACK(onUserListTooltip_gui), (gpointer)this);
-	g_signal_connect (gtk_tree_view_get_selection (GTK_TREE_VIEW (nickView.get())), "changed", G_CALLBACK (selection_changed_userlist_gui), GTK_WIDGET(nickView.get()));
+	g_signal_connect (nickSelection, "changed", G_CALLBACK (selection_changed_userlist_gui), GTK_WIDGET(nickView.get()));
 	/* Set a tooltip on the column */
 	set_Header_tooltip_gui();
 
@@ -366,24 +367,43 @@ gint Hub::sort_iter_compare_func_nick(GtkTreeModel *model, GtkTreeIter  *a,
 									GtkTreeIter  *b,  gpointer  data)
 {
 	Hub* hub = (Hub *)data;
-	g_autofree gchar *nick_a = NULL , *nick_b = NULL;
-	gtk_tree_model_get(model, a, hub->nickView.col(hub->sort), &nick_a, -1);
-	gtk_tree_model_get(model, b, hub->nickView.col(hub->sort), &nick_b, -1);
-	gint ret = 0;
-	if (nick_a == NULL || nick_b == NULL)
-	{
-		if (nick_a == NULL && nick_b == NULL)
-			ret = 0;
+    bool bSortInt = hub->sort == "Client Type";
+    gint ret = 0;
+    if(!bSortInt)
+    {
+        g_autofree gchar *nick_a = NULL , *nick_b = NULL;
+        gtk_tree_model_get(model, a, hub->nickView.col(hub->sort), &nick_a, -1);
+        gtk_tree_model_get(model, b, hub->nickView.col(hub->sort), &nick_b, -1);
+        ret = 0;
+        if (nick_a == NULL || nick_b == NULL)
+        {
+            if (nick_a == NULL && nick_b == NULL)
+                ret = 0;
 
-		ret = (nick_a == NULL) ? -1 : 1;
-	}
-	else
-	{
-		g_autofree gchar* a_nick = g_utf8_casefold(nick_a,-1);
-		g_autofree gchar* b_nick = g_utf8_casefold(nick_b,-1);
-		ret = g_utf8_collate(a_nick,b_nick);
-	}
-	return ret;
+            ret = (nick_a == NULL) ? -1 : 1;
+        }
+        else
+        {
+            g_autofree gchar* a_nick = g_utf8_casefold(nick_a,-1);
+            g_autofree gchar* b_nick = g_utf8_casefold(nick_b,-1);
+            ret = g_utf8_collate(a_nick,b_nick);
+        }
+        return ret;
+    }
+    else
+    {
+       gint gia = 0,gib = 0; 
+        gtk_tree_model_get(model, a, hub->nickView.col(hub->sort), gia, -1);
+        gtk_tree_model_get(model, b, hub->nickView.col(hub->sort), gib, -1);
+        ret = 0;
+        if(gia == gib)
+            return 0;
+        if(gia > gib)
+            return -1;
+        if(gia < gib)
+            return 1;
+   }
+        return ret;    
 }
 
 void Hub::setColorsRows()
@@ -1758,7 +1778,7 @@ void Hub::preferences_gui()
 	}
 
 	// resort users
-	string sort = SETTING(SORT_FAVUSERS_FIRST) ? "Client Type" : "Nick Order";
+	sort = SETTING(SORT_FAVUSERS_FIRST) ? "Client Type" : "Nick Order";
 
 	if(p_faventry)
 		sort = p_faventry->get(SettingsManager::SORT_FAVUSERS_FIRST, SETTING(SORT_FAVUSERS_FIRST)) ? "Client Type" : "Nick Order";
@@ -3299,7 +3319,7 @@ void Hub::onRemoveIgnoreUserItemClicked_gui(GtkMenuItem*, gpointer data)
 void Hub::onProtectUserClicked_gui(GtkMenuItem*, gpointer data)
 {
 	Hub *hub =(Hub *)data;
-	if (gtk_tree_selection_count_selected_rows(hub->nickSelection) == 1)
+	if (gtk_tree_selection_count_selected_rows(hub->nickSelection) >0)
 	{
 		string cid;
 		GtkTreeIter iter;
@@ -3332,7 +3352,7 @@ void Hub::onProtectUserClicked_gui(GtkMenuItem*, gpointer data)
 void Hub::onUnProtectUserClicked_gui(GtkMenuItem*, gpointer data)
 {
 	Hub *hub =(Hub *)data;
-	if (gtk_tree_selection_count_selected_rows(hub->nickSelection) == 1)
+	if (gtk_tree_selection_count_selected_rows(hub->nickSelection) >0 )
 	{
 		string cid;
 		GtkTreeIter iter;
@@ -3367,7 +3387,7 @@ void Hub::onShowReportClicked_gui(GtkMenuItem* , gpointer data)
     Hub *hub = (Hub *)data;
 	string cid,icon;
 
-	if (gtk_tree_selection_count_selected_rows(hub->nickSelection) == 1)
+	if (gtk_tree_selection_count_selected_rows(hub->nickSelection) > 0)
 	{
 		GtkTreeIter iter;
 		GtkTreePath *path;
@@ -3397,7 +3417,7 @@ void Hub::onTestSURItemClicked_gui(GtkMenuItem*, gpointer data)
 {
 	Hub *hub = (Hub *)data;
 
-	if (gtk_tree_selection_count_selected_rows(hub->nickSelection) >= 1)
+	if (gtk_tree_selection_count_selected_rows(hub->nickSelection) > 0)
 	{
 		std::queue<std::string> nicks;
 		GtkTreeIter iter;
@@ -3440,7 +3460,7 @@ void Hub::onCheckFLItemClicked_gui(GtkMenuItem* , gpointer data)
 {
 	Hub *hub = (Hub *)data;
 
-	if (gtk_tree_selection_count_selected_rows(hub->nickSelection) == 1)
+	if (gtk_tree_selection_count_selected_rows(hub->nickSelection) > 0)
 	{
 		string nick;
 		GtkTreeIter iter;

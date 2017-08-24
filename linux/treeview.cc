@@ -29,7 +29,7 @@
 using namespace std;
 
 TreeView::TreeView():
-visibleColumns(0), menu(NULL), sel(NULL)
+visibleColumns(0), menu(NULL)//, sel(NULL)
 {
 	view = NULL;
 	count = 0;
@@ -81,13 +81,6 @@ string TreeView::getString(GtkTreeIter *i, const string &column, GtkTreeModel *m
 	dcassert(gtk_tree_model_get_column_type(m, col(column)) == G_TYPE_STRING);
 	gtk_tree_model_get(m, i, col(column), &temp, -1);
 
-	/*if (temp != NULL)
-	{
-		value = string(temp);
-		//g_free(temp);
-	}
-
-	return value;*/
 	if(temp)
 		return string(temp);
 	return value;	
@@ -164,13 +157,8 @@ void TreeView::finalize()
 	if (padding)
 	{
 		GtkTreeViewColumn *col = gtk_tree_view_column_new();
-		// Set to fixed so that gtk_tree_view_set_fixed_height() doesn't complain.
-	//#if !GTK_CHECK_VERSION(3,8,0)
-	//	gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
-	//#else
 		if( (name.length() == 9) &&  (name == "transfers"))
 			gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-	//#endif	
 		gtk_tree_view_insert_column(view, col, count);
 	}
 }
@@ -391,7 +379,6 @@ void TreeView::addColumn_gui(Column& column)
 			renderer = gtk_cell_renderer_text_new();
 			gtk_tree_view_column_pack_start(col, renderer, true);
 			gtk_tree_view_column_add_attribute(col, renderer, "text", column.pos);
-			//gtk_tree_view_column_add_attribute(col, renderer, "foreground-set", TRUE);
 			gtk_tree_view_column_add_attribute(col, renderer, "foreground", TreeView::col(column.linkedTextColor));
 			break;
 		}	
@@ -408,7 +395,6 @@ void TreeView::addColumn_gui(Column& column)
 			renderer = gtk_cell_renderer_text_new();
 			gtk_tree_view_column_pack_start(col, renderer, true);
 			gtk_tree_view_column_add_attribute(col, renderer, "text", column.pos);
-			//gtk_tree_view_column_add_attribute(col, renderer, "foreground-set", TRUE);
 			gtk_tree_view_column_add_attribute(col, renderer, "foreground", TreeView::col(column.linkedTextColor));
 			break;
 		}	
