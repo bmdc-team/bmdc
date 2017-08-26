@@ -20,7 +20,7 @@
 #define DCPLUSPLUS_DCPP_GEO_MANAGER_H
 
 #include "forward.h"
-#include "GeoIP.h"
+#include "GeoIPc.h"
 #include "Singleton.h"
 
 #include <memory>

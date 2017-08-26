@@ -19,7 +19,7 @@
 #include "stdinc.h"
 #include "GeoManager.h"
 
-#include "GeoIP.h"
+#include "GeoIPc.h"
 #include "Util.h"
 
 namespace dcpp {
