@@ -1204,13 +1204,11 @@ gboolean PrivateMessage::onIpTagEvent_gui(GtkTextTag *tag, GObject*, GdkEvent *e
 	{
 		if(event->button.button == 3)
 		{
-			
-			gchar *tmp = NULL;
-			g_object_get(G_OBJECT(tag),"name",&tmp,NULL);
+            string tmp = WulforUtil::getTagName(tag);    
 			g_signal_connect(pm->getWidget("ripeitem"), "activate", G_CALLBACK(onRipeDbItem_gui),(gpointer)pm);
 			g_signal_connect(pm->getWidget("copyipItem"), "activate", G_CALLBACK(onCopyIpItem_gui),(gpointer)pm);
-			g_object_set_data_full(G_OBJECT(pm->getWidget("ripeitem")),"ip_addr",g_strdup(tmp),g_free);
-			g_object_set_data_full(G_OBJECT(pm->getWidget("copyipItem")),"ip_addr",g_strdup(tmp),g_free);
+			g_object_set_data_full(G_OBJECT(pm->getWidget("ripeitem")),"ip_addr",g_strdup(tmp.c_str()),g_free);
+			g_object_set_data_full(G_OBJECT(pm->getWidget("copyipItem")),"ip_addr",g_strdup(tmp.c_str()),g_free);
 			
 			gtk_widget_show_all(pm->getWidget("ipMenu"));
 			#if GTK_CHECK_VERSION(3,22,0)
@@ -1316,7 +1314,7 @@ void PrivateMessage::onCopyURIClicked_gui(GtkMenuItem*, gpointer data)
 void PrivateMessage::onOpenLinkClicked_gui(GtkMenuItem*, gpointer data)
 {
 	PrivateMessage *pm = (PrivateMessage *)data;
-	string error = "";
+	string error = string();
 	WulforUtil::openURI(pm->selectedTagStr, error);
 
 	if(!error.empty())
@@ -1605,7 +1603,7 @@ GtkWidget *PrivateMessage::createmenu()
 void PrivateMessage::onCloseItem(gpointer data)
 {
     BookEntry *entry = dynamic_cast<BookEntry*>((PrivateMessage *)data);
-    if(entry!= NULL)
+    if(entry)
 		WulforManager::get()->getMainWindow()->removeBookEntry_gui(entry);
 }
 

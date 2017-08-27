@@ -632,8 +632,8 @@ void Search::addResult_gui(const SearchResultPtr result)
 	GtkTreeIter parent;
 	GtkTreeIter child;
 	GtkTreeModel *m = GTK_TREE_MODEL(resultStore);
-	bool foundParent = FALSE;
-	bool createParent = FALSE;
+	bool foundParent = false;
+	bool createParent = false;
 
 	vector<SearchResultPtr> &existingResults = results[result->getUser()->getCID().toBase32()];
 	for (vector<SearchResultPtr>::iterator it = existingResults.begin(); it != existingResults.end(); ++it)

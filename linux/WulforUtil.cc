@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2012 Jens Oknelid, paskharen@gmail.com
- * Copyright © 2010-2017 BMDC++
+ * Copyright © 2010-2018 BMDC++
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -585,8 +585,8 @@ string WulforUtil::formatReport(const Identity& identity)
 string WulforUtil::generateLeech() {
 
 	char buf[650];
-	snprintf(buf, sizeof(buf), "\n\t [ BMDC++ %s %s Leech Stats ]\r\n [ Downloaded:\t\t\t %s ]\r\n [ Uploaded:\t\t\t %s ]\r\n [ Total Download:\t\t %s ]\r\n [ Total Upload:\t\t\t %s ]\r\n [ Ratio: \t\t\t\t %s ]\r\n [ Current Uploads:\t\t %s Running Upload(s) ]\r\n [ Current Upload Speed: \t\t %s/s ]\r\n [ Current Downloads:\t\t %s Running Download(s) ]\r\n [ Current Download Speed: \t %s/s ]",
-		VERSIONSTRING, GUI_VERSION_STRING, Util::formatBytes(Socket::getTotalDown()).c_str(), Util::formatBytes(Socket::getTotalUp()).c_str(),
+	snprintf(buf, sizeof(buf), "\n\t [ BMDC++ %s Leech Stats ]\r\n [ Downloaded:\t\t\t %s ]\r\n [ Uploaded:\t\t\t %s ]\r\n [ Total Download:\t\t %s ]\r\n [ Total Upload:\t\t\t %s ]\r\n [ Ratio: \t\t\t\t %s ]\r\n [ Current Uploads:\t\t %s Running Upload(s) ]\r\n [ Current Upload Speed: \t\t %s/s ]\r\n [ Current Downloads:\t\t %s Running Download(s) ]\r\n [ Current Download Speed: \t %s/s ]",
+		GUI_VERSION_STRING, Util::formatBytes(Socket::getTotalDown()).c_str(), Util::formatBytes(Socket::getTotalUp()).c_str(),
 		Util::formatBytes(static_cast<double>(SETTING(TOTAL_DOWNLOAD))).c_str(), Util::formatBytes(static_cast<double>(SETTING(TOTAL_UPLOAD))).c_str(),
 		Util::toString(((static_cast<double>(SETTING(TOTAL_UPLOAD)))) / static_cast<double>(SETTING(TOTAL_DOWNLOAD))).c_str(),
 		Util::toString(UploadManager::getInstance()->getUploadCount()).c_str(), Util::formatBytes(UploadManager::getInstance()->getRunningAverage()).c_str(),
@@ -634,8 +634,8 @@ bool WulforUtil::checkCommand(string& cmd, string& param, string& message, strin
 		}
 		else
 		{
-				Util::setAway(TRUE);
-				Util::setManualAway(TRUE);
+				Util::setAway(true);
+				Util::setManualAway(true);
 				Util::setAwayMessage(param);
 				ParamMap p;
 				p["message"] = param;

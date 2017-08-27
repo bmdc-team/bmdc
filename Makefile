@@ -17,8 +17,7 @@ cleandebug:
 	scons debug=1 -c
 
 #this is realy realy experminetal
-cmake-build:
-	mkdir -p cmake-build;cd cmake-build;
-	cmake -DENABLE_CANBERRA=OFF -DCMAKE_PREFIX_PATH=/usr/lib64 -DUSE_MINIUPNP=ON -DCMAKE_INSTALL_PREFIX=/home/mank1/bmdc-debug ..
-	make install
+meson-build:
+	meson builddir/
+	ninja
 

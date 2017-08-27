@@ -255,7 +255,6 @@ void EmoticonsDialog::showEmotDialog_gui()
 
 	build();
 	position();
-	//graber();
 
 	g_signal_connect(G_OBJECT(dialog), "event", G_CALLBACK(event), (gpointer)this);
 }
