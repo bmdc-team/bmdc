@@ -1797,7 +1797,7 @@ void Search::parseSearchResult_gui(SearchResultPtr result, StringMap &resultMap)
 		}
 	}
 
-	resultMap[_("Nick")] = WulforUtil::getNicks(result->getUser(), result->getHubURL());//NOTE: core 0.762
+	resultMap[_("Nick")] = WulforUtil::getNicks(result->getUser(), result->getHubURL());
 	resultMap["CID"] = result->getUser()->getCID().toBase32();
 	resultMap["Slots"] = result->getSlotString();
 	resultMap[_("Connection")] = ClientManager::getInstance()->getConnection(result->getUser()->getCID());
@@ -2108,7 +2108,7 @@ gboolean Search::on_match_select_entry(GtkEntryCompletion*,GtkTreeModel *model, 
 {
 	GValue value = G_VALUE_INIT;
 	gtk_tree_model_get_value(model, iter, EN_STRING, &value);
-	fprintf(stdout, "You have selected %s\n", g_value_get_string(&value));
+	dcdebug("You have selected %s\n", g_value_get_string(&value));
 	g_value_unset(&value);
 	return FALSE;
 }
@@ -2120,7 +2120,7 @@ gboolean Search::onResultView_gui(GtkWidget *widget, gint x, gint y, gboolean ke
 	GtkTreeView *view = GTK_TREE_VIEW(widget);
 	GtkTreeModel *model = gtk_tree_view_get_model (view);
 	GtkTreePath *path = NULL;
-	gchar *filename,*nick,*type,*size,*ppath,*slots,*con,*hub,*exsize,*country,*ip,*tth;
+	g_autofree gchar *filename,*nick,*type,*size,*ppath,*slots,*con,*hub,*exsize,*country,*ip,*tth;
 	
 
 	if(!gtk_tree_view_get_tooltip_context (view, &x, &y,
@@ -2151,7 +2151,7 @@ gboolean Search::onResultView_gui(GtkWidget *widget, gint x, gint y, gboolean ke
 	gtk_tree_view_set_tooltip_row (view, _tooltip, path);
 
 	gtk_tree_path_free (path);
-	g_free(filename);
+	/*g_free(filename);
 	g_free(nick);
 	g_free(type);
 	g_free(size);
@@ -2162,7 +2162,7 @@ gboolean Search::onResultView_gui(GtkWidget *widget, gint x, gint y, gboolean ke
 	g_free(exsize);
 	g_free(country);
 	g_free(ip);
-	g_free(tth);
+	g_free(tth);*/
 	return TRUE;
 }
 
@@ -2198,12 +2198,15 @@ void Search::set_Header_tooltip_gui()
 void Search::onCloseItem(gpointer data)
 {
 	Search *entry = (Search *)data;
-	WulforManager::get()->getMainWindow()->getSearchEntry()->removeBookEntry_gui(entry);
+    if(entry)
+        WulforManager::get()->getMainWindow()->getSearchEntry()->removeBookEntry_gui(entry);
 }
+
 void Search::onAddItem(gpointer )
 {
 	BookEntry* entry = new Search(string());
-	WulforManager::get()->getMainWindow()->getSearchEntry()->addBookEntry_gui(entry);
+    if(entry)
+        WulforManager::get()->getMainWindow()->getSearchEntry()->addBookEntry_gui(entry);
 }
 
 GtkWidget *Search::createmenu()

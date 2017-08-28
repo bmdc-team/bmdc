@@ -270,8 +270,8 @@ class MainWindow:
 		static void onDetectionClicked_gui(GtkWidget *widget, gpointer data);
 		static void onRecentHubClicked_gui(GtkWidget *widget, gpointer data);
 		static void onAwayClicked_gui(GtkWidget *widget, gpointer data);
-		static void onLimitingMenuItem_gui(GtkWidget *widget, gpointer data);
-		static void onLimitingDisable(GtkWidget *widget, gpointer data);
+		static void onLimitingMenuItem_gui(GtkRange *widget, gpointer data);
+//		static void onLimitingDisable(GtkWidget *widget, gpointer data);
 		static void onTTHFileDialog_gui(GtkWidget *widget, gpointer data);
 		static void onTTHFileButton_gui(GtkWidget *widget, gpointer data);
 		/**/
@@ -286,6 +286,7 @@ class MainWindow:
 		#ifdef HAVE_LIBTAR
 		static void onExportItemClicked_gui(GtkWidget *widget, gpointer data);
 		#endif
+        static void onPopupPopover(GtkWidget* widget , gpointer data);
 		// Client functions
 		void autoConnect_client();
 		void startSocket_client();

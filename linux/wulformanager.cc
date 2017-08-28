@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2015 Jens Oknelid, paskharen@gmail.com
- * Copyright © 2010-2017 BMDC++
+ * Copyright © 2010-2018 BMDC++
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,13 @@ mainWin(NULL)
 	// Initialize sempahore variables
 	g_rw_lock_init(&entryMutex);
 	// Determine path to data files
-	path = string(_DATADIR) + G_DIR_SEPARATOR_S + g_get_prgname();
+    path = string(g_get_system_data_dirs()[1]) + G_DIR_SEPARATOR_S + g_get_prgname();
+	if (!g_file_test(path.c_str(), G_FILE_TEST_EXISTS))
+	{
+		cerr << path << " is inaccessible, falling back to current directory instead.\n";
+	}
+    
+    path = string(g_get_system_data_dirs()[0]) + G_DIR_SEPARATOR_S + g_get_prgname();
 	if (!g_file_test(path.c_str(), G_FILE_TEST_EXISTS))
 	{
 		cerr << path << " is inaccessible, falling back to current directory instead.\n";
@@ -89,11 +95,16 @@ mainWin(NULL)
 WulforManager::~WulforManager()
 {
 	g_rw_lock_clear(&entryMutex);
+    	g_object_unref (application);
 }
 
 void WulforManager::createMainWindow()
 {
 	dcassert(!mainWin);
+    
+    application = g_application_new ("bmdcteam.bmdc", G_APPLICATION_FLAGS_NONE);
+    g_application_register (application, NULL, NULL);
+    
 	mainWin = new MainWindow();
 	WulforManager::insertEntry_gui(mainWin);
 	mainWin->show();

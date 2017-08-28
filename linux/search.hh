@@ -1,5 +1,5 @@
 /*
- * Copyright © 2004-2017 Jens Oknelid, paskharen@gmail.com
+ * Copyright © 2004-2018 Jens Oknelid, paskharen@gmail.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,6 @@
 #include "../dcpp/format.h"
 #include "bookentry.hh"
 #include "treeview.hh"
-
-//##define _(String) String
 
 class UserCommandMenu;
 
@@ -133,10 +131,10 @@ class Search:
 		void removeSource_client(std::string cid);
 
 		// Client callbacks
-		virtual void on(dcpp::ClientManagerListener::ClientConnected, dcpp::Client *client) throw();
-	 	virtual void on(dcpp::ClientManagerListener::ClientUpdated, dcpp::Client *client) throw();
-		virtual void on(dcpp::ClientManagerListener::ClientDisconnected, dcpp::Client *client) throw();
-		virtual void on(dcpp::SearchManagerListener::SR, const dcpp::SearchResultPtr &result) throw();
+		virtual void on(dcpp::ClientManagerListener::ClientConnected, dcpp::Client *client) noexcept;
+	 	virtual void on(dcpp::ClientManagerListener::ClientUpdated, dcpp::Client *client) noexcept;
+		virtual void on(dcpp::ClientManagerListener::ClientDisconnected, dcpp::Client *client) noexcept;
+		virtual void on(dcpp::SearchManagerListener::SR, const dcpp::SearchResultPtr &result) noexcept;
 
 		TreeView hubView, resultView;
 		GtkListStore *hubStore;
@@ -159,7 +157,7 @@ class Search:
 		bool isMenuCreated;
 		GtkWidget* menu;	
 		public:
-			GtkWidget *createmenu();
+			GtkWidget *createmenu() override;
 		private:
 			static void onCloseItem(gpointer data);
 			static void onAddItem(gpointer data);

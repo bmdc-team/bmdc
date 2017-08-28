@@ -23,7 +23,7 @@
 //This does rep nothing
 #ifndef DCPP_REVISION
 	#define DCPP_REVISION 2972
-	#define DCPP_REVISION_STRING "2972"
+	#define DCPP_REVISION_STRING ""
 #endif
 #ifndef BMDC_REVISION
 	#ifdef BZR_REVISION
@@ -36,7 +36,7 @@
 	#ifdef  BZR_REVISION_STRING
 		#define BMDC_REVISION_STRING BZR_REVISION_STRING
 	#else
-		#define BMDC_REVISION_STRING "1.0.0"
+		#define BMDC_REVISION_STRING "0.1.7"
 	#endif	
 #endif
 

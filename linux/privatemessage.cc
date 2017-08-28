@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2017 Jens Oknelid, paskharen@gmail.com
- * Copyright © 2011-2017 BMDC++
+ * Copyright © 2011-2018 BMDC++
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ PrivateMessage::PrivateMessage(const string &_cid, const string &_hubUrl):
 	tag_mark = gtk_text_buffer_create_mark(messageBuffer, NULL, &iter, FALSE);
 	emot_mark = gtk_text_buffer_create_mark(messageBuffer, NULL, &iter, TRUE);
 
-	handCursor = gdk_cursor_new_for_display(gdk_display_get_default (),GDK_HAND2); 
+	handCursor = gdk_cursor_new_from_name(gdk_display_get_default(),"pointer"); 
 
 	GtkAdjustment *adjustment = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(getWidget("scroll")));
 
@@ -78,7 +78,7 @@ PrivateMessage::PrivateMessage(const string &_cid, const string &_hubUrl):
 	emotdialog = new EmoticonsDialog(getWidget("entry"), getWidget("emotButton"), getWidget("emotMenu"));
 	if (!SETTING(USE_EMOTS))
 		gtk_widget_set_sensitive(getWidget("emotButton"), FALSE);
-	useEmoticons = TRUE;
+	useEmoticons = true;
 
 	// PM commands
 	g_object_set_data_full(G_OBJECT(getWidget("awayCommandItem")), "command", g_strdup("/away"), g_free);
@@ -135,7 +135,7 @@ PrivateMessage::PrivateMessage(const string &_cid, const string &_hubUrl):
 	
 	const OnlineUser* user = ClientManager::getInstance()->findOnlineUser(CID(cid), hubUrl);
 	
-	if(user != NULL) {
+	if(user) {
 		if(user->getIdentity().isBot())
 			setFlag(BOT);
 		

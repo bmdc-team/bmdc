@@ -1,6 +1,3 @@
-#include_directories('../natpmp')
-#include_directories('../miniupnpc')
-#include_directories('../dcpp')
 
 bmdcpp_sources = files ( [
 'AboutConfig.cc',
@@ -60,6 +57,6 @@ gtkdep = dependency('gtk+-3.0')
 openssl = dependency('openssl')
 bzipdep = cc.find_library('bz2', required : true)
 
-executable('bmdc', sources: bmdcpp_sources, dependencies: [thread_dep, pcre_dep,openssl,bzipdep,gtkdep,gdeps],link_with: [libdcpp,libnatpmp, libminiupnpc],  install: true , cpp_args : '-D_DATADIR="/usr/share/"')
+executable('bmdc', sources: bmdcpp_sources, dependencies: [thread_dep, pcre_dep,openssl,bzipdep,gtkdep,gdeps],link_with: [libdcpp,libnatpmp, libminiupnpc],  install: true , cpp_args : ['-Wno-reorder', '-Wno-unused-value','-DUSE_STACKTRACE','-D_DATADIR="../share"'])
 
 

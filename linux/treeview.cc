@@ -29,7 +29,7 @@
 using namespace std;
 
 TreeView::TreeView():
-visibleColumns(0), menu(NULL)//, sel(NULL)
+visibleColumns(0), menu(NULL)
 {
 	view = NULL;
 	count = 0;

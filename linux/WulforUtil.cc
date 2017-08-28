@@ -734,7 +734,7 @@ bool WulforUtil::checkCommand(string& cmd, string& param, string& message, strin
 		long udays = 0, uhour = 0 , umin =0;		
 		#if defined(APPLE)
 			rel = "macos";
-			mach= "x86_64";
+			mach = "x86_64";
 		#else
 		
 			#ifndef _WIN32
@@ -742,13 +742,13 @@ bool WulforUtil::checkCommand(string& cmd, string& param, string& message, strin
 			struct utsname u_name; //instance of utsname
 			z = uname(&u_name);
 			if (z == -1)
-				dcdebug("Failed on uname");
+				g_print("Failed on uname");
 			rel = u_name.release;
 			mach = u_name.machine;
 			struct sysinfo sys; //instance of acct;
 			y = sysinfo(&sys);
 			if(y != 0)
-				dcdebug("Failed on sysinfo");
+				g_print("Failed on sysinfo");
 
 			const long minute = 60;
 			const long hour = minute * 60;
@@ -1187,7 +1187,7 @@ bool WulforUtil::isHighlightingWorld( GtkTextBuffer *buffer, GtkTextTag* &tag, s
 						"underline", tUnderline ? PANGO_UNDERLINE_DOUBLE : PANGO_UNDERLINE_NONE,
 						NULL);
 					}
-					dcdebug("regexp hilg");
+					//dcdebug("regexp hilg");
 					ret = true;
 				}
 			}
@@ -1497,7 +1497,7 @@ void WulforUtil::setTextDeufaults(GtkWidget* widget, std::string strcolor, std::
 
 		if( strcolor.empty() || (!back_image_path.empty() && (dcpp::Util::fileExists(back_image_path) == true)) ) {
 		///NOTE: CSS
-			dcdebug("Test:img %s\n",hubUrl.c_str());
+			//dcdebug("Test:img %s\n",hubUrl.c_str());
 			GtkCssProvider *provider = gtk_css_provider_new ();
 			GdkDisplay *display = gdk_display_get_default ();
 			GdkScreen *screen = gdk_display_get_default_screen (display);

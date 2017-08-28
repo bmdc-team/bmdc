@@ -80,13 +80,31 @@ const string GeoManager::getCountryAbbrevation(const string& ip, int flags)
 		}
 	  }	
 	}
-	return Util::emptyString;
+	return string();
 }
 string GeoManager::getDbPath(bool v6) {
 #ifdef _WIN32	
 	return Util::getPath(Util::PATH_USER_LOCAL) + (v6 ? "GeoIPv6.dat" : "GeoIP.dat");
-#else	
-	return v6 ? "/usr/share/GeoIP/GeoIPv6.dat" : "/usr/share/GeoIP/GeoIP.dat";
+#else
+        //we should go over all paths...
+	if(v6)
+    {
+        if(Util::fileExists( string(g_get_system_data_dirs()[0])+"GeoIP/GeoIPv6.dat"))
+            return string(g_get_system_data_dirs()[0])+"GeoIP/GeoIPv6.dat";
+        if(Util::fileExists( string(g_get_system_data_dirs()[1])+"GeoIP/GeoIPv6.dat"))
+            return string(g_get_system_data_dirs()[1])+"GeoIP/GeoIPv6.dat";    
+        if(Util::fileExists( string(g_get_system_data_dirs()[2])+"GeoIP/GeoIPv6.dat"))
+            return string(g_get_system_data_dirs()[2])+"GeoIP/GeoIPv6.dat";        
+    }else
+    {    
+        if(Util::fileExists( string(g_get_system_data_dirs()[0])+"GeoIP/GeoIP.dat"))
+            return string(g_get_system_data_dirs()[0])+"GeoIP/GeoIP.dat";
+        if(Util::fileExists( string(g_get_system_data_dirs()[1])+"GeoIP/GeoIP.dat"))
+            return string(g_get_system_data_dirs()[1])+"GeoIP/GeoIP.dat";    
+        if(Util::fileExists( string(g_get_system_data_dirs()[2])+"GeoIP/GeoIP.dat"))
+          return string(g_get_system_data_dirs()[2])+"GeoIP/GeoIP.dat";        
+    }
+    return string();
 #endif	
 }
 

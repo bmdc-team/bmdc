@@ -1366,43 +1366,41 @@ void Settings::initAppearance_gui()
 
 		g_signal_connect(notifyView.getCellRenderOf(_("Use")), "toggled", G_CALLBACK(onOptionsViewToggled_gui), (gpointer)notifyStore);
 
-	#ifdef HAVE_NOTIFY
 		addOption_gui(notifyStore, wsm, _("Download finished"),
 			"notify-download-finished-use", "notify-download-finished-title",
-			"notify-download-finished-icon", NOTIFY_URGENCY_NORMAL);
+			"notify-download-finished-icon", G_NOTIFICATION_PRIORITY_NORMAL);
 
 		addOption_gui(notifyStore, wsm, _("Download finished file list"),
 			"notify-download-finished-ul-use", "notify-download-finished-ul-title",
-			"notify-download-finished-ul-icon", NOTIFY_URGENCY_LOW);
+			"notify-download-finished-ul-icon", G_NOTIFICATION_PRIORITY_LOW);
 
 		addOption_gui(notifyStore, wsm, _("Private message"),
 			"notify-private-message-use", "notify-private-message-title",
-			"notify-private-message-icon", NOTIFY_URGENCY_NORMAL);
+			"notify-private-message-icon", G_NOTIFICATION_PRIORITY_NORMAL);
 
 		addOption_gui(notifyStore, wsm, _("Hub connected"),
 			"notify-hub-connect-use", "notify-hub-connect-title",
-			"notify-hub-connect-icon", NOTIFY_URGENCY_NORMAL);
+			"notify-hub-connect-icon", G_NOTIFICATION_PRIORITY_NORMAL);
 
 		addOption_gui(notifyStore, wsm, _("Hub disconnected"),
 			"notify-hub-disconnect-use", "notify-hub-disconnect-title",
-			"notify-hub-disconnect-icon", NOTIFY_URGENCY_CRITICAL);
+			"notify-hub-disconnect-icon", G_NOTIFICATION_PRIORITY_HIGH);
 
 		addOption_gui(notifyStore, wsm, _("Favorite user joined"),
 			"notify-fuser-join", "notify-fuser-join-title",
-			"notify-fuser-join-icon", NOTIFY_URGENCY_NORMAL);
+			"notify-fuser-join-icon", G_NOTIFICATION_PRIORITY_NORMAL);
 
 		addOption_gui(notifyStore, wsm, _("Favorite user quit"),
 			"notify-fuser-quit", "notify-fuser-quit-title",
-			"notify-fuser-quit-icon", NOTIFY_URGENCY_NORMAL);
+			"notify-fuser-quit-icon", G_NOTIFICATION_PRIORITY_NORMAL);
 		addOption_gui(notifyStore, wsm, _("Highlighting string"),
 			"notify-high-use", "notify-high-title",
-			"notify-high-icon", NOTIFY_URGENCY_LOW);
+			"notify-high-icon", G_NOTIFICATION_PRIORITY_LOW);
 
 		addOption_gui(notifyStore, wsm, _("Chat Hub message"),
 			"notify-hub-chat-use", "notify-hub-chat-title",
-			"notify-hub-chat-icon", NOTIFY_URGENCY_NORMAL);
+			"notify-hub-chat-icon", G_NOTIFICATION_PRIORITY_NORMAL);
 
-	#endif
 		g_signal_connect(getWidget("notifyTestButton"), "clicked", G_CALLBACK(onNotifyTestButton_gui), (gpointer)this);
 		g_signal_connect(getWidget("notifyIconFileBrowseButton"), "clicked", G_CALLBACK(onNotifyIconFileBrowseClicked_gui), (gpointer)this);
 		g_signal_connect(getWidget("notifyOKButton"), "clicked", G_CALLBACK(onNotifyOKClicked_gui), (gpointer)this);
@@ -2560,11 +2558,9 @@ void Settings::onNotifyTestButton_gui(GtkWidget *, gpointer data)
 	{
 		string title = s->notifyView.getString(&iter, _("Title"));
 		string icon = s->notifyView.getString(&iter, _("Icon"));
-		#ifdef HAVE_NOTIFY
-		NotifyUrgency urgency = (NotifyUrgency)s->notifyView.getValue<int>(&iter, "Urgency");
+		GNotificationPriority urgency = (GNotificationPriority)s->notifyView.getValue<int>(&iter, "Urgency");
 		Notify::get()->showNotify(title, "<span weight=\"bold\" size=\"larger\">" + string(_("*** T E S T ***")) + "</span>",
 			"", icon, gtk_combo_box_get_active(GTK_COMBO_BOX(s->getWidget("notifyIconSizeComboBox"))), urgency);
-		#endif
 	}
 }
 

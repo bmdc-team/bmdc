@@ -141,7 +141,7 @@ vars.AddVariables(
 	BoolVariable('debug', 'Compile the program with debug information', 0),
 	BoolVariable('release', 'Compile the program with optimizations', 0),
 	BoolVariable('profile', 'Compile the program with profiling information', 0),
-	BoolVariable('libnotify', 'Enable notifications through libnotify', 1),
+#	BoolVariable('libnotify', 'Enable notifications through libnotify', 1),
 	BoolVariable('libtar', 'Enable Backup&Export with libtar', 1),
 	BoolVariable('libappindicator', 'Enable AppIndicator Support', 0),
 	BoolVariable('libxattr', 'Enable xattr support for storing calculated Hash in extended attributes of file',1),
@@ -307,15 +307,15 @@ if not 'install' in COMMAND_LINE_TARGETS:
 			conf.env.Append(CPPDEFINES = 'USE_XATTR')
 			LIB_HAVE_XATTR = True
 
-	if conf.env.get('libnotify'):
-			if not conf.CheckPKG('libnotify >= 0.4.1'):
-				print '\tlibnotify >= 0.4.1 not found, disabling notifications.'
-				print '\tNote: You might have the lib but not the headers'
-			else:
-				conf.env.Append(CPPDEFINES = 'HAVE_NOTIFY')
-				conf.env.ParseConfig('pkg-config --libs --cflags libnotify')
-				if conf.CheckPKG('libnotify >= 0.7'):
-					conf.env.Append(CPPDEFINES = 'HAVE_LIBNOTIFY_0_7')
+#	if conf.env.get('libnotify'):
+#			if not conf.CheckPKG('libnotify >= 0.4.1'):
+#				print '\tlibnotify >= 0.4.1 not found, disabling notifications.'
+#				print '\tNote: You might have the lib but not the headers'
+#			else:
+#				conf.env.Append(CPPDEFINES = 'HAVE_NOTIFY')
+#				conf.env.ParseConfig('pkg-config --libs --cflags libnotify')
+#				if conf.CheckPKG('libnotify >= 0.7'):
+#					conf.env.Append(CPPDEFINES = 'HAVE_LIBNOTIFY_0_7')
 
 	# Sound
 	conf.env['HAVE_CANBERRA_LIB'] = 0
@@ -506,13 +506,11 @@ if not 'install' in COMMAND_LINE_TARGETS:
 
 else:
 
-	glade_files = env.Glob('ui/*.ui')
 	text_files = env.Glob('*.txt')
 	prefix = env['FAKE_ROOT'] + env['PREFIX']
 	shell_files = env.Glob('extensions/Scripts/*.sh')
 	py_files = env.Glob('extensions/Scripts/*.py')
 	country_files = env.Glob('country/*.png')
-	info_image_files = env.Glob('info/*.png')
 	desktop_file = os.path.join('data', PACKAGE + '.desktop')
 
 	app_icon_filter = lambda icon: os.path.splitext(icon)[0] == PACKAGE
@@ -523,12 +521,10 @@ else:
 	env.RecursiveInstall(BUILD_LOCALE_PATH, os.path.join(prefix, 'share', 'locale'))
 	env.RecursiveInstall('emoticons', os.path.join(prefix, 'share', PACKAGE))
 
-	#env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'ui'), source = glade_files))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', 'doc', PACKAGE), source = text_files))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', 'applications'), source = desktop_file))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'extensions/Scripts'), source = shell_files))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'extensions/Scripts'), source = py_files))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'country'), source = country_files))
- 	#env.Alias('install', env.Install(dir = os.path.join(prefix, 'share', PACKAGE, 'info'), source = info_image_files))
 	env.Alias('install', env.Install(dir = os.path.join(prefix, 'bin'), source = PACKAGE))
 

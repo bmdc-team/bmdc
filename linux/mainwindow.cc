@@ -196,9 +196,11 @@ MainWindow::MainWindow():
 		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(onHubClicked_gui), (gpointer)this);
 	}
 	gtk_widget_show_all(menu);
-
+    
+    g_signal_connect(getWidget("limitingButton"),"clicked",G_CALLBACK(onPopupPopover),(gpointer)this);
+    
 	///Limits menu
-	menu = gtk_menu_new();
+	/*menu = gtk_menu_new();
 	gtk_menu_tool_button_set_menu(GTK_MENU_TOOL_BUTTON(getWidget("limitingButton")), menu);
 	gtk_container_foreach(GTK_CONTAINER(menu), (GtkCallback)gtk_widget_destroy, NULL);
 	GtkWidget *wdisupitem = gtk_menu_item_new_with_label(_("Upload Limit (disable)"));
@@ -237,7 +239,7 @@ MainWindow::MainWindow():
 		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(onLimitingMenuItem_gui), (gpointer)this);
 	}
 
-	gtk_widget_show_all(menu);
+	gtk_widget_show_all(menu);*/
 
 	// menu
 	g_object_ref_sink(getWidget("statusIconMenu"));
@@ -609,23 +611,53 @@ void MainWindow::autoOpen_gui()
 		showUploadQueue_gui();
 }
 
-void MainWindow::onLimitingMenuItem_gui(GtkWidget *widget, gpointer data)
+void MainWindow::onPopupPopover(GtkWidget* widget , gpointer data)
+{  
+    MainWindow* mw = (MainWindow*)data;
+    #ifndef grid_add
+    #define grid_add(box,widget,x,y,z,c) gtk_grid_attach(GTK_GRID(box), widget ,x,y,z,c)
+    #endif
+    GtkWidget *popover = gtk_popover_new(mw->getWidget("limitingButton"));
+    GtkWidget *labelup = gtk_label_new("Upload Limit");
+    GtkWidget *labeldown = gtk_label_new("Download Limit");
+    GtkWidget* scaleUp = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,0,9999999,1);
+    GtkWidget* scaleDown = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,0,9999999,1);
+    GtkWidget* grid = gtk_grid_new();
+    
+    grid_add(grid,labeldown,0,0,1,1);
+    grid_add(grid,scaleDown,1,0,1,1);
+    grid_add(grid,labelup,0,2,1,1);
+    grid_add(grid,scaleUp,1,2,1,1);
+    gtk_widget_show_all(grid);
+    gtk_container_add(GTK_CONTAINER(popover),grid);
+    
+    int iup = SETTING(MAX_UPLOAD_SPEED_MAIN);
+	int idown = SETTING(MAX_DOWNLOAD_SPEED_MAIN);
+    gtk_range_set_value (GTK_RANGE(scaleDown),idown);
+    gtk_range_set_value (GTK_RANGE(scaleUp),iup);
+    
+    g_signal_connect(GTK_RANGE(scaleDown),"value-changed",G_CALLBACK(onLimitingMenuItem_gui),(gpointer)mw);
+    g_object_set_data_full(G_OBJECT(scaleDown),"type",g_strdup("dw"),g_free);
+    g_signal_connect(GTK_RANGE(scaleUp),"value-changed",G_CALLBACK(onLimitingMenuItem_gui),(gpointer)mw);
+    g_object_set_data_full(G_OBJECT(scaleUp),"type",g_strdup("up"),g_free);
+    gtk_popover_popup(GTK_POPOVER(popover));
+}
+void MainWindow::onLimitingMenuItem_gui(GtkRange *widget, gpointer data)
 {
 	MainWindow *mw = (MainWindow *)data;
-	string s_speed = (gchar *)g_object_get_data(G_OBJECT(widget), "speed");
 	string s_type = (gchar *)g_object_get_data(G_OBJECT(widget), "type");
 
-	if(s_speed.empty() || s_type.empty())
+	if(s_type.empty())
 			return;
 
 	if(s_type == "up")
 	{
-		ThrottleManager::setSetting(SettingsManager::MAX_UPLOAD_SPEED_MAIN, Util::toInt(s_speed)/1024 );
+		ThrottleManager::setSetting(SettingsManager::MAX_UPLOAD_SPEED_MAIN, gtk_range_get_value(widget)/1024 );
 		mw->setLimitingIcon(true);
 	}
 	else if(s_type == "dw")
 	{
-		ThrottleManager::setSetting(SettingsManager::MAX_DOWNLOAD_SPEED_MAIN, Util::toInt(s_speed)/1024 );
+		ThrottleManager::setSetting(SettingsManager::MAX_DOWNLOAD_SPEED_MAIN, gtk_range_get_value(widget)/1024 );
 		mw->setLimitingIcon(true);
 	}
 	
@@ -639,7 +671,7 @@ void MainWindow::setLimitingIcon(bool bLimited)
 	setMainStatus_gui(string(_("Throtle ")) + ( bLimited ? string(_("on")) : string(_("off"))));
 	setStatusOfIcons(LIMITING, bLimited);
 }
-
+/*
 void MainWindow::onLimitingDisable(GtkWidget *widget, gpointer data)
 {
 	MainWindow *mw = (MainWindow *)data;
@@ -661,7 +693,7 @@ void MainWindow::onLimitingDisable(GtkWidget *widget, gpointer data)
 	mw->setLimitingIcon(false);
 	mw->setStatRate_gui();
 }
-
+*/
 void MainWindow::setInitThrotles()
 {
 	int iup = SETTING(MAX_UPLOAD_SPEED_MAIN);
