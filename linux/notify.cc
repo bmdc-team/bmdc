@@ -54,9 +54,6 @@ void Notify::init()
 {
     application = WulforManager::get()->getApplication();
     
-    //g_application_new ("bmdcteam.bmdc", G_APPLICATION_FLAGS_NONE);
-    //g_application_register (application, NULL, NULL);
-    
     static GActionEntry actions[] = {
     { "launch", onAction, "s", NULL, NULL }
     };
@@ -127,7 +124,7 @@ void Notify::showNotify(const string head, const string body, TypeNotify notify)
 			{
 
 				bAction = true;//set action
-				showNotify(wsm->getString("notify-download-finished-title"), head, Util::getFileName(body),
+				showNotify(wsm->getString("notify-download-finished-title"), head, body,
 					wsm->getString("notify-download-finished-icon"), wsm->getInt("notify-icon-size"), G_NOTIFICATION_PRIORITY_NORMAL);
 			}
 
@@ -195,7 +192,7 @@ void Notify::showNotify(const string title, const string head, const string body
 		return;
 	
 	g_autofree gchar *esc_title = g_markup_escape_text(g_filename_to_utf8(title.c_str(),-1,NULL,NULL,NULL), -1);
-	g_autofree gchar *esc_body = g_markup_escape_text(g_filename_to_utf8(body.c_str(),-1,NULL,NULL,NULL), -1);
+	g_autofree gchar *esc_body = g_markup_escape_text(g_filename_to_utf8(Util::getFileName(body).c_str(),-1,NULL,NULL,NULL), -1);
 	string message = head + esc_body;
 
     GFile* ficon = g_file_new_for_path(icon.c_str());
@@ -204,7 +201,8 @@ void Notify::showNotify(const string title, const string head, const string body
 	g_notification_set_body (notification, esc_body);
 	g_notification_set_icon (notification, gicon);
     if(bAction) {
-        g_notification_add_button_with_target (notification, "Open Folder", "app.launch", "s", Util::getFilePath(body).c_str());
+        g_notification_add_button_with_target (notification, "Open Folder", "app.launch", "s", (string("file:///")+Util::getFilePath(body)).c_str());
+        g_notification_add_button_with_target (notification, "Open File", "app.launch", "s", (string("file:///")+body).c_str());
     } 
     g_notification_set_priority (notification,urgency);          
 	g_application_send_notification (application, NULL, notification);
@@ -222,6 +220,4 @@ void Notify::onAction(GSimpleAction*, GVariant* var, gpointer)
 		WulforUtil::openURI(target);
 }
 
-				/*notify_notification_add_action(notification, "1", _("Open file"),
-					(NotifyActionCallback) onAction, g_strdup(body.c_str()), g_free);
-*/
+

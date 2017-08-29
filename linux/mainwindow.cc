@@ -555,7 +555,6 @@ void MainWindow::showTransfersPane_gui()
  */
 void MainWindow::loadIcons_gui()
 {
-	//WulforUtil::registerIcons();
 	#define g_tool_set gtk_tool_button_set_icon_name
 	#define g_image_set gtk_image_set_from_icon_name
 	
@@ -660,8 +659,16 @@ void MainWindow::onLimitingMenuItem_gui(GtkRange *widget, gpointer data)
 		ThrottleManager::setSetting(SettingsManager::MAX_DOWNLOAD_SPEED_MAIN, gtk_range_get_value(widget)/1024 );
 		mw->setLimitingIcon(true);
 	}
-	
-	SettingsManager::getInstance()->set(SettingsManager::THROTTLE_ENABLE, true);
+    
+    if(gtk_range_get_value(widget) == 0)
+    {    
+        SettingsManager::getInstance()->set(SettingsManager::THROTTLE_ENABLE, false);
+    }    
+    else
+    {
+        SettingsManager::getInstance()->set(SettingsManager::THROTTLE_ENABLE, true);
+    }    
+        
 	mw->setStatRate_gui();
 
 }

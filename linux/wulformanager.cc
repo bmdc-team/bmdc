@@ -102,7 +102,7 @@ void WulforManager::createMainWindow()
 {
 	dcassert(!mainWin);
     
-    application = g_application_new ("bmdcteam.bmdc", G_APPLICATION_FLAGS_NONE);
+    application = g_application_new ("org.bmdcteam.bmdc", G_APPLICATION_FLAGS_NONE);
     g_application_register (application, NULL, NULL);
     
 	mainWin = new MainWindow();
