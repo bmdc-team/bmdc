@@ -94,7 +94,7 @@ Hub::Hub(const string &address, const string &encoding):
 												p_faventry->get(SettingsManager::HUB_UL_SIZE,SETTING(HUB_UL_SIZE)),
 												p_faventry->get(SettingsManager::HUB_UL_VISIBLE,SETTING(HUB_UL_VISIBLE)));
 	}else{
-		//Maybe usefull also disabling?
+		//TODO:Maybe usefull also disabling?
 		nickView.restoreSettings(SETTING(HUB_UL_ORDER),SETTING(HUB_UL_SIZE),SETTING(HUB_UL_VISIBLE));
 	}
 
@@ -2276,7 +2276,7 @@ void Hub::onCopyIpItem_gui(GtkWidget* widget, gpointer)
 
 void Hub::onRipeDbItem_gui(GtkWidget* widget, gpointer data)
 {
-	Hub* hub=(Hub*)data;
+	Hub* hub = (Hub*)data;
 	string ip = (gchar*)g_object_get_data(G_OBJECT(widget),"ip_addr");
 	string error = string();
 	dcpp::ParamMap params;
@@ -2603,14 +2603,14 @@ void Hub::onSendMessage_gui(GtkEntry *entry, gpointer data)
 			"\r\n/emoticons, /emot\r\n\t" + _("Emoticons on/off") +
 			"\r\n/sc <stop/start>\r\n\t" + _("Start/Stop checkers") +
 			"\r\n/scmyinfo\r\n\t" + _("Start/Stop checkers of Myinfo") +
-			"\r\n/showjoins\r\n\t" + _("Join/Parts: 1 - enable , other disable ") +
-			"\r\n/showfavjoins\r\n\t" + _("Fav Joins/Parts: 1 - enable , other disable") +
+			"\r\n/showjoins\r\n\t" + _("Join/Parts: enable , other disable ") +
+			"\r\n/showfavjoins\r\n\t" + _("Fav Joins/Parts: enable , other disable") +
 			"\r\n/addfavorite\r\n\t" + _("Add Indepent Fav") +
 			"\r\n/topic\r\n\t" + _("Show topic") +
 			"\r\n/raw <rawtext>\r\n\t" + _("Send Raw data") +
 			"\r\n/conn\r\n\t" + _("Show Conection Setup Info") +
 			"\r\n/getuserinfo <nick>\r\n\t" +_("Show Get User Info") +
-			"\r\n/addip <ip>\r\n\t" + _("Get <ip> to watchlist") +
+			"\r\n/addip <ip/range>\r\n\t" + _("Get <ip> to watchlist") +
 			"\r\n/listip\r\n\t" + _("List watched ips") +
 			"\r\n/info\r\n\t" + _("Get Info about hub connection & favorite hub info") +
 			"\r\n/addfavorite\r\n\t" + _("Add Nick to Favorite users") +
@@ -3132,7 +3132,6 @@ void Hub::onDownloadToClicked_gui(GtkMenuItem*, gpointer data)
 		{
 			Hub *hub = (Hub *)data;
 			string path = Text::toUtf8(temp) + G_DIR_SEPARATOR_S;
-			//g_free(temp);
 
 			WulforManager::get()->getMainWindow()->fileToDownload_gui(hub->selectedTagStr, path);
 		}

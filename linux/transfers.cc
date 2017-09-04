@@ -918,7 +918,7 @@ void Transfers::getParams_client(StringMap& params, ConnectionQueueItem* cqi)
 	params["Hub URL"] = user.hint;
 }
 
-void Transfers::getParams_client(StringMap& params, Transfer* tr)
+void Transfers::getParams_client(StringMap& params, Transfer* tr, bool down)
 {
 	const HintedUser user = tr->getHintedUser();
 	double percent = 0.0;
@@ -940,11 +940,20 @@ void Transfers::getParams_client(StringMap& params, Transfer* tr)
 		percent = static_cast<double>(tr->getPos() * 100.0)/ tr->getSize();
 	params["Progress"] = Util::toString(static_cast<int>(percent));
 	params["IP"] = tr->getUserConnection().getRemoteIp();
-	params[_("Time Left")] = tr->getSecondsLeft() > 0 ? Util::toString(tr->getSecondsLeft()) : "0";
-	//double timeleft = static_cast<double>(tr->getSize() - tr->getPos()) / tr->getAverageSpeed();
 	
+    
+    if(down) {
+        Download *d = reinterpret_cast<Download*>(tr);
+       // string pos = Util::formatBytes(d->getPos());
+       // double percent = (double) d->getPos()*100.0 / (double) d->getSize();
+        string elapsed = Util::formatSeconds((GET_TICK() - d->getStart())/1000);
+        params[_("Time Left")] = elapsed;
+    } else {    
+        params[_("Time Left")] = tr->getSecondsLeft() > 0 ? Util::toString(tr->getSecondsLeft()) : "0";
+    }
+	//double timeleft = static_cast<double>(tr->getSize() - tr->getPos()) / tr->getAverageSpeed();
 	//params[_("Time Left")] = Util::formatSeconds((GET_TICK() - tr->getStart())/1000);
-	//params[_("Time Left")] = Util::toString(timeleft);
+	
 	params["Target"] = tr->getPath();
 	params["Hub URL"] = tr->getUserConnection().getHubUrl();
 	params["TTH"] = tr->getTTH().toBase32();
@@ -1149,7 +1158,7 @@ void Transfers::on(UploadManagerListener::Starting, Upload* ul) noexcept
 {
 	StringMap params;
 
-	getParams_client(params, ul);
+	getParams_client(params, ul, false);
 	params[_("Status")] = _("Upload starting...");
 	params["Sort Order"] = "u" + params[_("User")];
 	params["Failed"] = "0";
@@ -1168,7 +1177,7 @@ void Transfers::on(UploadManagerListener::Tick, const UploadList& uls) noexcept
 		StringMap params;
 		ostringstream stream;
 
-		getParams_client(params, ul);
+		getParams_client(params, ul, false);
 
 		if (ul->getUserConnection().isSecure())
 		{
@@ -1195,7 +1204,7 @@ void Transfers::on(UploadManagerListener::Complete, Upload* ul) noexcept
 {
 	StringMap params;
 
-	getParams_client(params, ul);
+	getParams_client(params, ul , false);
 	params[_("Status")] = _("Upload complete...");
 	params["Sort Order"] = "w" + params[_("User")];
 	params[_("Speed")] = "0";
@@ -1208,7 +1217,7 @@ void Transfers::on(UploadManagerListener::Complete, Upload* ul) noexcept
 void Transfers::on(UploadManagerListener::Failed, Upload* ul, const string& reason) noexcept
 {
 	StringMap params;
-	getParams_client(params, ul);
+	getParams_client(params, ul, false);
 	params[_("Status")] = reason;
 	params["Sort Order"] = "w" + params[_("User")];
 	params["Failed"] = "1";

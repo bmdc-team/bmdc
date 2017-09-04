@@ -524,7 +524,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 
 	ClientManager::getInstance()->setIpAddress(aSource->getUser(),aSource->getRemoteIp());
 
-	if(ClientManager::getInstance()->isOp(aSource->getUser(), aSource->getHubUrl()))
+	if(UsersManager::getInstance()->isOp(aSource->getUser(), aSource->getHubUrl()))
 		aSource->setFlag(UserConnection::FLAG_OP);
 
 	if( aSource->isSet(UserConnection::FLAG_INCOMING) ) {

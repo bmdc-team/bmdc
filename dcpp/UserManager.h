@@ -253,7 +253,13 @@ void setIpAddress(const UserPtr& p, const string& ip) {
 		}
 		fire(UsersManagerListener::UserUpdated(),(dynamic_cast<const OnlineUser&>(*i->second)));
 	}
-}
+}/*
+void on(UsersUpdated, Client* , const OnlineUserList& l) noexcept {
+	for(OnlineUserList::const_iterator i = l.begin(), iend = l.end(); i != iend; ++i) {
+		updateNick(*(*i));
+		fire(UsersManagerListener::UserUpdated(), *(*i));
+	}
+}*/
 private:
 	OnlineHubUserMap onlineHubUsers;
 	OnlineMap onlineUsers;

@@ -55,7 +55,7 @@ void Notify::init()
     application = WulforManager::get()->getApplication();
     
     static GActionEntry actions[] = {
-    { "launch", onAction, "s", NULL, NULL }
+    { .name = "launch", .activate = onAction, .parameter_type = "s", .state = NULL , .change_state = NULL , .padding = {0,0,0} }
     };
 
     g_action_map_add_action_entries (G_ACTION_MAP (application),
@@ -184,7 +184,7 @@ void Notify::showNotify(const string head, const string body, TypeNotify notify)
 		default: break;
 	}
 }
-void Notify::showNotify(const string title, const string head, const string body, const string icon, const int iconSize, GNotificationPriority urgency)
+void Notify::showNotify(const string title, const string head, const string body, const string icon, const int /*iconSize*/, GNotificationPriority urgency)
 {
 
 //@ only title is Fatal	
