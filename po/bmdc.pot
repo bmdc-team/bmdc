@@ -19,7 +19,7 @@ msgstr ""
 "#-#-#-#-#  linux.pot  #-#-#-#-#\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://sourceforge.net/projects/freedcppmv/\n"
-"POT-Creation-Date: 2017-09-04 14:27+0200\n"
+"POT-Creation-Date: 2017-09-09 18:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -495,8 +495,8 @@ msgid "About:Config"
 msgstr ""
 
 #: ui/adlsearch.ui:444 ui/detection.ui:3054 linux/detectiontab.cc:178
-#: linux/detectiontab.cc:1336 linux/detectiontab.cc:1374
-#: linux/detectiontab.cc:1430
+#: linux/detectiontab.cc:1338 linux/detectiontab.cc:1376
+#: linux/detectiontab.cc:1432
 msgid "Action"
 msgstr ""
 
@@ -798,8 +798,8 @@ msgid "Chat Menu"
 msgstr ""
 
 #: ui/detection.ui:650 linux/detectiontab.cc:43 linux/detectiontab.cc:335
-#: linux/detectiontab.cc:830 linux/detectiontab.cc:897
-#: linux/detectiontab.cc:912 linux/hub.cc:80 linux/hub.cc:422 linux/hub.cc:644
+#: linux/detectiontab.cc:832 linux/detectiontab.cc:899
+#: linux/detectiontab.cc:914 linux/hub.cc:80 linux/hub.cc:422 linux/hub.cc:644
 #: linux/hub.cc:684 linux/hub.cc:800 linux/hub.cc:829
 msgid "Cheat"
 msgstr ""
@@ -906,8 +906,8 @@ msgstr ""
 
 #: ui/adlsearch.ui:400 linux/adlsearch.cc:50 linux/adlsearch.cc:142
 #: linux/adlsearch.cc:252 linux/adlsearch.cc:294 linux/detectiontab.cc:44
-#: linux/detectiontab.cc:336 linux/detectiontab.cc:831
-#: linux/detectiontab.cc:898 linux/detectiontab.cc:913
+#: linux/detectiontab.cc:336 linux/detectiontab.cc:833
+#: linux/detectiontab.cc:900 linux/detectiontab.cc:915
 msgid "Comment"
 msgstr ""
 
@@ -984,11 +984,11 @@ msgstr ""
 #: ui/favoritehubs.ui:1517 ui/favoritehubs.ui:1534 ui/favoritehubs.ui:1551
 #: ui/favoritehubs.ui:1568 ui/favoritehubs.ui:1585 ui/settingsdialog.ui:5272
 #: ui/settingsdialog.ui:5964 ui/settingsdialog.ui:6148
-#: ui/settingsdialog.ui:6333 ui/settingsdialog.ui:8700 linux/AboutConfig.cc:113
-#: linux/AboutConfig.cc:122 linux/AboutConfig.cc:193 linux/AboutConfig.cc:198
-#: linux/AboutConfig.cc:209 linux/AboutConfig.cc:213 linux/AboutConfig.cc:438
-#: linux/AboutConfigFav.cc:153 linux/AboutConfigFav.cc:176
-#: linux/AboutConfigFav.cc:193 linux/AboutConfigFav.cc:217
+#: ui/settingsdialog.ui:6333 ui/settingsdialog.ui:8700 linux/AboutConfig.cc:115
+#: linux/AboutConfig.cc:124 linux/AboutConfig.cc:195 linux/AboutConfig.cc:200
+#: linux/AboutConfig.cc:211 linux/AboutConfig.cc:215 linux/AboutConfig.cc:440
+#: linux/AboutConfigFav.cc:155 linux/AboutConfigFav.cc:178
+#: linux/AboutConfigFav.cc:195 linux/AboutConfigFav.cc:219
 #: linux/FavoriteHubDialog.cc:174 linux/FavoriteHubDialog.cc:185
 #: linux/FavoriteHubDialog.cc:255 linux/FavoriteHubDialog.cc:386
 #: linux/FavoriteHubDialog.cc:387 linux/emoticonsdialog.cc:149
@@ -1170,8 +1170,8 @@ msgstr ""
 #: linux/detectiontab.cc:479 linux/detectiontab.cc:505
 #: linux/detectiontab.cc:640 linux/detectiontab.cc:649
 #: linux/detectiontab.cc:668 linux/detectiontab.cc:680
-#: linux/detectiontab.cc:828 linux/detectiontab.cc:895
-#: linux/detectiontab.cc:910 linux/detectiontab.cc:1070
+#: linux/detectiontab.cc:830 linux/detectiontab.cc:897
+#: linux/detectiontab.cc:912 linux/detectiontab.cc:1072
 msgid "Enable"
 msgstr ""
 
@@ -1527,8 +1527,8 @@ msgid "Home"
 msgstr ""
 
 #: ui/search.ui:851 linux/bookentry.cc:390 linux/detectiontab.cc:108
-#: linux/detectiontab.cc:1018 linux/detectiontab.cc:1118
-#: linux/detectiontab.cc:1216 linux/finishedtransfers.cc:77
+#: linux/detectiontab.cc:1020 linux/detectiontab.cc:1120
+#: linux/detectiontab.cc:1218 linux/finishedtransfers.cc:77
 #: linux/finishedtransfers.cc:183 linux/search.cc:107 linux/search.cc:231
 #: linux/search.cc:706 linux/search.cc:778 linux/search.cc:920
 #: linux/search.cc:1804 linux/search.cc:2139 linux/search.cc:2190
@@ -1559,9 +1559,9 @@ msgstr ""
 #: linux/detectiontab.cc:543 linux/detectiontab.cc:574
 #: linux/detectiontab.cc:641 linux/detectiontab.cc:650
 #: linux/detectiontab.cc:669 linux/detectiontab.cc:681
-#: linux/detectiontab.cc:833 linux/detectiontab.cc:857
-#: linux/detectiontab.cc:900 linux/detectiontab.cc:915
-#: linux/detectiontab.cc:1069
+#: linux/detectiontab.cc:835 linux/detectiontab.cc:859
+#: linux/detectiontab.cc:902 linux/detectiontab.cc:917
+#: linux/detectiontab.cc:1071
 msgid "ID"
 msgstr ""
 
@@ -1795,7 +1795,7 @@ msgid "Mini slot size"
 msgstr ""
 
 #: ui/detection.ui:816 linux/detectiontab.cc:48 linux/detectiontab.cc:340
-#: linux/detectiontab.cc:902 linux/detectiontab.cc:917
+#: linux/detectiontab.cc:904 linux/detectiontab.cc:919
 msgid "MisMatch"
 msgstr ""
 
@@ -1842,12 +1842,12 @@ msgstr ""
 #: ui/detection.ui:152 ui/detection.ui:612 ui/detection.ui:949
 #: ui/favoritehubs.ui:85 ui/settingsdialog.ui:1156 linux/AboutConfig.cc:33
 #: linux/AboutConfig.cc:43 linux/AboutConfig.cc:45 linux/AboutConfig.cc:74
-#: linux/AboutConfig.cc:247 linux/AboutConfig.cc:261 linux/AboutConfig.cc:365
-#: linux/AboutConfig.cc:422 linux/AboutConfigFav.cc:35
+#: linux/AboutConfig.cc:249 linux/AboutConfig.cc:263 linux/AboutConfig.cc:367
+#: linux/AboutConfig.cc:424 linux/AboutConfigFav.cc:35
 #: linux/AboutConfigFav.cc:45 linux/AboutConfigFav.cc:47
-#: linux/AboutConfigFav.cc:121 linux/AboutConfigFav.cc:256
-#: linux/AboutConfigFav.cc:269 linux/AboutConfigFav.cc:371
-#: linux/AboutConfigFav.cc:411 linux/FavoriteHubDialog.cc:303
+#: linux/AboutConfigFav.cc:121 linux/AboutConfigFav.cc:258
+#: linux/AboutConfigFav.cc:271 linux/AboutConfigFav.cc:373
+#: linux/AboutConfigFav.cc:413 linux/FavoriteHubDialog.cc:303
 #: linux/FavoriteHubDialog.cc:580 linux/FavoriteHubDialog.cc:593
 #: linux/detectiontab.cc:42 linux/detectiontab.cc:61 linux/detectiontab.cc:72
 #: linux/detectiontab.cc:313 linux/detectiontab.cc:334
@@ -1856,8 +1856,8 @@ msgstr ""
 #: linux/detectiontab.cc:526 linux/detectiontab.cc:558
 #: linux/detectiontab.cc:639 linux/detectiontab.cc:648
 #: linux/detectiontab.cc:665 linux/detectiontab.cc:677
-#: linux/detectiontab.cc:829 linux/detectiontab.cc:856
-#: linux/detectiontab.cc:896 linux/detectiontab.cc:911 linux/exportimport.cc:39
+#: linux/detectiontab.cc:831 linux/detectiontab.cc:858
+#: linux/detectiontab.cc:898 linux/detectiontab.cc:913 linux/exportimport.cc:39
 #: linux/exportimport.cc:68 linux/favoritehubs.cc:41 linux/favoritehubs.cc:58
 #: linux/favoritehubs.cc:130 linux/favoritehubs.cc:400 linux/publichubs.cc:39
 #: linux/publichubs.cc:147 linux/publichubs.cc:292 linux/recenthub.cc:36
@@ -2103,8 +2103,8 @@ msgstr ""
 msgid "Play"
 msgstr ""
 
-#: ui/detection.ui:1215 linux/detectiontab.cc:177 linux/detectiontab.cc:1335
-#: linux/detectiontab.cc:1373 linux/detectiontab.cc:1429
+#: ui/detection.ui:1215 linux/detectiontab.cc:177 linux/detectiontab.cc:1337
+#: linux/detectiontab.cc:1375 linux/detectiontab.cc:1431
 msgid "Points"
 msgstr ""
 
@@ -2206,8 +2206,8 @@ msgstr ""
 #: ui/settingsdialog.ui:944 linux/detectiontab.cc:45 linux/detectiontab.cc:73
 #: linux/detectiontab.cc:337 linux/detectiontab.cc:406
 #: linux/detectiontab.cc:503 linux/detectiontab.cc:666
-#: linux/detectiontab.cc:678 linux/detectiontab.cc:832
-#: linux/detectiontab.cc:899 linux/detectiontab.cc:914
+#: linux/detectiontab.cc:678 linux/detectiontab.cc:834
+#: linux/detectiontab.cc:901 linux/detectiontab.cc:916
 msgid "Raw"
 msgstr ""
 
@@ -2742,9 +2742,9 @@ msgid "Trusted certificates path"
 msgstr ""
 
 #: ui/detection.ui:288 ui/detection.ui:967 linux/AboutConfig.cc:35
-#: linux/AboutConfig.cc:42 linux/AboutConfig.cc:76 linux/AboutConfig.cc:249
+#: linux/AboutConfig.cc:42 linux/AboutConfig.cc:76 linux/AboutConfig.cc:251
 #: linux/AboutConfigFav.cc:37 linux/AboutConfigFav.cc:44
-#: linux/AboutConfigFav.cc:123 linux/AboutConfigFav.cc:258 linux/search.cc:102
+#: linux/AboutConfigFav.cc:123 linux/AboutConfigFav.cc:260 linux/search.cc:102
 #: linux/search.cc:226 linux/search.cc:704 linux/search.cc:783
 #: linux/search.cc:923 linux/search.cc:1774 linux/search.cc:1775
 #: linux/search.cc:1776 linux/search.cc:1790 linux/search.cc:2134
@@ -2844,12 +2844,12 @@ msgid "Users"
 msgstr ""
 
 #: ui/detection.ui:956 linux/AboutConfig.cc:36 linux/AboutConfig.cc:77
-#: linux/AboutConfig.cc:250 linux/AboutConfig.cc:263 linux/AboutConfig.cc:366
+#: linux/AboutConfig.cc:252 linux/AboutConfig.cc:265 linux/AboutConfig.cc:368
 #: linux/AboutConfigFav.cc:38 linux/AboutConfigFav.cc:124
-#: linux/AboutConfigFav.cc:259 linux/AboutConfigFav.cc:271
-#: linux/AboutConfigFav.cc:372 linux/detectiontab.cc:107
-#: linux/detectiontab.cc:1017 linux/detectiontab.cc:1117
-#: linux/detectiontab.cc:1215
+#: linux/AboutConfigFav.cc:261 linux/AboutConfigFav.cc:273
+#: linux/AboutConfigFav.cc:374 linux/detectiontab.cc:107
+#: linux/detectiontab.cc:1019 linux/detectiontab.cc:1119
+#: linux/detectiontab.cc:1217
 msgid "Value"
 msgstr ""
 
@@ -3361,7 +3361,7 @@ msgstr ""
 msgid "Address: "
 msgstr ""
 
-#: linux/WulforUtil.cc:992
+#: linux/WulforUtil.cc:995
 msgid "Aliases not found."
 msgstr ""
 
@@ -3383,7 +3383,7 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
-#: linux/detectiontab.cc:864
+#: linux/detectiontab.cc:866
 #, c-format, boost-format
 msgid "Are you sure you want to delete Entry \"%s\"?"
 msgstr ""
@@ -3402,7 +3402,7 @@ msgstr ""
 msgid "Are you sure you want to delete favorite user(s)?"
 msgstr ""
 
-#: linux/detectiontab.cc:1045 linux/detectiontab.cc:1450
+#: linux/detectiontab.cc:1047 linux/detectiontab.cc:1452
 msgid "Are you sure you want to delete item?"
 msgstr ""
 
@@ -4005,12 +4005,12 @@ msgstr ""
 msgid "Favorite user quit"
 msgstr ""
 
-#: linux/detectiontab.cc:106 linux/detectiontab.cc:1016
-#: linux/detectiontab.cc:1116 linux/detectiontab.cc:1214
+#: linux/detectiontab.cc:106 linux/detectiontab.cc:1018
+#: linux/detectiontab.cc:1118 linux/detectiontab.cc:1216
 msgid "Field"
 msgstr ""
 
-#: linux/detectiontab.cc:1236
+#: linux/detectiontab.cc:1238
 msgid "Fields Name, ID and detection fields are required"
 msgstr ""
 
@@ -4050,8 +4050,8 @@ msgstr ""
 msgid "Filter kick and NMDC debug messages"
 msgstr ""
 
-#: linux/detectiontab.cc:47 linux/detectiontab.cc:339 linux/detectiontab.cc:834
-#: linux/detectiontab.cc:901 linux/detectiontab.cc:916
+#: linux/detectiontab.cc:47 linux/detectiontab.cc:339 linux/detectiontab.cc:836
+#: linux/detectiontab.cc:903 linux/detectiontab.cc:918
 msgid "Flag"
 msgstr ""
 
@@ -4919,7 +4919,7 @@ msgstr ""
 msgid "Source too slow"
 msgstr ""
 
-#: linux/WulforUtil.cc:792 linux/WulforUtil.cc:798
+#: linux/WulforUtil.cc:793 linux/WulforUtil.cc:800
 msgid "Specify a search string"
 msgstr ""
 
@@ -4952,10 +4952,10 @@ msgstr ""
 msgid "Started MyInfo check"
 msgstr ""
 
-#: linux/AboutConfig.cc:34 linux/AboutConfig.cc:75 linux/AboutConfig.cc:248
-#: linux/AboutConfig.cc:262 linux/AboutConfigFav.cc:36
-#: linux/AboutConfigFav.cc:122 linux/AboutConfigFav.cc:257
-#: linux/AboutConfigFav.cc:270 linux/downloadqueue.cc:66
+#: linux/AboutConfig.cc:34 linux/AboutConfig.cc:75 linux/AboutConfig.cc:250
+#: linux/AboutConfig.cc:264 linux/AboutConfigFav.cc:36
+#: linux/AboutConfigFav.cc:122 linux/AboutConfigFav.cc:259
+#: linux/AboutConfigFav.cc:272 linux/downloadqueue.cc:66
 #: linux/downloadqueue.cc:277 linux/downloadqueue.cc:384
 #: linux/favoritehubs.cc:49 linux/favoritehubs.cc:139 linux/favoritehubs.cc:763
 #: linux/searchspy.cc:57 linux/searchspy.cc:293 linux/searchspy.cc:375
@@ -5236,8 +5236,8 @@ msgstr ""
 msgid "User Per Favorite Hub Set"
 msgstr ""
 
-#: linux/AboutConfig.cc:410 linux/AboutConfigFav.cc:163
-#: linux/AboutConfigFav.cc:399
+#: linux/AboutConfig.cc:412 linux/AboutConfigFav.cc:165
+#: linux/AboutConfigFav.cc:401
 msgid "User Set"
 msgstr ""
 
@@ -5277,9 +5277,9 @@ msgstr ""
 msgid "User operator (passive) "
 msgstr ""
 
-#: linux/AboutConfig.cc:131 linux/AboutConfig.cc:142 linux/AboutConfig.cc:153
-#: linux/AboutConfig.cc:164 linux/AboutConfig.cc:175 linux/AboutConfig.cc:198
-#: linux/AboutConfig.cc:213 linux/AboutConfig.cc:383
+#: linux/AboutConfig.cc:133 linux/AboutConfig.cc:144 linux/AboutConfig.cc:155
+#: linux/AboutConfig.cc:166 linux/AboutConfig.cc:177 linux/AboutConfig.cc:200
+#: linux/AboutConfig.cc:215 linux/AboutConfig.cc:385
 msgid "User set"
 msgstr ""
 
@@ -5527,11 +5527,11 @@ msgstr ""
 msgid "[Z]"
 msgstr ""
 
-#: linux/AboutConfig.cc:514 linux/FavoriteHubDialog.cc:625
+#: linux/AboutConfig.cc:516 linux/FavoriteHubDialog.cc:625
 msgid "_Cancel"
 msgstr ""
 
-#: linux/AboutConfig.cc:513 linux/FavoriteHubDialog.cc:623
+#: linux/AboutConfig.cc:515 linux/FavoriteHubDialog.cc:623
 msgid "_OK"
 msgstr ""
 

@@ -705,7 +705,9 @@ void DetectionTab::removeRaw_gui(string Id, string )
 
 void DetectionTab::addAct_client(StringMap params)
 {
-	RawManager::getInstance()->addAction(Util::toInt(params["ID"]),params["Name"],Util::toInt(params["Enabled"]));
+    string res = string();
+	RawManager::getInstance()->addAction(Util::toInt(params["ID"]),params["Name"],Util::toInt(params["Enabled"]),res);
+    printf("%s",res.c_str());
 	RawManager::getInstance()->saveActionRaws();
 }
 

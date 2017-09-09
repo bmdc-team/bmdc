@@ -24,10 +24,14 @@ using namespace std;
 using namespace dcpp;
 
 IgnoreTempManager::IgnoreTempManager()
-{}
+{
+
+}
 
 IgnoreTempManager::~IgnoreTempManager()
-{}
+{
+	
+}
 
 void IgnoreTempManager::addNickIgnored(string nick, uint64_t time)
 {

@@ -4744,7 +4744,7 @@ GtkWidget *Hub::createmenu()
 		GtkWidget *reconectItem = gtk_menu_item_new_with_label(_("Reconnect this hub"));
 		GtkWidget *closeItem = gtk_menu_item_new_with_label (_("Close Hub"));
 		//custom share things...
-        GtkWidget *shareView,*shareRefresh;
+        GtkWidget *shareView = NULL,*shareRefresh = NULL;//@NULL made gcc happy :p
         ShareManager *sm = client->getShareManager();
         if(!sm->getName().empty())
         {    

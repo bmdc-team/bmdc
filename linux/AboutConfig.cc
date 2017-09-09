@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2011 - 2017 - BMDC++
+	Copyright (C) 2011 - 2018 - BMDC
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -89,11 +89,13 @@ void AboutConfig::setColorRow(string scell)
 }
 
 
-void AboutConfig::makeColor(GtkTreeViewColumn *column,GtkCellRenderer *cell, GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
+void AboutConfig::makeColor(GtkTreeViewColumn*,GtkCellRenderer *cell, GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
 	AboutConfig* pf = (AboutConfig*)data;
-	if(pf == NULL) return;if(model == NULL) return;if(iter == NULL)return;
-	if(column == NULL)return;if(cell == NULL) return;
+	if(!pf){return;}
+	if(model == NULL){return;}
+	if(iter == NULL){return;}
+	if(cell == NULL){return;}
 	string fcolor = pf->aboutView.getString(iter,"ForeColor",model);
 	g_object_set(cell,"foreground-set",TRUE,"foreground",fcolor.c_str(),NULL);
 
@@ -223,23 +225,23 @@ void AboutConfig::show()
 void AboutConfig::addItem_gui(const gchar* rowname, const gchar* sDefault, const gchar* types, const gchar* value, gboolean bIsWulfor,bool bISDefualt)
 {
 	GtkTreeIter iter;
-	g_print("\n%s-%s-%s-%s-%d ",rowname,sDefault,types,value,(int)bIsWulfor);
+	g_debug("\n%s-%s-%s-%s-%d ",rowname,sDefault,types,value,(int)bIsWulfor);
 	if(value == NULL)return;
 	gboolean bIsOk = g_utf8_validate(value,-1,NULL);
 	gboolean bIsOk2 = g_utf8_validate(rowname,-1,NULL);
 	gboolean bIsOk3 = g_utf8_validate(sDefault,-1,NULL);
 	gboolean bIsOk4 = g_utf8_validate(types,-1,NULL);
 	if(!bIsOk) {
-		dcdebug("value\n");
+		g_debug("value\n");
 	}
 	if(!bIsOk2) {
-		dcdebug("rowname\n");
+		g_debug("rowname\n");
 	}
 	if(!bIsOk3) {
-		dcdebug("isdef\n");
+		g_debug("isdef\n");
 	}
 	if(!bIsOk4) {
-		dcdebug("types\n");
+		g_debug("types\n");
 	}
 
 	gtk_list_store_append(aboutStore,&iter);

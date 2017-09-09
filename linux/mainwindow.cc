@@ -610,7 +610,7 @@ void MainWindow::autoOpen_gui()
 		showUploadQueue_gui();
 }
 
-void MainWindow::onPopupPopover(GtkWidget* widget , gpointer data)
+void MainWindow::onPopupPopover(GtkWidget*  , gpointer data)
 {  
     MainWindow* mw = (MainWindow*)data;
     #ifndef grid_add
@@ -641,6 +641,7 @@ void MainWindow::onPopupPopover(GtkWidget* widget , gpointer data)
     g_object_set_data_full(G_OBJECT(scaleUp),"type",g_strdup("up"),g_free);
     gtk_popover_popup(GTK_POPOVER(popover));
 }
+
 void MainWindow::onLimitingMenuItem_gui(GtkRange *widget, gpointer data)
 {
 	MainWindow *mw = (MainWindow *)data;

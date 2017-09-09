@@ -787,18 +787,21 @@ bool WulforUtil::checkCommand(string& cmd, string& param, string& message, strin
 		return true;
 		
 	}
-	else if ( cmd == "g" || cmd == "google"){
-	  if(param.empty())
-		status += _("Specify a search string");
-	   else
-		openURI("http://www.google.com/search?q=" + param);
+	else if ( cmd == "g" || cmd == "google")
+    {
+	  if(param.empty()) {
+            status += _("Specify a search string");
+	   } else {
+            openURI("http://www.google.com/search?q=" + param);
+       }
 		return true;
 	}else if ( cmd == "imdb") {
-	  if(param.empty())
+	  if(param.empty()) {
 		status += _("Specify a search string");
-	   else
+	   }else {
 		openURI("http://www.imdb.com/find?q=" + param);
-		return true;
+     }   
+	return true;
 	/// "Now Playing" spam // added by curse and Irene
 	}else if (cmd == "amar")
 	{

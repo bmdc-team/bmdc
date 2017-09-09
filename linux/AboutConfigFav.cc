@@ -1,5 +1,5 @@
 //
-//		Copyright (C) 2011 - 2017 - BMDC++
+//		Copyright (C) 2011 - 2018 - BMDC
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
 //      the Free Software Foundation; either version 2 of the License, or
@@ -135,13 +135,15 @@ if(aboutView.getCellRenderOf(cell) != NULL)
 
 }
 
-void AboutConfigFav::makeColor(GtkTreeViewColumn *column,GtkCellRenderer *cell, GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
+void AboutConfigFav::makeColor(GtkTreeViewColumn*,GtkCellRenderer *cell, GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
-	AboutConfigFav* f = (AboutConfigFav*)data;
-	if(f == NULL) return;if(model == NULL) return;if(iter == NULL)return;
-	if(column == NULL)return;if(cell == NULL) return;
-	string fcolor = f->aboutView.getString(iter,"ForeColor",model);
-	g_object_set(cell,"foreground-set",TRUE,"foreground",fcolor.c_str(),NULL);
+	AboutConfigFav* acf = (AboutConfigFav*)data;
+	if(!acf){return;}
+	if(model == NULL) {return;}
+	if(iter == NULL){return;}
+	if(cell == NULL) {return;}
+	string sColor = acf->aboutView.getString(iter,"ForeColor",model);
+	g_object_set(cell,"foreground-set",TRUE,"foreground",sColor.c_str(),NULL);
 
 }
 

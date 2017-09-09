@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2017  BMDC
+// Copyright (C) 2014-2018  BMDC
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -567,7 +567,7 @@ void FavoriteHubDialog::initActions()
 {
 		GtkTreeIter toplevel;
 
-		gtk_tree_store_clear(actionStore);
+		gtk_tree_store_clear(actionStore);//probaly not need?
 
 		const Action::ActionList& list = RawManager::getInstance()->getActions();
 
@@ -722,7 +722,7 @@ void FavoriteHubDialog::updateShares_gui()
 
 void FavoriteHubDialog::addShare_gui(string path, string name)
 {
-	int64_t size = p_entry->getShareManager()->getShareSize(path);
+	uint64_t size = p_entry->getShareManager()->getShareSize(path);
 	GtkTreeIter iter;
 	gtk_list_store_append(shareStore, &iter);
 	gtk_list_store_set(shareStore, &iter,
