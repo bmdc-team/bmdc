@@ -286,7 +286,9 @@ class MainWindow:
 		#ifdef HAVE_LIBTAR
 		static void onExportItemClicked_gui(GtkWidget *widget, gpointer data);
 		#endif
+		#if GTK_CHECK_VERSION(3,22,0)
         static void onPopupPopover(GtkWidget* widget , gpointer data);
+        #endif
 		// Client functions
 		void autoConnect_client();
 		void startSocket_client();

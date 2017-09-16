@@ -196,9 +196,9 @@ MainWindow::MainWindow():
 		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(onHubClicked_gui), (gpointer)this);
 	}
 	gtk_widget_show_all(menu);
-    
+    #if GTK_CHECK_VERSION(3,22,0)
     g_signal_connect(getWidget("limitingButton"),"clicked",G_CALLBACK(onPopupPopover),(gpointer)this);
-    
+    #endif
 	///Limits menu
 	/*menu = gtk_menu_new();
 	gtk_menu_tool_button_set_menu(GTK_MENU_TOOL_BUTTON(getWidget("limitingButton")), menu);
@@ -609,7 +609,7 @@ void MainWindow::autoOpen_gui()
 	if (WGETB("open-upload-queue"))
 		showUploadQueue_gui();
 }
-
+#if GTK_CHECK_VERSION(3,22,0)
 void MainWindow::onPopupPopover(GtkWidget*  , gpointer data)
 {  
     MainWindow* mw = (MainWindow*)data;
@@ -641,7 +641,7 @@ void MainWindow::onPopupPopover(GtkWidget*  , gpointer data)
     g_object_set_data_full(G_OBJECT(scaleUp),"type",g_strdup("up"),g_free);
     gtk_popover_popup(GTK_POPOVER(popover));
 }
-
+#endif
 void MainWindow::onLimitingMenuItem_gui(GtkRange *widget, gpointer data)
 {
 	MainWindow *mw = (MainWindow *)data;
