@@ -987,8 +987,11 @@ void Hub::popupNickMenu_gui()
 	g_free(markup);
 	
 	ignoreMenu->buildMenu_gui(lastNick,cid,ip);	
-
+	#if GTK_CHECK_VERSION(3,22,0)
 	gtk_menu_popup_at_pointer(GTK_MENU(getWidget("nickMenu")),NULL);
+	#else
+	gtk_menu_popup(GTK_MENU(getWidget("nickMenu")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
+	#endif
 
 	gtk_widget_show_all(getWidget("nickMenu"));
 }
