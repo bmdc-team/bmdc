@@ -304,7 +304,7 @@ void BufferedSocket::threadRead() {
 					}
 				}
 			}
-			default:continue;
+			default: ;
 		}
 	}
 

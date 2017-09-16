@@ -38,7 +38,7 @@ class IgnoreTempManager: public dcpp::Singleton<IgnoreTempManager>, private dcpp
 		~IgnoreTempManager();
 		mutable dcpp::CriticalSection cs;
 
-		std::map<std::string, std::pair<uint64_t,uint64_t> > nickIgnore;
+		std::map<std::string, time_t > nickIgnore;
 		std::map<std::string, std::pair<uint64_t,uint64_t> > ipIgnore;
 		std::map<std::string, std::pair<uint64_t,uint64_t> > cidIgnore;
 
