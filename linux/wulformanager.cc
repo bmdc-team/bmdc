@@ -71,18 +71,17 @@ mainWin(NULL)
 	// Initialize sempahore variables
 	g_rw_lock_init(&entryMutex);
 	// Determine path to data files
-    path = string(g_get_system_data_dirs()[1]) + G_DIR_SEPARATOR_S + g_get_prgname();
-	if (!g_file_test(path.c_str(), G_FILE_TEST_EXISTS))
+	const gchar* const* g_path = g_get_system_data_dirs();
+	int g = 0;
+	do
 	{
-		cerr << path << " is inaccessible, falling back to current directory instead.\n";
-	}
-    
-    path = string(g_get_system_data_dirs()[0]) + G_DIR_SEPARATOR_S + g_get_prgname();
-	if (!g_file_test(path.c_str(), G_FILE_TEST_EXISTS))
-	{
-		cerr << path << " is inaccessible, falling back to current directory instead.\n";
-		path = ".";
-	}
+		path = string(g_path[g]) + G_DIR_SEPARATOR_S + g_get_prgname();
+		if (g_file_test(path.c_str(), G_FILE_TEST_EXISTS))
+		{
+			break;
+		}
+	
+	}while(g_path[g] != NULL);
 
 	// Set the custom icon search path so GTK+ can find our icons
 	const string iconPath = path + G_DIR_SEPARATOR_S + "icons";
