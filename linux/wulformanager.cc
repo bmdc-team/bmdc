@@ -80,7 +80,7 @@ mainWin(NULL)
 		{
 			break;
 		}
-	
+		g++;
 	}while(g_path[g] != NULL);
 
 	// Set the custom icon search path so GTK+ can find our icons
