@@ -57,9 +57,8 @@ void Emoticons::create()
 	if (!SETTING(USE_EMOTS))
 		return;
 
-	string file = currPackName;
 	string path = WulforManager::get()->getPath() + G_DIR_SEPARATOR_S + "emoticons" + G_DIR_SEPARATOR_S;
-	string packName = file;
+	string packName = currPackName;
 
 	/* load current pack */
 	if (load(path + packName + ".xml"))
@@ -73,7 +72,7 @@ void Emoticons::create()
 
 	for(auto it = files.begin(); it != files.end(); ++it)
 	{
-		file = Util::getFileName(*it);
+		string file = Util::getFileName(*it);
 		string::size_type pos = file.rfind('.');
 		file = file.substr(0, pos);
 

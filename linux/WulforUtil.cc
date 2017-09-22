@@ -1473,7 +1473,7 @@ string WulforUtil::cpuinfo()
 	return string(cpu_info);
 }
 
-void WulforUtil::setTextDeufaults(GtkWidget* widget, std::string strcolor, std::string back_image_path /*= */,bool pm/* = false*/,std::string hubUrl /*= */,std::string where /**/)
+void WulforUtil::setTextDeufaults(GtkWidget* widget, string strcolor, string back_image_path /*= */,bool pm/* = false*/,string hubUrl /*= */,string where /**/)
 {
 		if( (pm == false) && hubUrl.empty()) // Global any hub?
 			gtk_widget_set_name(widget,"Hub");
@@ -1481,7 +1481,7 @@ void WulforUtil::setTextDeufaults(GtkWidget* widget, std::string strcolor, std::
 		if( pm == true)
 			gtk_widget_set_name(widget,"pm");
 
-		std::string hubCid;
+		string hubCid;
 		if(!hubUrl.empty() && (pm == false)) {
 			hubCid = dcpp::CID(hubUrl.c_str()).toBase32();
 			gtk_widget_set_name(widget,hubCid.c_str());
@@ -1492,7 +1492,7 @@ void WulforUtil::setTextDeufaults(GtkWidget* widget, std::string strcolor, std::
 			gtk_widget_set_name(widget,where.c_str());
 		}
 		// Intialize the chat window
-		std::string mono = string();
+		string mono = string();
 		if (SETTING(USE_OEM_MONOFONT))
 		{
 			mono = "Monospace";
@@ -1505,12 +1505,12 @@ void WulforUtil::setTextDeufaults(GtkWidget* widget, std::string strcolor, std::
 			GdkDisplay *display = gdk_display_get_default ();
 			GdkScreen *screen = gdk_display_get_default_screen (display);
 
-			std::string t_css = std::string("textview#") + (pm ? "pm" : ( hubCid.empty() ? "Hub": hubCid )) + " text {\n"
+			string t_css = string("textview#") + (pm ? "pm" : ( hubCid.empty() ? "Hub": hubCid )) + " text {\n"
                             "   background-image: url('"+back_image_path+"');\n"
                             "}\n\0";
 			
 			if(!mono.empty()) {
-				t_css = std::string("textview#") + (pm ? "pm" : ( hubCid.empty() ? "Hub": hubCid )) + " text {\n"
+				t_css = string("textview#") + (pm ? "pm" : ( hubCid.empty() ? "Hub": hubCid )) + " text {\n"
                             "   background-image: url('"+back_image_path+"');\n"
                             "	font: "+mono+";\n"
                             "}\n\0";
@@ -1526,13 +1526,13 @@ void WulforUtil::setTextDeufaults(GtkWidget* widget, std::string strcolor, std::
 			return;
 		}
 		
-		std::string strwhat = (pm ? "pm" : ( hubCid.empty() ? "Hub": hubCid ));
+		string strwhat = (pm ? "pm" : ( hubCid.empty() ? "Hub": hubCid ));
 		if(!where.empty()) strwhat = where;
 				
-		std::string t_css = std::string("textview#"+strwhat+" text { background: "+strcolor+" ;}\n");
+		string t_css = string("textview#"+strwhat+" text { background: "+strcolor+" ;}\n");
 				
 		if(!mono.empty()) {
-			t_css =	std::string("textview#"+strwhat+" text { background: "+strcolor+" ; font: "+mono+"; }\n");	
+			t_css =	string("textview#"+strwhat+" text { background: "+strcolor+" ; font: "+mono+"; }\n");	
 		}	
 		
 		GtkStyleContext *context;
@@ -1550,13 +1550,13 @@ void WulforUtil::setTextDeufaults(GtkWidget* widget, std::string strcolor, std::
 		
 }
 
-void WulforUtil::setTextColor(std::string color,std::string where /*= */)
+void WulforUtil::setTextColor(string color,string where /*= */)
 //Note : selected is red, because most themes get white or black
 {
 		GtkCssProvider *provider = gtk_css_provider_new ();
 		GdkDisplay *display = gdk_display_get_default ();
 		GdkScreen *screen = gdk_display_get_default_screen (display);
-		std::string t_css = std::string("textview#"+where+" ,textview#"+where+":focus, textview#"+where+":active text { color: "+color+" ;} GtkTextView#"+where+":selected { color: red ; }	\n\0");
+		string t_css = string("textview#"+where+" ,textview#"+where+":focus, textview#"+where+":active text { color: "+color+" ;} GtkTextView#"+where+":selected { color: red ; }	\n\0");
 
 		gtk_css_provider_load_from_data (GTK_CSS_PROVIDER (provider),t_css.c_str(),-1, NULL);
 

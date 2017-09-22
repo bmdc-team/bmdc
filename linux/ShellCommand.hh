@@ -1,6 +1,6 @@
 //Class to take care of communication with the shell
 //Author: Irene //@Modified by Mank
-// * Copyright © 2012-2017 BMDC++
+// * Copyright © 2012-2018 BMDC
 #ifndef SHELL_COMMAND_HH
 #define SHELL_COMMAND_HH
 

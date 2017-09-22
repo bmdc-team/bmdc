@@ -80,6 +80,7 @@ void IgnoreTempManager::on(dcpp::TimerManagerListener::Minute, uint64_t aTick) n
 				removeNick(ix);
 			}	
 		}
+		/*this need check*/
 		if(ipIgnore.size() >= 1)
 		{
 			

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2004-2017 Jens Oknelid, paskharen@gmail.com
+ * Copyright © 2004-2018 Jens Oknelid, paskharen@gmail.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,10 +32,9 @@ Entry::Entry(const EntryType type, const string &ui, const string &id):
 	type(type),
 	id(dcpp::Util::toString(type) + ":" + id)
 {
-	if(!ui.empty()) 
+	if(!ui.empty()) // Load the Builder XML resource, if applicable
 	{
-	// Load the Builder XML resource, if applicable
-	xml = gtk_builder_new_from_resource( (string("/org/bmdc-team/bmdc/ui/") + ui + ".ui").c_str());
+		xml = gtk_builder_new_from_resource( (string("/org/bmdc-team/bmdc/ui/") + ui + ".ui").c_str());
 	}
 }
 

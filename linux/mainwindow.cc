@@ -785,7 +785,7 @@ void MainWindow::raisePage_gui(GtkWidget *page)
 
 void MainWindow::removeBookEntry_gui(BookEntry *entry)
 {
-	if(entry == NULL) return;//entry can not be NULL at any rate
+	if(!entry) return;//entry can not be NULL at any rate
 	
 	string entryID = entry->getID();
 	Entry::EntryType type = entry->getType();
@@ -2888,7 +2888,7 @@ void MainWindow::onIdle()
 	XScreenSaverQueryInfo(display, DefaultRootWindow(display), _mit_info);
 			
 if(_idleDetectionPossible) {
-	//g_print("Detection Part 2");
+	//g_debug("Detection Part 2");
 		long idlesecs = (_mit_info->idle/1000); // in sec
 		//NOTE: (1000 ms = 1s)
 		if (idlesecs > SETTING(AWAY_IDLE)) {
@@ -2956,7 +2956,9 @@ void MainWindow::back(string tth, string filename, int64_t size)
 void MainWindow::progress(bool progress)
 {
 	if(progress)
+	{
 		gtk_progress_bar_pulse (GTK_PROGRESS_BAR (getWidget("progressbar")));
+	}	
 	else
 	{
 		gtk_widget_set_sensitive(getWidget("buttonok"),TRUE);
@@ -3020,7 +3022,7 @@ void MainWindow::onCloseAllHub_gui(GtkWidget*, gpointer data)
 	while(!mw->Hubs.empty())
 	{
 		Hub *hub = dynamic_cast<Hub*>(mw->Hubs.back());
-		if(hub == NULL) continue;//should never hapen but :-D
+		if(!hub) continue;//should never hapen but :-D
 		typedef Func1<MainWindow,BookEntry*> F1;
 		F1 *func = new F1(mw,&MainWindow::removeBookEntry_gui,hub);
 		WulforManager::get()->dispatchGuiFunc(func);
@@ -3037,7 +3039,7 @@ void MainWindow::onCloseAllPM_gui(GtkWidget*, gpointer data)
 	for(auto i= mw->privateMessage.begin(); i != mw->privateMessage.end();++i)
 	{
 		PrivateMessage *pm = dynamic_cast<PrivateMessage*>(*i);
-		if(pm == NULL) continue;
+		if(!pm) continue;
 		typedef Func1<MainWindow,BookEntry*> F1;
 		F1 *func = new F1(mw,&MainWindow::removeBookEntry_gui,pm);
 		WulforManager::get()->dispatchGuiFunc(func);
@@ -3053,7 +3055,7 @@ void MainWindow::onReconectAllHub_gui(GtkWidget*, gpointer data)
 	for(auto i= mw->Hubs.begin(); i != mw->Hubs.end();++i)
 	{
 		Hub *hub = dynamic_cast<Hub*>(*i);
-		if(hub != NULL)
+		if(hub)
 			hub->reconnect_client();
 	}
 }
@@ -3067,7 +3069,7 @@ void MainWindow::onCloseAllofPM_gui(GtkWidget*, gpointer data)
 	{
 		PrivateMessage *pm = dynamic_cast<PrivateMessage*>(*i);
 
-		if( !(pm == NULL) && pm->getIsOffline())
+		if( pm && pm->getIsOffline())
 		{
 			typedef Func1<MainWindow,BookEntry*> F1;
 			F1 *func = new F1(mw,&MainWindow::removeBookEntry_gui,pm);

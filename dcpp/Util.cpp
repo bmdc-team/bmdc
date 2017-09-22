@@ -31,6 +31,7 @@
 #include "version.h"
 
 #ifndef _WIN32
+	#include <ifaddrs.h>
 	#include <sys/socket.h>
 	#include <netinet/in.h>
 	#include <arpa/inet.h>
@@ -563,54 +564,38 @@ string Util::formatExactSize(const int64_t aBytes) {
 		return string(buf);
 #endif
 }
-
+//todo win code?
 string Util::getLocalIp(bool IsIPv6) {
-	struct addrinfo hints;
-	memset(&hints, 0, sizeof(addrinfo));
-	hints.ai_family = AF_UNSPEC;
-	addrinfo *result;
 
-	int ret = ::getaddrinfo("localhost",NULL,&hints,&result);
-	if( ret == 0)
-	{
-		struct addrinfo *res;
-		char buf[INET6_ADDRSTRLEN + 1];
-		for(res = result; res != NULL; res = res->ai_next)
+		struct ifaddrs *ifaddr= NULL,*ifa = NULL;
+		void *tmp = NULL;
+		string mAddrIP = string() , mAddrIP6 = string();
+		getifaddrs(&ifaddr);
+		for(ifa = ifaddr;ifa!= NULL;ifa = ifa->ifa_next)
 		{
-			if ( res->ai_family == AF_INET )
-			{
-				#ifdef _WIN32
-				Socket::inet_ntop(&((struct sockaddr_in *)res->ai_addr)->sin_addr,buf,sizeof(buf));
-				#else
-				inet_ntop(AF_INET,&((struct sockaddr_in *)res->ai_addr)->sin_addr,buf,sizeof(buf));
-				#endif
+			if(!ifa->ifa_addr)
+				continue;
 				
-				if(Util::isPrivateIp(buf) || strncmp(buf, "169.254", 7) == 0)
-				{
-					//local ip can be private ip or 169.254.x? or that wich is set as bindaddr....
-					const string& bindAddr = CONNSETTING(BIND_ADDRESS);
-					if(!bindAddr.empty() && bindAddr != SettingsManager::getInstance()->getDefault(SettingsManager::BIND_ADDRESS)) {
-						return bindAddr;
-					}
-					
-					break;
-				}
-			}
-			else if(IsIPv6)
+			if(ifa->ifa_addr->sa_family == AF_INET)
 			{
-				#ifdef _WIN32
-				Socket::inet_ntop(&((struct sockaddr_in *)res->ai_addr)->sin_addr,buf,sizeof(buf));
-				#else
-				inet_ntop(AF_INET6, &((struct sockaddr_in6 *)res->ai_addr)->sin6_addr, buf, sizeof(buf));
-				#endif
-				//local ip is fe80 for IPv6
-				if(strncmp(buf,"fe80",4) == 0) break;
-
+				tmp = &((struct sockaddr_in*)ifa->ifa_addr)->sin_addr;
+				char address[INET_ADDRSTRLEN];
+				inet_ntop(AF_INET,tmp,address, INET_ADDRSTRLEN);
+				mAddrIP = address;
 			}
+			else if(ifa->ifa_addr->sa_family == AF_INET6)
+			{
+				tmp = &((struct sockaddr_in6*)ifa->ifa_addr)->sin6_addr;
+				char address[INET_ADDRSTRLEN];
+				inet_ntop(AF_INET6,tmp,address, INET_ADDRSTRLEN);
+				mAddrIP6 = address;
+			}
+			
+			
 		}
-		return buf;
-	}
-	return string();
+		if(IsIPv6)
+				mAddrIP = mAddrIP6;
+		return mAddrIP;
 /*	
 	char buf[256];
 	gethostname(buf, 255);

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2004-2017 Jens Oknelid, paskharen@gmail.com
+ * Copyright © 2004-2018 Jens Oknelid, paskharen@gmail.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,11 +77,11 @@ class FinishedTransfers:
 
 		// Client callbacks
 		virtual void on(dcpp::FinishedManagerListener::AddedFile, bool upload, const std::string &file, const dcpp::FinishedFileItemPtr &item) noexcept;
-		virtual void on(dcpp::FinishedManagerListener::AddedUser, bool upload, const dcpp::HintedUser &user, const dcpp::FinishedUserItemPtr &item) noexcept;//NOTE: core 0.762
+		virtual void on(dcpp::FinishedManagerListener::AddedUser, bool upload, const dcpp::HintedUser &user, const dcpp::FinishedUserItemPtr &item) noexcept;
 		virtual void on(dcpp::FinishedManagerListener::UpdatedFile, bool upload, const std::string &file, const dcpp::FinishedFileItemPtr &item) noexcept;
 		virtual void on(dcpp::FinishedManagerListener::RemovedFile, bool upload, const std::string &file) noexcept;
-		virtual void on(dcpp::FinishedManagerListener::UpdatedUser, bool upload, const dcpp::HintedUser &user) noexcept;//NOTE: core 0.762
-		virtual void on(dcpp::FinishedManagerListener::RemovedUser, bool upload, const dcpp::HintedUser &user) noexcept;//NOTE: core 0.762
+		virtual void on(dcpp::FinishedManagerListener::UpdatedUser, bool upload, const dcpp::HintedUser &user) noexcept;
+		virtual void on(dcpp::FinishedManagerListener::RemovedUser, bool upload, const dcpp::HintedUser &user) noexcept;
 
 		GtkListStore *fileStore, *userStore;
 		TreeView userView;
