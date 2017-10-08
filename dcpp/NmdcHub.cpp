@@ -294,15 +294,17 @@ void NmdcHub::onLine(const string& aLine) noexcept {
 
 		int count = 0;
 		for(auto fi = seekers.begin(); fi != seekers.end(); ++fi) {
-			if(fi->first == seeker)
+			if(fi->first == seeker) {
 				count++;
+			}	
 
 			if(count > 7) {
 				
-				if( (seeker.size() > 4) && seeker.compare(0, 4, "Hub:") == 0)
+				if(seeker.compare(0, 4, "Hub:") == 0) {
 					fire(ClientListener::SearchFlood(), this, seeker.substr(4));
-				else
+				} else {
 					fire(ClientListener::SearchFlood(), this, string(seeker+F_(" (Nick unknown)")));
+				}	
 
 				flooders.push_back(make_pair(seeker, tick));
 				return;
@@ -1056,13 +1058,13 @@ void NmdcHub::sendUserCmd(const UserCommand& command, const ParamMap& params) {
 		send(fromUtf8(cmd));
 	}
 }
-
+// 5*60*1000 ms is 5 Minutes?
 void NmdcHub::clearFlooders(uint64_t aTick) {
-	while(!seekers.empty() && seekers.front().second + (5 * 1000) < aTick) {
+	while(!seekers.empty() && ( (seekers.front().second + (5 * 60 * 1000)) < aTick)) {
 		seekers.pop_front();
 	}
 
-	while(!flooders.empty() && flooders.front().second + (120 * 1000) < aTick) {
+	while(!flooders.empty() && ((flooders.front().second + (120 * 60 * 1000)) < aTick)) {
 		flooders.pop_front();
 	}
 }
