@@ -14,7 +14,6 @@
 // MA 02110-1301, USA.
 // 
 
-
 #ifndef USER_MANAGER
 #define USER_MANAGER
 #include "format.h"
@@ -82,28 +81,29 @@ class UsersManager: public Singleton<UsersManager>, public Speaker<UsersManagerL
 		return lst;
 	}	
 	
-	StringList getNicks(const CID& cid, const string& hintUrl) {
-	Lock l(cs);
-	StringList ret;
+	StringList getNicks(const CID& cid, const string& hintUrl) 
+	{
+		Lock l(cs);
+		StringList ret;
 
-	OnlinePairC op = onlineUsers.equal_range(cid);
-	for(auto i = op.first; i != op.second; ++i) {
-		if(i->second->getClient().getHubUrl() == hintUrl)
+		OnlinePairC op = onlineUsers.equal_range(cid);
+		for(auto i = op.first; i != op.second; ++i) {
+			if(i->second->getClient().getHubUrl() == hintUrl)
 				ret.push_back(i->second->getIdentity().getNick());
-	}
-
-	if(ret.empty()) {
-		// offline
-		NickMap::const_iterator i = nicks.find(cid);
-		if(i != nicks.end()) {
-			ret.push_back(i->second.first);
-		} else {
-			ret.push_back('{' + cid.toBase32() + '}');
 		}
-	}
 
-	return ret;
-}
+		if(ret.empty()) {
+			// offline
+			NickMap::const_iterator i = nicks.find(cid);
+			if(i != nicks.end()) {
+				ret.push_back(i->second.first);
+			} else {
+				ret.push_back('{' + cid.toBase32() + '}');
+			}
+		}
+
+		return ret;
+	}
 
 
 
@@ -253,13 +253,21 @@ void setIpAddress(const UserPtr& p, const string& ip) {
 		}
 		fire(UsersManagerListener::UserUpdated(),(dynamic_cast<const OnlineUser&>(*i->second)));
 	}
-}/*
-void on(UsersUpdated, Client* , const OnlineUserList& l) noexcept {
+}
+
+void on(ClientListener::UserUpdated, dcpp::Client*, const OnlineUser& user) noexcept {
+	updateNick(user);
+	fire(UsersManagerListener::UserUpdated(), user);
+
+}
+
+
+void on(ClientListener::UsersUpdated, Client* , const OnlineUserList& l) noexcept {
 	for(OnlineUserList::const_iterator i = l.begin(), iend = l.end(); i != iend; ++i) {
 		updateNick(*(*i));
 		fire(UsersManagerListener::UserUpdated(), *(*i));
 	}
-}*/
+}
 private:
 	OnlineHubUserMap onlineHubUsers;
 	OnlineMap onlineUsers;

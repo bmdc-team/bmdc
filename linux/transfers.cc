@@ -614,7 +614,6 @@ void Transfers::updateParent_gui(GtkTreeIter* iter)
 		progress = (double)(position * 100.0) / totalSize;
 	if (speed > 0)
 		timeLeft = ((GET_TICK() - position )/1000);
-		//(totalSize - position) / speed;
 
 	stream << setiosflags(ios::fixed) << setprecision(1);
 
@@ -930,6 +929,7 @@ void Transfers::getParams_client(StringMap& params, Transfer* tr, bool down)
 		params[_("Filename")] = "TTH: " + Util::getFileName(tr->getPath());
 	else
 		params[_("Filename")] = Util::getFileName(tr->getPath());
+	
 	params[_("User")] = WulforUtil::getNicks(user);
 	params[_("Hub Name")] = WulforUtil::getHubNames(user);
 	params[_("Path")] = Util::getFilePath(tr->getPath());

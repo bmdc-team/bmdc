@@ -584,18 +584,6 @@ void ClientManager::on(Connected, Client* c) noexcept {
 	fire(ClientManagerListener::ClientConnected(), c);
 }
 
-//void ClientManager::on(UserUpdated, Client*, const OnlineUser& user) noexcept {
-//	updateNick(user);
-//	fire(ClientManagerListener::UserUpdated(), user);
-//}
-
-/*void ClientManager::on(UsersUpdated, Client* , const OnlineUserList& l) noexcept {
-	for(OnlineUserList::const_iterator i = l.begin(), iend = l.end(); i != iend; ++i) {
-		updateNick(*(*i));
-		fire(UsersManagerListener::UserUpdated(), *(*i));
-	}
-}
-*/
 void ClientManager::on(HubUpdated, Client* c) noexcept {
 	fire(ClientManagerListener::ClientUpdated(), c);
 }

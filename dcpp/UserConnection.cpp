@@ -155,7 +155,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) noexc
 	}
 }
 
-void UserConnection::connect(const string& aServer, const uint16_t& aPort, const string& localPort, BufferedSocket::NatRoles natRole) {
+void UserConnection::connect(const string& aServer, const uint16_t& aPort, const uint16_t& localPort, BufferedSocket::NatRoles natRole) {
 	dcassert(!socket);
 
 	socket = BufferedSocket::getSocket(0);

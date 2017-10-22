@@ -154,8 +154,8 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) noexcept {
 				if(!c.getParam("NI", 0, nick)) {
 					nick = "[nick unknown]";
 				}
-				fire(ClientListener::StatusMessage(), this, autosprintf(_("%s has same CID %s as %s %s,%s, ignoring"),u->getIdentity().getNick().c_str()
-				,u->getIdentity().getSIDString().c_str(), sCid.c_str(), nick.c_str(),AdcCommand::fromSID(c.getFrom()).c_str()).c_str()
+				fire(ClientListener::StatusMessage(), this, autosprintf(_("%s has same CID %s as %s %s,%s, ignoring"), u->getIdentity().getNick().c_str()
+				, u->getIdentity().getSIDString().c_str(), sCid.c_str(), nick.c_str(),AdcCommand::fromSID(c.getFrom()).c_str()).c_str()
 					,ClientListener::FLAG_IS_SPAM);
 				return;
 			}
@@ -169,17 +169,17 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) noexcept {
 	}
 
 	if(!u) {
-		dcdebug("AdcHub::INF Unknown user / no ID\n");
 		LOG(PROTO,"AdcHub::INF Unknown user / no ID");
-		DebugManager::getInstance()->SendCommandMessage("AdcHub::INF Unknown user / no ID\n",DebugManager::TYPE_HUB,DebugManager::INCOMING,"Unknow");
+		DebugManager::getInstance()->SendCommandMessage("AdcHub::INF Unknown user / no ID\n", DebugManager::TYPE_HUB, DebugManager::INCOMING, "Unknow");
 		return;
 	}
 
 	for(auto i = c.getParameters().begin(); i != c.getParameters().end(); ++i) {
 		if(i->length() < 2)
 			continue;
-		if(*i == "U4") { u->getIdentity().setUdp4Port(Util::toInt(i->substr(2)));continue; }
-		if(*i == "U6") { u->getIdentity().setUdp6Port(Util::toInt(i->substr(2)));continue; }
+			
+		if(*i == "U4") { u->getIdentity().setUdp4Port(Util::toInt(i->substr(2))); continue; }
+		if(*i == "U6") { u->getIdentity().setUdp6Port(Util::toInt(i->substr(2))); continue; }
 
 		u->getIdentity().set(i->c_str(), i->substr(2));
 	}
@@ -628,13 +628,13 @@ void AdcHub::handle(AdcCommand::NAT, AdcCommand& c) noexcept {
 	}
 
 	// Trigger connection attempt sequence locally ...
-	string localPort = Util::toString(sock->getLocalPort());
+	uint16_t localPort = sock->getLocalPort();
 	dcdebug("triggering connecting attempt in NAT: remote port = %s, local port = %d\n", port.c_str(), sock->getLocalPort());
 	ConnectionManager::getInstance()->adcConnect(*u, Util::toInt(port), localPort, BufferedSocket::NAT_CLIENT, token, secure);
 
 	// ... and signal other client to do likewise.
 	send(AdcCommand(AdcCommand::CMD_RNT, u->getIdentity().getSID(), AdcCommand::TYPE_DIRECT).addParam(protocol).
-		addParam(localPort).addParam(token));
+		addParam(Util::toString(localPort)).addParam(token));
 }
 
 void AdcHub::handle(AdcCommand::RNT, AdcCommand& c) noexcept {
@@ -663,7 +663,7 @@ void AdcHub::handle(AdcCommand::RNT, AdcCommand& c) noexcept {
 
 	// Trigger connection attempt sequence locally
 	dcdebug("triggering connecting attempt in RNT: remote port = %s, local port = %d\n", port.c_str(), sock->getLocalPort());
-	ConnectionManager::getInstance()->adcConnect(*u, Util::toInt(port), Util::toString(sock->getLocalPort()), BufferedSocket::NAT_SERVER, token, secure);
+	ConnectionManager::getInstance()->adcConnect(*u, Util::toInt(port), sock->getLocalPort(), BufferedSocket::NAT_SERVER, token, secure);
 }
 
 void AdcHub::handle(AdcCommand::ZON, AdcCommand& c) noexcept {
@@ -976,9 +976,8 @@ void AdcHub::password(const string& pwd) {
 		salt.clear();
 	}
 }
-//why this is not in AdcHub or AdcCommand class?
 
-static void addParam(StringMap& lastInfoMap, AdcCommand& c, const string& var, const string& value) {
+void AdcHub::addParam(StringMap& lastInfoMap, AdcCommand& c, const string& var, const string& value) {
 	StringMap::iterator i = lastInfoMap.find(var);
 
 	if(i != lastInfoMap.end()) {
@@ -996,7 +995,8 @@ static void addParam(StringMap& lastInfoMap, AdcCommand& c, const string& var, c
 	}
 }
 
-void AdcHub::infoImpl() {
+void AdcHub::infoImpl() 
+{
 	if(state != STATE_IDENTIFY && state != STATE_NORMAL)
 				return;
 
@@ -1024,7 +1024,7 @@ void AdcHub::infoImpl() {
 	addParam(lastInfoMap, c, "HN", Util::toString(counts[COUNT_NORMAL]));
 	addParam(lastInfoMap, c, "HR", Util::toString(counts[COUNT_REGISTERED]));
 	addParam(lastInfoMap, c, "HO", Util::toString(counts[COUNT_OP]));
-	addParam(lastInfoMap, c, "AP", APPNAME);//APPNAME
+	addParam(lastInfoMap, c, "AP", APPNAME);
 	addParam(lastInfoMap, c, "VE", VERSIONSTRING);
 	addParam(lastInfoMap, c, "AW", Util::getAway() ? "1" : Util::emptyString);
 	// RF = ref address from connected...
