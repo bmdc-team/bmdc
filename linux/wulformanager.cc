@@ -24,6 +24,8 @@
 #include "GuiUtil.hh"
 
 #include <iostream>
+#include <vector>
+#include <string>
 #include <glib/gi18n.h>
 #include "hashdialog.hh"
 
@@ -73,22 +75,27 @@ mainWin(NULL)
 	// Determine path to data files
 	const gchar* const* g_path = g_get_system_data_dirs();
 	int g = 0;
+    std::vector<std::string> tmp;
 	do
 	{
 		path = string(g_path[g]) + G_DIR_SEPARATOR_S + g_get_prgname();
 		if (g_file_test(path.c_str(), G_FILE_TEST_EXISTS))
 		{
-			break;
+            tmp.push_back(path);
+			continue;
 		}
 		g++;
 	}while(g_path[g] != NULL);
-
-	// Set the custom icon search path so GTK+ can find our icons
-	const string iconPath = path + G_DIR_SEPARATOR_S + "icons";
-	const string themes = path + G_DIR_SEPARATOR_S + "themes";
-	GtkIconTheme *iconTheme = gtk_icon_theme_get_default();
-	gtk_icon_theme_append_search_path(iconTheme, iconPath.c_str());
-	gtk_icon_theme_append_search_path(iconTheme, themes.c_str());
+    
+    GtkIconTheme *iconTheme = gtk_icon_theme_get_default();
+    for(auto ii:tmp) { 
+    	// Set the custom icon search path so GTK+ can find our icons
+	   const string iconPath = ii + G_DIR_SEPARATOR_S + "icons";
+	   const string themes = ii + G_DIR_SEPARATOR_S + "themes";
+	
+	   gtk_icon_theme_append_search_path(iconTheme, iconPath.c_str());
+	   gtk_icon_theme_append_search_path(iconTheme, themes.c_str());
+    }
 }
 
 WulforManager::~WulforManager()
