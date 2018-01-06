@@ -28,8 +28,10 @@
 #include <GeoIP.h>
 
 namespace dcpp {
+using namespace std;
 
-GeoIP::GeoIP(string&& _path) : geo(nullptr), path(move(_path)) {
+
+GeoIP::GeoIP(string&& _path) : path(move(_path)) {
 #ifdef _WIN32	
 	if(File::getSize(path) > 0 
 	|| decompress()
@@ -49,31 +51,92 @@ GeoIP::~GeoIP() {
 
 const string& GeoIP::getCountry(const string& ip) const {
 	Lock l(cs);
-	if(geo) {
+	/*if(geo) {
 		auto id = (v6() ? GeoIP_id_by_addr_v6 : GeoIP_id_by_addr)(geo, ip.c_str());
 		if(id > 0 && static_cast<size_t>(id) < cache.size()) {
 			return cache[id];
 		}
-	}
+	}*/
+	open();
+	int gai_error = 0, mmdb_error = 0;
+    MMDB_lookup_result_s result =
+        MMDB_lookup_string(&mmdb, ip.c_str(), &gai_error, &mmdb_error);
+
+    if (gai_error != 0 ) {
+        dcdebug(
+                "\n  Error from getaddrinfo for %s - %s\n\n",
+                ip.c_str(), gai_strerror(gai_error));
+         return Util::emptyString;       
+    }
+
+    if (MMDB_SUCCESS != mmdb_error) {
+        dcdebug(
+                "\n  Got an error from libmaxminddb: %s\n\n",
+                MMDB_strerror(mmdb_error));
+		return Util::emptyString;
+    }
+    
+	MMDB_entry_data_s entry_data;
+	int status =   MMDB_get_value(&result.entry, &entry_data,
+                   "names", "en", NULL);
+	if (status != MMDB_SUCCESS) { return Util:emptyString; }
+		if (entry_data.has_data) { 
+			if(entry_data.type == MMDB_DATA_TYPE_UTF8_STRING)
+				return strdup(entry_data.utf8_string);
+			
+			}
+
+     dcdebug(
+            "\n  No entry for this IP address (%s) was found\n\n",
+            ip.c_str());
 	return Util::emptyString;
 }
 const string GeoIP::getCountryAB(const string& ip) const {
     Lock l(cs);
-    if(geo)
-    {
-        auto id = v6() ? GeoIP_id_by_addr_v6(geo,ip.c_str()) : GeoIP_id_by_addr(geo,ip.c_str());
-        if(id > 0)
-        {
-            return GeoIP_code_by_id(id);
-        }
-     }
+    //if(geo)
+    //{
+     ///   auto id = v6() ? GeoIP_id_by_addr_v6(geo,ip.c_str()) : GeoIP_id_by_addr(geo,ip.c_str());
+     //   if(id > 0)
+     //   {
+     //       return GeoIP_code_by_id(id);
+     ///   }
+     //}
+    /*int gai_error = -1, mmdb_error = -1;
+    MMDB_lookup_result_s result = MMDB_lookup_string(&mmdb, ip.c_str(), &gai_error, &mmdb_error);
+
+    if (gai_error != 0) {
+        fprintf(stderr,
+                "\n  Error from getaddrinfo for %s - %s\n\n",
+                ip.c_str(), gai_strerror(gai_error));
+         return string("");       
+    }
+
+    if (MMDB_SUCCESS != mmdb_error) {
+        fprintf(stderr,
+                "\n  Got an error from libmaxminddb: %s\n\n",
+                MMDB_strerror(mmdb_error));
+		return string("");
+    }
+    
+	MMDB_entry_data_s entry_data;
+	int status =   MMDB_get_value(&result.entry, &entry_data,
+                   "country_iso_code", "en", NULL);
+	if (status != MMDB_SUCCESS) { return ""; }
+		if (entry_data.has_data) { return strdup(entry_data.utf8_string);}
+
+     fprintf(
+            stderr,
+            "\n  No entry for this IP address (%s) was found\n\n",
+            ip.c_str());
+        return "Unknows";    
+    */
     return Util::emptyString;
 }
 
 void GeoIP::update() {
 	Lock l(cs);
 
-	close();
+	//close();
 #ifdef _WIN32
 	if(decompress()) {
 #endif		
@@ -106,7 +169,7 @@ string getGeoInfo(int id, GEOTYPE type) {
 } // unnamed namespace
 
 void GeoIP::rebuild() {
-	Lock l(cs);
+	/*Lock l(cs);
 	if(geo) {
 		const string& setting = SETTING(COUNTRY_FORMAT);
 
@@ -131,13 +194,13 @@ void GeoIP::rebuild() {
 			};
 #else*/
 			/// @todo any way to get localized country names on non-Windows?
-			params["name"] =  forwardRet(GeoIP_name_by_id(id)); 
-			params["officialname"] = forwardRet(GeoIP_name_by_id(id)); 
+//			params["name"] =  forwardRet(GeoIP_name_by_id(id)); 
+//			params["officialname"] = forwardRet(GeoIP_name_by_id(id)); 
 //#endif
 
-			cache[id] = Util::formatParams(setting, params);
-		}
-	}
+//			cache[id] = Util::formatParams(setting, params);
+//		}
+//	}
 }
 #ifdef _WIN32
 bool GeoIP::decompress() const {
@@ -152,21 +215,33 @@ bool GeoIP::decompress() const {
 }
 #endif
 void GeoIP::open() {
-	geo = GeoIP_open(path.c_str(), GEOIP_STANDARD);
-	if(geo) {
-		GeoIP_set_charset(geo, GEOIP_CHARSET_UTF8);
-	}
+	//geo = GeoIP_open(path.c_str(), GEOIP_STANDARD);
+	//if(geo) {
+	//	GeoIP_set_charset(geo, GEOIP_CHARSET_UTF8);
+	//}
+	int status = MMDB_open(path.c_str(), MMDB_MODE_MMAP, &mmdb);
+
+    if (MMDB_SUCCESS != status) {
+        dcdebug("\n  Can't open %s - %s\n",
+                path.c_str(), MMDB_strerror(status));
+
+        if (MMDB_IO_ERROR == status) {
+            dcdebug("    IO error: %s\n", strerror(errno));
+        }
+        
+    }
 }
 
 void GeoIP::close() {
-	cache.clear();
-
-	GeoIP_delete(geo);
-	geo = NULL;
+	//cache.clear();
+	MMDB_close(&mmdb);
+	//GeoIP_delete(geo);
+	//geo = NULL;
 }
 
 bool GeoIP::v6() const {
-	return geo->databaseType == GEOIP_COUNTRY_EDITION_V6 || geo->databaseType == GEOIP_LARGE_COUNTRY_EDITION_V6;
+	return true;
+	//return geo->databaseType == GEOIP_COUNTRY_EDITION_V6 || geo->databaseType == GEOIP_LARGE_COUNTRY_EDITION_V6;
 }
 
 } // namespace dcpp

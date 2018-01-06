@@ -40,27 +40,27 @@ void GeoManager::update(bool v6) {
 }
 
 void GeoManager::rebuild() {
-	geo6->rebuild();
+	//geo6->rebuild();
 	geo4->rebuild();
 }
 
 void GeoManager::close() {
-	geo6.reset();
+	//geo6.reset();
 	geo4.reset();
 }
 
 const string& GeoManager::getCountry(const string& ip, int flags) {
 	if(!ip.empty()) {
 
-		if((flags & V6) && geo6.get()) {
+		/*if((flags & V6) && geo6.get()) {
 			const string& ret = geo6->getCountry(ip);
 			if(!ret.empty())
 				return ret;
 		}
 
 		if((flags & V4) && geo4.get()) {
-			return geo4->getCountry(ip);
-		}
+			*/return geo4->getCountry(ip);
+	/*	}*/
 	}
 
 	return Util::emptyString;
@@ -70,42 +70,20 @@ const string GeoManager::getCountryAbbrevation(const string& ip, int flags)
 {
 	if(!ip.empty())
 	{
-		if((flags & V6) && geo6.get()) {
-		const string& ret = geo6->getCountryAB(ip);
-		if(!ret.empty()) {
-			return ret;
-		}
-		if((flags & V4) && geo4.get()) {
+//		if((flags & V6) && geo6.get()) {
+	//	const string& ret = geo6->getCountryAB(ip);
+	//	if(!ret.empty()) {
+		//	return ret;
+		//}
+		//if((flags & V4) && geo4.get()) {
 			return geo4->getCountryAB(ip);
-		}
-	  }	
+		//}
+	  //}	
 	}
 	return string();
 }
 string GeoManager::getDbPath(bool v6) {
-#ifdef _WIN32	
-	return Util::getPath(Util::PATH_USER_LOCAL) + (v6 ? "GeoIPv6.dat" : "GeoIP.dat");
-#else
-        //we should go over all paths...
-	if(v6)
-    {
-        if(Util::fileExists( string(g_get_system_data_dirs()[0])+"GeoIP/GeoIPv6.dat"))
-            return string(g_get_system_data_dirs()[0])+"GeoIP/GeoIPv6.dat";
-        if(Util::fileExists( string(g_get_system_data_dirs()[1])+"GeoIP/GeoIPv6.dat"))
-            return string(g_get_system_data_dirs()[1])+"GeoIP/GeoIPv6.dat";    
-        if(Util::fileExists( string(g_get_system_data_dirs()[2])+"GeoIP/GeoIPv6.dat"))
-            return string(g_get_system_data_dirs()[2])+"GeoIP/GeoIPv6.dat";        
-    }else
-    {    
-        if(Util::fileExists( string(g_get_system_data_dirs()[0])+"GeoIP/GeoIP.dat"))
-            return string(g_get_system_data_dirs()[0])+"GeoIP/GeoIP.dat";
-        if(Util::fileExists( string(g_get_system_data_dirs()[1])+"GeoIP/GeoIP.dat"))
-            return string(g_get_system_data_dirs()[1])+"GeoIP/GeoIP.dat";    
-        if(Util::fileExists( string(g_get_system_data_dirs()[2])+"GeoIP/GeoIP.dat"))
-          return string(g_get_system_data_dirs()[2])+"GeoIP/GeoIP.dat";        
-    }
-    return string();
-#endif	
+	return Util::getPath(Util::PATH_USER_LOCAL) + "GeoIPv2.mmdb";
 }
 
 } // namespace dcpp

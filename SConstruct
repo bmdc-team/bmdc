@@ -38,7 +38,7 @@ NEW_SETTING = False
 #'-ldl',
 # http://stackoverflow.com/questions/1564937/gcc-warning-will-be-initialized-after
 BUILD_FLAGS = {#'-Wno-unused-parameter','-Wno-unused-value',
-	'common'  : ['-I#','-D_GNU_SOURCE', '-D_LARGEFILE_SOURCE', '-D_FILE_OFFSET_BITS=64', '-D_REENTRANT','-pipe','-DUSE_STACKTRACE'],
+	'common'  : ['-I#','-D_GNU_SOURCE', '-D_LARGEFILE_SOURCE', '-D_FILE_OFFSET_BITS=64', '-D_REENTRANT','-pipe','-fpermissive','-DUSE_STACKTRACE'],
 	'debug'   : ['-O1','-g', '-ggdb','-W', '-Wall','-Wextra','-D_DEBUG' ,'-DUSE_ADDR2LINE','-Wno-reorder','-DGDK_DISABLE_DEPRECATED','-DGTK_DISABLE_DEPRECATED'],#'-fpermissive' ,'-Wpadded'
 	'release' : ['-O3', '-fomit-frame-pointer', '-DNDEBUG']
 }
@@ -325,6 +325,12 @@ if not 'install' in COMMAND_LINE_TARGETS:
 		Exit(1)
 	else:
 		conf.env['HAVE_CANBERRA_LIB'] = 1
+	
+	if not conf.CheckPKG('libmaxminddb'):
+		print 'maxmind db not found'
+	else:
+		conf.env.Append(LINKFLAGS = '-lmaxminddb')	
+
 
 	# Check for MiniUPnPc
 	#if not conf.CheckLib('libminiupnpc'):
@@ -334,13 +340,13 @@ if not 'install' in COMMAND_LINE_TARGETS:
 		LIB_IS_NATPMP = False
 
 	# GeoIp
-	if conf.CheckHeader('GeoIP.h'):
-		print 'Found GeoIP headers'
-		conf.env.Append(CPPDEFINES = 'HAVE_GEOIPLIB')
-		LIB_IS_GEO = True
-	else:
-		print 'Dont Found GeoIP headers or libs'
-		Exit(1)
+	#if conf.CheckHeader('GeoIP.h'):
+	#	print 'Found GeoIP headers'
+	#	conf.env.Append(CPPDEFINES = 'HAVE_GEOIPLIB')
+	#	LIB_IS_GEO = True
+	#else:
+	#	print 'Dont Found GeoIP headers or libs'
+	#	Exit(1)
 
 	# libtar for Backup/Restore man...
 	if conf.env.get('libtar'):

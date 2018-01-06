@@ -23,6 +23,11 @@
 #include <string>
 #include <vector>
 
+#include <errno.h>
+#include <maxminddb.h>
+#include <stdlib.h>
+
+
 typedef struct GeoIPTag GeoIP;
 
 namespace dcpp {
@@ -49,7 +54,9 @@ private:
 	bool v6() const;
 
 	mutable CriticalSection cs;
-	::GeoIP* geo;
+	//::GeoIP* geo;
+	//
+	MMDB_s mmdb;
 	vector<string> cache;
 	const string path;
 
