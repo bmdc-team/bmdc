@@ -434,7 +434,7 @@ bool WulforUtil::profileIsLocked()
 	// Also, Util::getConfigPath() is utf8 and we need system encoding for g_open().
 	const char *home = g_get_home_dir();
 	#ifndef _DEBUG
-		string configPath = home ? string(home) + "/.bmdc++-s/" : g_get_tmp_dir();
+		string configPath = home ? string(home) + "/.bmdc++/" : g_get_tmp_dir();
 	#else
 		string configPath = home ? string(home) + "/.bmdc++-debug/" : g_get_tmp_dir();
 	#endif
