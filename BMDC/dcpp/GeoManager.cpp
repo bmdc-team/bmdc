@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
+// Some CODE Under GPL by BMDC-Team (Mank)
 #include "stdinc.h"
 #include "GeoManager.h"
 
@@ -30,7 +30,7 @@ void GeoManager::init() {
 	rebuild();
 }
 
-void GeoManager::update(bool v6) {
+void GeoManager::update() {
 	if(geo4) {
 		geo4->update();
 		geo4->rebuild();
@@ -45,7 +45,8 @@ void GeoManager::close() {
 	geo4.reset();
 }
 
-const string GeoManager::getCountry(const string& ip, int flags) {
+const string GeoManager::getCountry(const string& ip) {
+	
 	if(!ip.empty()) {
 		dcdebug("%s",geo4->getCountry(ip).c_str());
 		return geo4->getCountry(ip);
@@ -54,12 +55,12 @@ const string GeoManager::getCountry(const string& ip, int flags) {
 	return Util::emptyString;
 }
 
-const string GeoManager::getCountryAbbrevation(const string& ip, int flags)
+const string GeoManager::getCountryAbbrevation(const string& ip)
 {
 	if(!ip.empty())
 	{
 		dcdebug("%s",geo4->getCountryAB(ip).c_str());
-			return geo4->getCountryAB(ip);
+		return geo4->getCountryAB(ip);
 	}
 	return Util::emptyString;
 }

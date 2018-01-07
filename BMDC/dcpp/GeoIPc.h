@@ -27,9 +27,6 @@
 #include <maxminddb.h>
 #include <stdlib.h>
 
-
-//typedef struct GeoIPTag GeoIP;
-
 namespace dcpp {
 
 using std::string;
@@ -51,10 +48,8 @@ private:
 #endif	
 	void open();
 	void close();
-	bool v6() const;
 
 	mutable CriticalSection cs;
-	//::GeoIP* geo;
 	//
 	MMDB_s mmdb;
 	vector<string> cache;

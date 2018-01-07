@@ -139,20 +139,6 @@ inline string forwardRet(const char* ret) {
 	return ret ? ret : Util::emptyString;
 }
 
-#ifdef _WIN32
-string getGeoInfo(int id, GEOTYPE type) {
-	/*id = GeoIP_Win_GEOID_by_id(id);
-	if(id) {
-		tstring str(GetGeoInfo(id, type, 0, 0, 0), 0);
-		str.resize(GetGeoInfo(id, type, &str[0], str.size(), 0));
-		if(!str.empty()) {
-			return Text::fromT(str);
-		}
-	}*/
-	return Util::emptyString;
-}
-#endif
-
 } // unnamed namespace
 
 void GeoIP::rebuild() {
@@ -202,7 +188,6 @@ bool GeoIP::decompress() const {
 }
 #endif
 void GeoIP::open() {
-	//geo = GeoIP_open(path.c_str(), GEOIP_STANDARD);
 	dcdebug("%s",path.c_str());
 	int status = MMDB_open(path.c_str(), MMDB_MODE_MMAP, &mmdb);
 
@@ -218,12 +203,7 @@ void GeoIP::open() {
 }
 
 void GeoIP::close() {
-	cache.clear();
 	MMDB_close(&mmdb);
-}
-
-bool GeoIP::v6() const {
-	return true;
 }
 
 } // namespace dcpp
