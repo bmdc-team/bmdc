@@ -165,9 +165,9 @@ string Identity::getConnection() const {
 	return get("CO");
 }
 
-const string& Identity::getCountry() const {
-	bool v6 = !getIp6().empty();
-	return GeoManager::getInstance()->getCountry(v6 ? getIp6() : getIp4(), v6 ? GeoManager::V6 : GeoManager::V4);
+const string Identity::getCountry() const {
+//	bool v6 = !getIp6().empty();
+	return GeoManager::getInstance()->getCountry(getIp());
 }
 
 string Identity::get(const char* name) const {

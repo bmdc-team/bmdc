@@ -15,7 +15,6 @@ Dependencies:
 - libbz2
 - libssl
 - libmaxminddb
-
 --optional--
 
 - libXss (Note: for idle detection)

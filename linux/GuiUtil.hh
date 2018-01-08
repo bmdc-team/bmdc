@@ -79,7 +79,7 @@ class WulforUtil
 		static bool isLink(const std::string &text);
 		static bool isHubURL(const std::string &text);
 		// Profile locking
-		static bool profileIsLocked();
+		//static bool profileIsLocked();
 		static gboolean getNextIter_gui(GtkTreeModel *model, GtkTreeIter *iter, bool children = TRUE, bool parent = TRUE);
 		static GtkTreeIter copyRow_gui(GtkListStore *store, GtkTreeIter *fromIter, int position = -1);
 		static void copyValue_gui(GtkListStore* store, GtkTreeIter *fromIter, GtkTreeIter *toIter, int position);

@@ -160,9 +160,9 @@ void Util::initialize(PathsMap pathOverrides) {
 	paths[PATH_LOCALE] = Text::fromT(buf);
 
 #else
-	string home = g_get_home_dir ();//glib
+	string home = g_get_home_dir ();
 	#ifndef _DEBUG
-	paths[PATH_GLOBAL_CONFIG] = paths[PATH_USER_CONFIG] = home + "/.bmdc++-s/";
+	paths[PATH_GLOBAL_CONFIG] = paths[PATH_USER_CONFIG] = home + "/.bmdc++/";
 	#else
 	paths[PATH_GLOBAL_CONFIG] = paths[PATH_USER_CONFIG] = home + "/.bmdc++-debug/";
 	#endif

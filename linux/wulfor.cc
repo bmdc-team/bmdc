@@ -109,43 +109,21 @@ int main(int argc, char *argv[])
 	bindtextdomain(GUI_LOCALE_PACKAGE, GUI_LOCALE_DIR);
 	textdomain(GUI_LOCALE_PACKAGE);
 	bind_textdomain_codeset(GUI_LOCALE_PACKAGE, "UTF-8");
-
-	#ifndef _WIN32
-	connection = bacon_message_connection_new(GUI_PACKAGE);
-
-	if (connection != NULL) {
-		dcdebug("bmdc: connection yes...\n");
-	}else {
-		dcdebug("bmdc: connection no...\n");
-	}
-	// Check if profile is locked
-	if (WulforUtil::profileIsLocked())
-	{
-		if (!bacon_message_connection_get_is_server(connection))
-		{
-			dcdebug("bmdc: is client...\n");
-
-			if (argc > 1)
-			{
-				dcdebug("bmdc: send %s\n", argv[1]);
-				bacon_message_connection_send(connection, argv[1]);
-			}
-		}
-
-		bacon_message_connection_free(connection);
-
-		return 1;
-	}
-
-	if (bacon_message_connection_get_is_server(connection))
-	{
-		dcdebug("bmdc: is server...\n");
-		bacon_message_connection_set_callback(connection, receiver, NULL);
-	}
-	#endif
+	dcpp::Util::PathsMap map;
+	string home = string(g_get_home_dir ())+"/.bmdc++/";
+	map[dcpp::Util::PATH_GLOBAL_CONFIG] = home;
+	if(argc >= 1) {
+		if(argv[1] != NULL) {
+			map[dcpp::Util::PATH_GLOBAL_CONFIG] = string(argv[1]);
+			map[dcpp::Util::PATH_USER_CONFIG] = string(argv[1]);
+			map[dcpp::Util::PATH_DOWNLOADS] = string(argv[1]);
+			}	
+	}	
 	// Start the DC++ client core
-
-	dcpp::Util::initialize();
+	if(map.size() > 1) {
+		dcpp::Util::initialize(map);
+	} else
+		dcpp::Util::initialize();
 
 	gtk_init(&argc, &argv);
 

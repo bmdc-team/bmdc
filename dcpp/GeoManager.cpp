@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
+// Some CODE Under GPL by BMDC-Team (Mank)
 #include "stdinc.h"
 #include "GeoManager.h"
 
@@ -25,65 +25,47 @@
 namespace dcpp {
 
 void GeoManager::init() {
-	geo6.reset(new GeoIP(getDbPath(true)));
-	geo4.reset(new GeoIP(getDbPath(false)));
+	geo4.reset(new GeoIP(getDbPath()));
 
 	rebuild();
 }
 
-void GeoManager::update(bool v6) {
-	GeoIP* geo = (v6 ? geo6 : geo4).get();
-	if(geo) {
-		geo->update();
-		geo->rebuild();
+void GeoManager::update() {
+	if(geo4) {
+		geo4->update();
+		geo4->rebuild();
 	}
 }
 
 void GeoManager::rebuild() {
-	//geo6->rebuild();
 	geo4->rebuild();
 }
 
 void GeoManager::close() {
-	//geo6.reset();
 	geo4.reset();
 }
 
-const string& GeoManager::getCountry(const string& ip, int flags) {
+const string GeoManager::getCountry(const string& ip) {
+	
 	if(!ip.empty()) {
-
-		/*if((flags & V6) && geo6.get()) {
-			const string& ret = geo6->getCountry(ip);
-			if(!ret.empty())
-				return ret;
-		}
-
-		if((flags & V4) && geo4.get()) {
-			*/return geo4->getCountry(ip);
-	/*	}*/
+		dcdebug("%s",geo4->getCountry(ip).c_str());
+		return geo4->getCountry(ip);
 	}
 
 	return Util::emptyString;
 }
 
-const string GeoManager::getCountryAbbrevation(const string& ip, int flags)
+const string GeoManager::getCountryAbbrevation(const string& ip)
 {
 	if(!ip.empty())
 	{
-//		if((flags & V6) && geo6.get()) {
-	//	const string& ret = geo6->getCountryAB(ip);
-	//	if(!ret.empty()) {
-		//	return ret;
-		//}
-		//if((flags & V4) && geo4.get()) {
-			return geo4->getCountryAB(ip);
-		//}
-	  //}	
+		dcdebug("%s",geo4->getCountryAB(ip).c_str());
+		return geo4->getCountryAB(ip);
 	}
-	return string();
+	return Util::emptyString;
 }
-string GeoManager::getDbPath(bool v6) {
-	return Util::getPath(Util::PATH_USER_LOCAL) + "GeoIPv2.mmdb";
+string GeoManager::getDbPath() {
+	return Util::getPath(Util::PATH_USER_LOCAL) + "GeoLite2-Country.mmdb";
 }
 
 } // namespace dcpp

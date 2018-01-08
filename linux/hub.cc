@@ -3898,8 +3898,8 @@ void Hub::getParams_client(ParamMap &params, Identity &id)
 	params.insert(ParamMap::value_type("eMail", id.getEmail()));
 	params.insert(ParamMap::value_type("CID", id.getUser()->getCID().toBase32()));
 	//BMDC++
-	if( !id.isHub() || !id.isBot() ) { //should *not* getting CC from Bot/Hub User
-		params.insert(ParamMap::value_type("Country", (SETTING(GET_USER_COUNTRY)) ? id.getCountry() : string() ));
+	if( !id.isHub() || !id.isBot() || !id.getIp().empty() ) { //should *not* getting CC from Bot/Hub User
+		params.insert(ParamMap::value_type("Country", (SETTING(GET_USER_COUNTRY)) ? /*GeoManager::getInstance()->getCountry(id.getIp())*/id.getCountry() : string() ));
 		params.insert(ParamMap::value_type("Abbrevation", (SETTING(GET_USER_COUNTRY)) ? GeoManager::getInstance()->getCountryAbbrevation(id.getIp()): string() ));
 	}
 	params.insert(ParamMap::value_type("Slots", id.get("SL")));
@@ -4462,7 +4462,7 @@ string Hub::formatAdditionalInfo(const string& sIp, bool bIp, bool bCC) {
 
 	if(!sIp.empty()) {
 		
-		string country_name = bCC ? GeoManager::getInstance()->getCountry(sIp) : string();
+		string country_name = bCC ? GeoManager::getInstance()->getCountry(sIp) : Util::emptyString;
 		bool showCc = bCC && !country_name.empty();
 
 		if(bIp) {

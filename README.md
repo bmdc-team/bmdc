@@ -7,16 +7,15 @@ see bzr log or git log for more detailed changes info.
 Dependencies:
 -------------
 - scons >= 0.96
-
 - pkg-config
 - g++ >= 4.7
 - glib >= 2.32
-- gtk+-3.0 >= 3.6
+- gtk+-3.0 >= 3.17
 - pthread
 - zlib
 - libbz2
 - libssl
-- libmaxmindb
+- libmaxminddb
 
 --optional--
 - libXss (Note: for idle detection)
@@ -25,7 +24,7 @@ Dependencies:
 - libappindicator3 ( Note: For appindicators)
 - xattr ( Note: for storing hashes beside files to not always re-hash )
 --suggested--
-- python2-dbus and qdbus for Media Spam (/kaff and /vlc)
+- python2-dbus and/or qdbus for Media Spam (/kaff and /vlc)
 - Runtime-deps is also glib-networking ( or similar) for open URI
 
 Compiling:
