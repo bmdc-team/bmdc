@@ -424,7 +424,7 @@ bool WulforUtil::isHubURL(const string &text)
 		g_ascii_strncasecmp(text.c_str(), "adcs://", 7) == 0;
 }
 
-bool WulforUtil::profileIsLocked()
+/*bool WulforUtil::profileIsLocked()
 {
 	#ifndef _WIN32
 	if (_profileIsLocked)
@@ -465,7 +465,7 @@ bool WulforUtil::profileIsLocked()
 	#else
 	return false;
 	#endif
-}
+}*/
 
 gboolean WulforUtil::getNextIter_gui(GtkTreeModel *model, GtkTreeIter *iter, bool children /* = TRUE */, bool parent /* = TRUE */)
 {

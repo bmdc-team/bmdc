@@ -16,7 +16,7 @@ Dependencies:
 - zlib
 - libbz2
 - libssl
-- libGeoIP >= 1.4.7
+- libmaxmindb
 
 --optional--
 - libXss (Note: for idle detection)
