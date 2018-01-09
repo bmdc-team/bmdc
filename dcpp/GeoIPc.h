@@ -40,7 +40,6 @@ public:
 	const string getCountry(const string& ip) const;
 	const string getCountryAB(const string& ip) const;
 	void update();
-	void rebuild();
 
 private:
 #ifdef _WIN32
@@ -48,13 +47,9 @@ private:
 #endif	
 	void open();
 	void close();
-
 	mutable CriticalSection cs;
-	//
 	MMDB_s mmdb;
-	vector<string> cache;
 	const string path;
-
 	GeoIP(GeoIP&);
 	GeoIP operator=(GeoIP&);
 };

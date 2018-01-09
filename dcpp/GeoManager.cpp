@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2014 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2018 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,31 +25,29 @@
 namespace dcpp {
 
 void GeoManager::init() {
-	geo4.reset(new GeoIP(getDbPath()));
+	geo.reset(new GeoIP(getDbPath()));
 
 	rebuild();
 }
 
 void GeoManager::update() {
-	if(geo4) {
-		geo4->update();
-		geo4->rebuild();
+	if(geo) {
+		geo->update();
 	}
 }
 
 void GeoManager::rebuild() {
-	geo4->rebuild();
 }
 
 void GeoManager::close() {
-	geo4.reset();
+	geo.reset();
 }
 
 const string GeoManager::getCountry(const string& ip) {
 	
 	if(!ip.empty()) {
-		dcdebug("%s",geo4->getCountry(ip).c_str());
-		return geo4->getCountry(ip);
+		dcdebug("%s",geo->getCountry(ip).c_str());
+		return geo->getCountry(ip);
 	}
 
 	return Util::emptyString;
@@ -59,8 +57,8 @@ const string GeoManager::getCountryAbbrevation(const string& ip)
 {
 	if(!ip.empty())
 	{
-		dcdebug("%s",geo4->getCountryAB(ip).c_str());
-		return geo4->getCountryAB(ip);
+		dcdebug("%s",geo->getCountryAB(ip).c_str());
+		return geo->getCountryAB(ip);
 	}
 	return Util::emptyString;
 }
