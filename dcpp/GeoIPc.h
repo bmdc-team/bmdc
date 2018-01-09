@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2018 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+ /*Some parts by BMDC-team*/
 
 #ifndef DCPLUSPLUS_DCPP_GEOIP_H
 #define DCPLUSPLUS_DCPP_GEOIP_H
@@ -37,6 +38,7 @@ public:
 	explicit GeoIP(string&& _path);
 	~GeoIP();
 
+	const string GetAnyInfoItem(const string& ip, ...);
 	const string getCountry(const string& ip) const;
 	const string getCountryAB(const string& ip) const;
 	void update();

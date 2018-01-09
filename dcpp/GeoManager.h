@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2017 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2018 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,14 +39,13 @@ public:
 	void init();
 	/** Update a database and its internal caches. Call after a new one have been downloaded. */
 	void update();
-	/** Rebuild the internal caches. Call after a change of country settings. */
-	void rebuild();
 	/** Unload databases and clear internal caches. */
 	void close();
 
 	/** Map an IP address to a country. The flags specify which database(s) to look into. */
 	const string getCountry(const string& ip);
 	const string getCountryAbbrevation(const string& ip);
+	const string getAnyInfo(const string& ip, ...);
 
 	static string getDbPath();
 

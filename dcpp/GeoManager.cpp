@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 // Some CODE Under GPL by BMDC-Team (Mank)
+
 #include "stdinc.h"
 #include "GeoManager.h"
 
@@ -26,17 +27,12 @@ namespace dcpp {
 
 void GeoManager::init() {
 	geo.reset(new GeoIP(getDbPath()));
-
-	rebuild();
 }
 
 void GeoManager::update() {
 	if(geo) {
 		geo->update();
 	}
-}
-
-void GeoManager::rebuild() {
 }
 
 void GeoManager::close() {
@@ -61,6 +57,16 @@ const string GeoManager::getCountryAbbrevation(const string& ip)
 		return geo->getCountryAB(ip);
 	}
 	return Util::emptyString;
+}
+
+const string GeoManager::getAnyInfo(const string& ip, ...)
+{
+	va_list keys;
+	va_start (keys, ip);
+	string ret = geo->GetAnyInfoItem(ip,keys);
+	va_end(keys);
+	return ret;
+	
 }
 string GeoManager::getDbPath() {
 	return Util::getPath(Util::PATH_USER_LOCAL) + "GeoLite2-Country.mmdb";
