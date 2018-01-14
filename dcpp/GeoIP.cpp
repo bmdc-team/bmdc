@@ -25,13 +25,10 @@
 #include "Util.h"
 #include "ZUtils.h"
 
-#include <GeoIP.h>
-
 namespace dcpp {
 using namespace std;
 
-static char *
-get_value (MMDB_lookup_result_s res, ...)
+static char *get_value (MMDB_lookup_result_s res, ...)
 {
   MMDB_entry_data_s entry_data;
   char *value = NULL;
@@ -59,13 +56,7 @@ get_value (MMDB_lookup_result_s res, ...)
 
 
 GeoIP::GeoIP(string&& _path) : path(move(_path)) {
-#ifdef _WIN32	
-	if(File::getSize(path) > 0 
-	|| decompress()
-	)
-#else 
 	if(Util::fileExists(path) == true)
-#endif	
 	{
 		open();
 	}
@@ -76,24 +67,54 @@ GeoIP::~GeoIP() {
 	close();
 }
 
+static int LogCheckError(string ip,int gai,int mm_err)
+{
+	
+	if(0 != gai)
+	{
+	  dcdebug("\n  Error from getaddrinfo for %s - %s\n\n",
+                ip.c_str(), gai_strerror(gai));
+         return 1; // Not SuccessFull       
+    }	
+	
+	if(mm_err != MMDB_SUCCESS)
+	{
+		dcdebug("\n  Got an error from libmaxminddb: %s\n\n",
+                MMDB_strerror(mm_err));
+        return 1; // Not SuccessFull              	
+	}
+	return 0;
+}
+
 const string GeoIP::getCountry(const string& ip) const {
 	Lock l(cs);
 
 	int gai_error, mmdb_error;
-    	MMDB_lookup_result_s result =
+    MMDB_lookup_result_s result =
         MMDB_lookup_string(const_cast<MMDB_s*>(&mmdb), ip.c_str(), &gai_error, &mmdb_error);
-
-	if (0 != gai_error){
-        dcdebug(
-                "\n  Error from getaddrinfo for %s - %s\n\n",
-                ip.c_str(), gai_strerror(gai_error));
-    	}
-
-    if (mmdb_error != MMDB_SUCCESS ) {
-        dcdebug(
-                "\n  Got an error from libmaxminddb: %s\n\n",
-                MMDB_strerror(mmdb_error));
+    int ret = LogCheckError(ip,gai_error,mmdb_error);
+    
+    if(ret == 0)
+	{
+		char *country = NULL, *code = NULL, *cont = NULL;
+		country = get_value (result, "country", "names", "en", NULL);
+		code = get_value (result, "country", "iso_code", NULL);
+		cont = get_value (result,"continent", "code" ,NULL);
+	
+		const string& setting = SETTING(COUNTRY_FORMAT);
+		ParamMap params;
+		params["2code"] = code;
+		//		params["3code"] = forwardRet(GeoIP_code3_by_id(id)); 
+		params["continent"] = cont; 
+		params["engname"] = country; 
+		params["name"] =  country; 
+		params["officialname"] = country; 
+		string rr = Util::formatParams(setting, params);
+	
+		//return  std::string(""+string(code)+" - "+string(country)+"");
+		return rr;
 	}
+<<<<<<< HEAD
 	char *country = NULL, *code = NULL, cont = NULL;
 	country = get_value (result, "country", "names", "en", NULL);
 	code = get_value (result, "country", "iso_code", NULL);
@@ -110,43 +131,53 @@ const string GeoIP::getCountry(const string& ip) const {
 	Util::formatParams(setting, params);
 	
 	return  std::string(""+string(code)+" - "+string(country)+"");
+=======
+	return Util::emptyString;
+>>>>>>> 02ddfccbd2abe8cb45e9f56985c1292c782d4e5a
 }
 
 const string GeoIP::getCountryAB(const string& ip) const {
     Lock l(cs);
     int gai_error, mmdb_error;
     MMDB_lookup_result_s result = MMDB_lookup_string(const_cast<MMDB_s*>(&mmdb), ip.c_str(), &gai_error, &mmdb_error);
-
-    if (gai_error != 0) {
-        fprintf(stderr,
-                "\n  Error from getaddrinfo for %s - %s\n\n",
-                ip.c_str(), gai_strerror(gai_error));
-    }
-
-    if (mmdb_error != MMDB_SUCCESS ) {
-        fprintf(stderr,
-                "\n  Got an error from libmaxminddb: %s\n\n",
-                MMDB_strerror(mmdb_error));
-    }
-    char *code = NULL;
-	code = get_value (result, "country", "iso_code", NULL); 
-	return  std::string(code);
+    int ret = LogCheckError(ip,gai_error,mmdb_error);
+	if(ret == 0) {
+		char *code = NULL;
+		code = get_value (result, "country", "iso_code", NULL); 
+		return  std::string(code);
+	}
+	return Util::emptyString;	
 }
+
+const string GeoIP::GetAnyInfoItem(const string& ip, ...)
+{
+	int gai_error, mmdb_error;
+    MMDB_lookup_result_s result = MMDB_lookup_string(const_cast<MMDB_s*>(&mmdb), ip.c_str(), &gai_error, &mmdb_error);
+    int ret = LogCheckError(ip,gai_error,mmdb_error);
+	if(ret == 0) {
+		va_list keys;
+		va_start (keys, ip);
+		char *code = NULL;
+		code = get_value (result, keys);
+		va_end(keys);
+		if(code != NULL) 
+			return  std::string(code);
+	}
+	return Util::emptyString;		
+}
+
+<<<<<<< HEAD
+#ifdef _WIN32
+=======
 
 void GeoIP::update() {
 	Lock l(cs);
-
-	//close();
-#ifdef _WIN32
-//	if(decompress()) {
-#endif		
-//		open();
-#ifdef _WIN32		
-	}
-#endif	
+	close();
+	open();
 }
 
-#ifdef _WIN32
+/*#ifdef _WIN32
+>>>>>>> 02ddfccbd2abe8cb45e9f56985c1292c782d4e5a
 bool GeoIP::decompress() const {
 	if(File::getSize(path + ".gz") <= 0) {
 		return false;
@@ -157,7 +188,7 @@ bool GeoIP::decompress() const {
 
 	return true;
 }
-#endif
+#endif*/
 void GeoIP::open() {
 	dcdebug("%s",path.c_str());
 	int status = MMDB_open(path.c_str(), MMDB_MODE_MMAP, &mmdb);

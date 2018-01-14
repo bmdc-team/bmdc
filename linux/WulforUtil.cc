@@ -33,7 +33,7 @@
 #include "../dcpp/RegEx.h"
 #include "../dcpp/HighlightManager.h"
 #include "../dcpp/RawManager.h"
-
+#include "../dcpp/GeoManager.h"
 #include "../dcpp/UserManager.h"
 
 #include <iostream>
@@ -575,7 +575,13 @@ string WulforUtil::formatReport(const Identity& identity)
 	{
 		report += "\n" + i->first + ": " +  i->second;
 	}
-
+	/*if(!identity.getIp4().empty())
+	{
+		string time_info = GeoManager::getInstance()->getAnyInfo(identity.getIp4(),"location", "time_zone",NULL);
+		string cont_info = GeoManager::getInstance()->getAnyInfo(identity.getIp4(),"continent", "code" ,NULL);
+		string post_info = GeoManager::getInstance()->getAnyInfo(identity.getIp4(),"postal", "code", NULL);
+		report += "Timezone: "+ time_info + "\n" + "Continent: "+ cont_info + "\n" + "Postal Info:" + post_info + "\n";
+	}*/
 	return report + "\n";
 }
 //From CrzDC++

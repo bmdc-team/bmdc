@@ -75,7 +75,7 @@ mainWin(NULL)
 	// Determine path to data files
 	// Maybe best way determine Path is by compile prefix?
 //	const gchar* const* g_path = g_get_system_data_dirs();
-	path = string(_DATADIR) + "/share/bmdc/";
+	path = string(_DATADIR) + "bmdc" + G_DIR_SEPARATOR_S;
 
     GtkIconTheme *iconTheme = gtk_icon_theme_get_default();
    	// Set the custom icon search path so GTK+ can find our icons
