@@ -94,11 +94,24 @@ const string GeoIP::getCountry(const string& ip) const {
                 "\n  Got an error from libmaxminddb: %s\n\n",
                 MMDB_strerror(mmdb_error));
 	}
-	char *country = NULL, *code = NULL;
+	char *country = NULL, *code = NULL, cont = NULL;
 	country = get_value (result, "country", "names", "en", NULL);
-	code = get_value (result, "country", "iso_code", NULL); 
+	code = get_value (result, "country", "iso_code", NULL);
+	cont = get_value (result,"continent", "code" ,NULL);
+	
+	const string& setting = SETTING(COUNTRY_FORMAT);
+	ParamsMap params;
+	params["2code"] = code;
+	//		params["3code"] = forwardRet(GeoIP_code3_by_id(id)); 
+	params["continent"] = cont; 
+	params["engname"] = country; 
+	params["name"] =  country; 
+	params["officialname"] = country; 
+	Util::formatParams(setting, params);
+	
 	return  std::string(""+string(code)+" - "+string(country)+"");
 }
+
 const string GeoIP::getCountryAB(const string& ip) const {
     Lock l(cs);
     int gai_error, mmdb_error;
@@ -133,48 +146,6 @@ void GeoIP::update() {
 #endif	
 }
 
-namespace {
-
-inline string forwardRet(const char* ret) {
-	return ret ? ret : Util::emptyString;
-}
-
-} // unnamed namespace
-
-void GeoIP::rebuild() {
-	/*Lock l(cs);
-	if(geo) {
-		const string& setting = SETTING(COUNTRY_FORMAT);
-
-		auto size = GeoIP_num_countries();
-		cache.resize(size);
-		for(unsigned int id = 1; id < size; ++id) {
-
-			ParamMap params;
-
-			params["2code"] = forwardRet(GeoIP_code_by_id(id)); 
-			params["3code"] = forwardRet(GeoIP_code3_by_id(id)); 
-			params["continent"] = forwardRet(GeoIP_continent_by_id(id)); 
-			params["engname"] = forwardRet(GeoIP_name_by_id(id)); 
-/*#ifdef _WIN32
-			params["name"] = [id]() -> string {
-				auto str = getGeoInfo(id, GEO_FRIENDLYNAME);
-				return str.empty() ? forwardRet(GeoIP_name_by_id(id)) : str;
-			};
-			params["officialname"] = [id]() -> string {
-				auto str = getGeoInfo(id, GEO_OFFICIALNAME);
-				return str.empty() ? forwardRet(GeoIP_name_by_id(id)) : str;
-			};
-#else*/
-			/// @todo any way to get localized country names on non-Windows?
-//			params["name"] =  forwardRet(GeoIP_name_by_id(id)); 
-//			params["officialname"] = forwardRet(GeoIP_name_by_id(id)); 
-//#endif
-
-//			cache[id] = Util::formatParams(setting, params);
-//		}
-//	}
-}
 #ifdef _WIN32
 bool GeoIP::decompress() const {
 	if(File::getSize(path + ".gz") <= 0) {

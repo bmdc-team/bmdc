@@ -54,7 +54,7 @@ private:
 	friend class Singleton<GeoManager>;
 
 	// only these 2 for now. in the future, more databases could be added (region / city info...).
-	unique_ptr<GeoIP> geo4;
+	unique_ptr<GeoIP> geo;
 
 	GeoManager() { }
 	virtual ~GeoManager() { }
