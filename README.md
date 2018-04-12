@@ -60,6 +60,7 @@ See License.txt for details.
 Contact:
 --------
 Website: 
-	https://launchpad.net/bmdc++
 	https://github.com/bmdcpp/bmdc
+	https://launchpad.net/bmdc++
 	https://sourceforge.net/projects/freedcppmv/
+*E-Mail*: freedcpp at seznam dot cz
