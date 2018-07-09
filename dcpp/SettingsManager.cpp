@@ -283,7 +283,7 @@ SettingsManager::SettingsManager()
 	setDefault(SETTINGS_HEIGHT, 600); //not used?
 	//--//
 	setDefault(SOCKS_PORT, 1080);
-	setDefault(SOCKS_RESOLVE, 1);
+	setDefault(SOCKS_RESOLVE, false);
 	setDefault(CONFIG_VERSION, "0.181");		// 0.181 is the last version missing configversion
 	setDefault(KEEP_LISTS, false);
 	setDefault(AUTO_KICK, false);
