@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2018 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2019 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,36 +104,14 @@ const string GeoIP::getCountry(const string& ip) const {
 		const string& setting = SETTING(COUNTRY_FORMAT);
 		ParamMap params;
 		params["2code"] = code;
-		//		params["3code"] = forwardRet(GeoIP_code3_by_id(id)); 
+		//params["3code"] = forwardRet(GeoIP_code3_by_id(id)); 
 		params["continent"] = cont; 
 		params["engname"] = country; 
 		params["name"] =  country; 
 		params["officialname"] = country; 
-		string rr = Util::formatParams(setting, params);
-	
-		//return  std::string(""+string(code)+" - "+string(country)+"");
-		return rr;
+		return Util::formatParams(setting, params);
 	}
-<<<<<<< HEAD
-	char *country = NULL, *code = NULL, cont = NULL;
-	country = get_value (result, "country", "names", "en", NULL);
-	code = get_value (result, "country", "iso_code", NULL);
-	cont = get_value (result,"continent", "code" ,NULL);
-	
-	const string& setting = SETTING(COUNTRY_FORMAT);
-	ParamsMap params;
-	params["2code"] = code;
-	//		params["3code"] = forwardRet(GeoIP_code3_by_id(id)); 
-	params["continent"] = cont; 
-	params["engname"] = country; 
-	params["name"] =  country; 
-	params["officialname"] = country; 
-	Util::formatParams(setting, params);
-	
-	return  std::string(""+string(code)+" - "+string(country)+"");
-=======
 	return Util::emptyString;
->>>>>>> 02ddfccbd2abe8cb45e9f56985c1292c782d4e5a
 }
 
 const string GeoIP::getCountryAB(const string& ip) const {
@@ -166,10 +144,6 @@ const string GeoIP::GetAnyInfoItem(const string& ip, ...)
 	return Util::emptyString;		
 }
 
-<<<<<<< HEAD
-#ifdef _WIN32
-=======
-
 void GeoIP::update() {
 	Lock l(cs);
 	close();
@@ -177,7 +151,6 @@ void GeoIP::update() {
 }
 
 /*#ifdef _WIN32
->>>>>>> 02ddfccbd2abe8cb45e9f56985c1292c782d4e5a
 bool GeoIP::decompress() const {
 	if(File::getSize(path + ".gz") <= 0) {
 		return false;
