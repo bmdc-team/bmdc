@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2018 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2020 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// Some CODE Under GPL by BMDC-Team (Mank)
 
 #include "stdinc.h"
 #include "GeoManager.h"
@@ -27,17 +26,12 @@ namespace dcpp {
 
 void GeoManager::init() {
 	geo.reset(new GeoIP(getDbPath()));
-<<<<<<< HEAD
-
 	rebuild();
-=======
->>>>>>> 02ddfccbd2abe8cb45e9f56985c1292c782d4e5a
 }
 
 void GeoManager::update() {
 	if(geo) {
 		geo->update();
-<<<<<<< HEAD
 		geo->rebuild();
 	}
 }
@@ -46,11 +40,7 @@ void GeoManager::rebuild() {
 	geo->rebuild();
 }
 
-=======
-	}
-}
 
->>>>>>> 02ddfccbd2abe8cb45e9f56985c1292c782d4e5a
 void GeoManager::close() {
 	geo.reset();
 }
@@ -84,6 +74,7 @@ const string GeoManager::getAnyInfo(const string& ip, ...)
 	return ret;
 	
 }
+	
 string GeoManager::getDbPath() {
 	return Util::getPath(Util::PATH_USER_LOCAL) + "GeoLite2-Country.mmdb";
 }
